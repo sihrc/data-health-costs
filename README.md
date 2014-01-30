@@ -40,15 +40,19 @@ data.
 ===============================
 ###Code
 data.py
+
   Currently, this contains String processing methods that analyze the differences and frequency of differences of the strings in the first column of the data set. The Strings are in increasing order (they are long numbers). They appear to behave like time-stamps of some sort, or some kind of special identification number. 
 
 stats
+
   Contains the modules with thinkstats2.py and thinkplot.py provided by Allen Downey through Green Tea Press.
 
 temp.p
+
   Currently used for pipelining the dataset. 
 
 
 To-Do
+
   Refactor the String processing methods into its own class or module. 
 
