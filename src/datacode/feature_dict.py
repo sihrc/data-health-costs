@@ -11,7 +11,7 @@ class Data():
 		self.data = None
 		#self.indicies, self.features = self.createDicts(codebook)
 	
-	def createDicts(self, codebook):
+	def createRefs(self):
 		"""
 		Create Reference Dicts
 		Feature - Var:Description
@@ -20,16 +20,16 @@ class Data():
 		count = 0
 		self.features = dict()
 		self.indicies = dict()
-		for key,item in codebook.iteritems():
+		for key,item in self.codebook.iteritems():
 			self.features["V" + str(count)] = key
 			self.indicies["V" + str(count)] = item
 			count += 1
 
-	def var(self, var):
+	def feature(self, var):
 		"""
 		Given the variable name, returns the variable description
 		"""
-		return self.feature[var]
+		return self.features[var]
 
 	def index(self, var):
 		"""
@@ -37,7 +37,7 @@ class Data():
 		"""
 		return self.indicies[var]
 
-	def loadData(filename):
+	def loadData(self,filename):
 		"""
 		Loads the Data Set from filename as numpy array
 		"""
