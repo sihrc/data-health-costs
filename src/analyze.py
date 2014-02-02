@@ -11,8 +11,14 @@ if __name__ == "__main__":
 	d.createRefs()
 	d.loadData("../h144d.dat")
 
-	print d.getColumn("V1")
-	# for i in range (len(dataHolder.data)) :
-	# 	plt.plot( dataHolder.getColumn("V" + str(i)))
-	# 	plt.ylabel(dataHolder.lookUp("V" + str(i)))
-	# 	plt.show()
+	#print d.getColumn("V1")
+	costId = d.lookUp(desc = "CHG")[0][0] # V49
+	cost = d.getColumn(costId)
+
+	for i in range (len(d.data)) :
+		data = d.getColumn("V" + str(i))
+		print data
+		raw_input()
+	 	plt.plot(data, cost)
+	 	plt.ylabel(d.lookUp(var = "V" + str(i))[1])
+	 	plt.show()
