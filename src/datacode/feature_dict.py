@@ -17,7 +17,6 @@ class Data():
 		"""
 		count = 0
 		self.features = dict()
-		self.indicies = dict()
 		for key,item in self.codebook.iteritems():
 			self.features["V" + str(count)] = [key, item]
 			count += 1
@@ -45,7 +44,7 @@ class Data():
 		data = []
 		with open(filename, 'rb') as f:
 			for line in f:
-				data.append(line.strip())
+				data.append(list(line.strip()))
 		self.data = np.array(data)
 
 	def getColumn(self, var):
