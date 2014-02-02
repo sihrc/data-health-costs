@@ -11,6 +11,7 @@ if __name__ == "__main__":
 	d.createRefs()
 	d.loadData("../h144d.dat")
 
+	print d.getColumn("V1")
 	# for i in range (len(dataHolder.data)) :
 	# 	plt.plot( dataHolder.getColumn("V" + str(i)))
 	# 	plt.ylabel(dataHolder.lookUp("V" + str(i)))
