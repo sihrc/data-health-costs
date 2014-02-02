@@ -6,7 +6,6 @@ HC144D = {"DUID: DWELLING UNIT ID":(1, 5),"PID: PERSON NUMBER":(6, 8),"DUPERSID:
 class Data():
 	def __init__ (self, data = dict(), codebook = HC144D):
 		self.codebook = codebook
-		self.indicies = dict()
 		self.features = dict()
 		self.data = None
 		#self.indicies, self.features = self.createDicts(codebook)
@@ -21,21 +20,24 @@ class Data():
 		self.features = dict()
 		self.indicies = dict()
 		for key,item in self.codebook.iteritems():
-			self.features["V" + str(count)] = key
-			self.indicies["V" + str(count)] = item
+			self.features["V" + str(count)] = [key, item]
 			count += 1
 
-	def feature(self, var):
+	def lookUp(self, var = None, desc = None):
 		"""
-		Given the variable name, returns the variable description
+		Look up a feature using the variable name or a description
 		"""
-		return self.features[var]
+		if var:
+			return self.features[var]
+		elif desc:
+			results = []
+			for key,item in self.features.iteritems():
+				if desc.lower() in item[0].lower():
+					results.append((key,item))
+			return results
+		else:
+			return list
 
-	def index(self, var):
-		"""
-		Given the variable name, returns the indices of the data
-		"""
-		return self.indicies[var]
 
 	def loadData(self,filename):
 		"""
@@ -46,6 +48,7 @@ class Data():
 			for line in f:
 				data.append(line)
 		self.data = np.array(data)
+
 
 	def save(self, filename):
 		with open(filename, 'wb') as f:
