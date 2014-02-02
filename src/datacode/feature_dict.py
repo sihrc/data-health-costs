@@ -49,6 +49,14 @@ class Data():
 				data.append(line)
 		self.data = np.array(data)
 
+	def getColumn(self, var):
+		entry = self.lookUp(var = var)
+		ranges = entry[1]
+		dats = []
+		for line in self.data:
+			dats.append(line[ranges[0]:ranges[1]])
+		return dats
+
 
 	def save(self, filename):
 		with open(filename, 'wb') as f:
