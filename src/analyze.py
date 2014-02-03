@@ -15,10 +15,13 @@ if __name__ == "__main__":
 	costId = d.lookUp(desc = "CHG")[0][0] # V49
 	cost = d.getColumn(costId)
 
-	for i in range (len(d.data)) :
-		data = d.getColumn("V" + str(i))
-		print data
-		raw_input()
-	 	plt.plot(data, cost)
-	 	plt.ylabel(d.lookUp(var = "V" + str(i))[1])
-	 	plt.show()
+	for i in range (len(d.features)):
+		try:
+			data = d.getColumn("V" + str(i))
+		 	plt.scatter(data, cost)
+		 	print "Plotting " + str(i) + " variable vs cost plot"
+		 	plt.xlabel(d.lookUp(var = "V" + str(i))[0])
+		 	plt.ylabel("Cost in dollars")
+		 	plt.savefig("../visuals/feature_v_cost/" + d.lookUp(var = "V" + str(i))[0].replace(" ", "_") + ".png")
+		except:
+			print "Plotting " + str(i) + " failed"
