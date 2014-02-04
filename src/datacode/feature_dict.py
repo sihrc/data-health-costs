@@ -51,7 +51,6 @@ class Data():
 		ranges = self.lookUp(var = var)[1]
 		rawData = self.data[:,ranges[0] - 1:ranges[1]]
 		newFormat = np.zeros(shape = (rawData.shape[0]))
-		print ranges
 		for i in range(len(rawData)):
 			newFormat[i] = "".join(rawData[i]).strip()
 		return newFormat

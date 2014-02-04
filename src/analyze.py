@@ -10,11 +10,51 @@ import datacode.feature_dict as dc
 if __name__ == "__main__":
 	d = dc.Data(codebook = dc.HC144D)
 	d.createRefs()
-	d.loadData("../h144d.dat")
+	d.loadData("../data/h144d.dat")
 
 	#print d.getColumn("V1")
 	costId = d.lookUp(desc = "CHG")[0][0] # V49
 	cost = d.getColumn(costId)
+
+	feature_dicts = dict()
+	for i in range(len(d.features)):
+		try:
+			var = "V"+str(i)
+			current_dict = dict()
+			data = d.getColumn(var)
+			ranges = np.linspace(min(data), max(data), 10)
+			colors = ['b','g','k','m','y','p','r','c','k-','k*']
+			for i,(low, high) in enumerate(zip(ranges[:-1], ranges[1:])):
+				costs = cost[np.where((low < data) * (data < high))]
+				if len(costs) == 0:
+					continue
+				cost_range = np.linspace(min(costs), max(costs),10)
+				for cost_low, cost_high in zip(cost_range[:-1], cost_range[1:]):
+					current_dict[(low,high)] = (cost_low, cost_high, len(np.where((cost_low < costs) * (costs < cost_high))[0]))
+			feature_dicts[var] = current_dict
+		except:
+			print var + " is not numeral"
+	print feature_dicts
+
+
+	# try:
+	# 	pmf = ts2.MakePmfFromList(list(costs))
+	# 	tp.Hist(pmf, color = colors[i])
+	# 	tp.show()
+	# 	raw_input()
+	# except ValueError:
+	# 	print "divide by 0 sadness"
+	
+
+	# new_dats = ts2.BinData(cost, min(cost), max(cost),10)
+	# print "Plotting " + str(i) + " variable vs cost plot"
+	# print cost
+	# pmf = ts2.MakePmfFromList(cost, "Cost")
+	# tp.Hist(pmf)
+	# thinkplot.Show(title=d.lookUp(var = "V" + str(i))[0],
+ #           xlabel='Cost in dollars',
+ #           ylabel='Count')
+	#tp.Show()
 
 	# for i in range (len(d.features)):
 	# 	try:
@@ -26,15 +66,3 @@ if __name__ == "__main__":
 	# 	 	plt.savefig("../visuals/feature_v_cost/" + d.lookUp(var = "V" + str(i))[0].replace(" ", "_") + ".png")
 	# 	except:
 	# 		print "Plotting " + str(i) + " failed"
-
-	for i in range (len(d.features)):
-		try:
-			data = d.getColumn("V" + str(i))
-			new_dats = ts2.BinData(list(cost), min(cost), max(cost),6)
-			print "Plotting " + str(i) + " variable vs cost plot"
-			pmf = ts2.MakePmfFromList(cost)
-			tp.Hist(pmf)
-			tp.Show()
-	 	except:
-	 		print "Plotting " + str(i) + " failed"
-
