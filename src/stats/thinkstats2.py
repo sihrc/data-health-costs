@@ -41,9 +41,11 @@ def BinData(data, low, high, n):
 
     returns: sequence of numbers
     """
+    print(data)
     bins = numpy.linspace(low, high, n)
     data = (numpy.array(data) - low) / (high - low) * n
     data = numpy.round(data) * (high - low) / n + low
+    print(data)
     return data
     
 def RandomSeed(x):

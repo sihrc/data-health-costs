@@ -30,10 +30,9 @@ if __name__ == "__main__":
 	for i in range (len(d.features)):
 		try:
 			data = d.getColumn("V" + str(i))
-			new_dats = ts2.BinData(cost, min(cost), max(cost),10)
+			new_dats = ts2.BinData(list(cost), min(cost), max(cost),6)
 			print "Plotting " + str(i) + " variable vs cost plot"
-			print new_dats
-			pmf = ts2.MakePmfFromList(list(cost))
+			pmf = ts2.MakePmfFromList(cost)
 			tp.Hist(pmf)
 			tp.Show()
 	 	except:
