@@ -1,2 +1,2 @@
-from thinkplot import *
-from thinkstats2 import *
+import thinkplot as tp
+import thinkstats2 as ts2
