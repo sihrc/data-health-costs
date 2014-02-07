@@ -4,7 +4,7 @@ Contains visualization data scripts
 
 #To-DO Create a Visuals module that holds all the visualization TASKS
 import matplotlib.pyplot as plt
-
+from stats import *
 
 def FeatureVsCost(data, cost, var):
 		try:
@@ -24,5 +24,16 @@ def AllFeatureVsCost(data):
 		except:
 			print "Plotting " + str(i) + " failed"
 
-def graphCostPmf(data):
-	return "what"
+def graphCostPmf(cost):
+	new_dats = ts2.BinData(cost, min(list(cost)), max(list(cost)), 100)
+	print new_dats
+	pmf = ts2.MakePmfFromList(list(cost))
+	print pmf.d
+	cdf = ts2.MakeCdfFromPmf(pmf)
+	#pmf = ts2.MakePmfFromList(cost)
+	tp.Hist(pmf)
+	#tp.Clf()
+	#tp.Cdf(cdf)
+	tp.Show(title='PMF of Cost',
+               xlabel='Money (Dollars)',
+               ylabel='probability')
