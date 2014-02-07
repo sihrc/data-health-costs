@@ -7,11 +7,9 @@ class Data():
 	def __init__ (self, data = dict(), codebook = HC144D):
 		self.codebook = codebook
 		self.features = dict()
-		self.temporary = dict()
+		self.results = dict()
 		self.data = None
-		costId = d.lookUp(desc = "CHG")[0][0] # V49
-		cost = d.getColumn(costId)
-	
+
 	def createRefs(self):
 		"""
 		Create Reference Dicts
@@ -49,6 +47,8 @@ class Data():
 			for line in f:
 				data.append(list(line.strip()))
 		self.data = np.array(data)
+		self.costId = self.lookUp(desc = "CHG")[0][0] # V49
+		self.cost = self.getColumn(self.costId)
 
 	def getColumn(self, var):
 		ranges = self.lookUp(var = var)[1]
