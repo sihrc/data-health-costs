@@ -1,12 +1,12 @@
+"""
+Contains analyze data scripts
+"""
+
 #Useful Libraries
 import numpy as np
-import pickle as p
-import matplotlib.pyplot as plt
-from stats import *
 
 #Data Library
-import datacode.feature_dict as dc
-import visuals as vis
+import data as dc
 
 def featureCostRange(d):
 	"""
@@ -61,6 +61,3 @@ if __name__ == "__main__":
 
 	#Load previously saved state of the dataholder (including data)
 	#d.load("temp.p")
-
-	#vis.FeatureVsCost(d, d.cost, "V1")
-	# vis.graphCostPmf(d.cost)

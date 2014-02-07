@@ -1,3 +1,7 @@
+"""
+Contains visualization data scripts
+"""
+
 #To-DO Create a Visuals module that holds all the visualization TASKS
 import matplotlib.pyplot as plt
 

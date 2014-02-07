@@ -1,3 +1,7 @@
+"""
+Contains data holder class
+"""
+
 import pickle as p
 import numpy as np
 
@@ -37,7 +41,6 @@ class Data():
 		else:
 			return list
 
-
 	def loadData(self,filename):
 		"""
 		Loads the Data Set from filename as numpy array
@@ -51,6 +54,9 @@ class Data():
 		self.cost = self.getColumn(self.costId)
 
 	def getColumn(self, var):
+		"""
+		Gets the column of data given by var
+		"""
 		ranges = self.lookUp(var = var)[1]
 		rawData = self.data[:,ranges[0] - 1:ranges[1]]
 		newFormat = np.zeros(shape = (rawData.shape[0]))
@@ -81,7 +87,4 @@ class Data():
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary"
 
 if __name__ == "__main__":
-	with open("../feature_dict.p",'wb') as f:
-		print "Dumping Data in feature_dict.p ..."
-		p.dump(data, f)
-		print "Finished Dumping Data"
+	print "See Documentation"
