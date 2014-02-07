@@ -14,6 +14,14 @@ class Data():
 		self.createRefs()
 		self.results = dict()
 		self.data = self.loadData(os.path.join("..","data",filename))
+	
+	def createBins(self, data, bins = 10):
+		#Create ranges for data
+		ranges = np.linspace(np.min(data), np.max(data), bins)
+		#Ranges between ranges
+		for low,high in zip(ranges[:1], ranges[1:]):
+			data[np.where((data > low) * (data < high))] = (low + high)/2.0
+		return data
 
 	def createRefs(self):
 		"""
