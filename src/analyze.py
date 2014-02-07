@@ -7,15 +7,7 @@ from stats import *
 #Data Library
 import datacode.feature_dict as dc
 
-if __name__ == "__main__":
-	d = dc.Data(codebook = dc.HC144D)
-	d.createRefs()
-	d.loadData("../data/h144d.dat")
-
-	#print d.getColumn("V1")
-	costId = d.lookUp(desc = "CHG")[0][0] # V49
-	cost = d.getColumn(costId)
-
+def featureCostRange(dataHandler):
 	feature_dicts = dict()
 	for i in range(len(d.features)):
 		try:
@@ -34,7 +26,18 @@ if __name__ == "__main__":
 			feature_dicts[var] = current_dict
 		except:
 			print var + " is not numeral"
-	print feature_dicts
+	return feature_dicts
+
+if __name__ == "__main__":
+	d = dc.Data(codebook = dc.HC144D)
+	# d.createRefs()
+	# d.loadData("../data/h144d.dat")
+
+	d.load("temp.p")
+
+
+
+
 
 
 	# try:

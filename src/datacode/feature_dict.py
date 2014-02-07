@@ -7,7 +7,10 @@ class Data():
 	def __init__ (self, data = dict(), codebook = HC144D):
 		self.codebook = codebook
 		self.features = dict()
+		self.temporary = dict()
 		self.data = None
+		costId = d.lookUp(desc = "CHG")[0][0] # V49
+		cost = d.getColumn(costId)
 	
 	def createRefs(self):
 		"""
@@ -57,16 +60,16 @@ class Data():
 
 	def save(self, filename):
 		with open(filename, 'wb') as f:
-			f.dump(self, f)
-			print filename + "Saved Successfully"
+			p.dump(self, f)
+			print filename + " Saved Successfully"
 
 	def load(self, filename):
 		"""
 		Saves this object as a pickle file for access later
 		"""
 		with open(filename, 'rb') as f:
-			f.load(f)
-			print filename + "Loaded Successfully"
+			self = p.load(f)
+			print filename + " Loaded Successfully"
 
 	"""
 	Class native methods
