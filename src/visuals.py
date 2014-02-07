@@ -24,10 +24,9 @@ def AllFeatureVsCost(data):
 		except:
 			print "Plotting " + str(i) + " failed"
 
-def GraphCostPmf(cost):
-	new_dats = ts2.BinData(cost, min(list(cost)), max(list(cost)), 100)
-	pmf = ts2.MakePmfFromList(list(cost))
-	print pmf.d
+def GraphCostPmf(d):
+	new_dats = d.createBins(d.cost, bins = 20)
+	pmf = ts2.MakePmfFromList(list(d.cost))
 	cdf = ts2.MakeCdfFromPmf(pmf)
 	#pmf = ts2.MakePmfFromList(cost)
 	tp.Hist(pmf)
