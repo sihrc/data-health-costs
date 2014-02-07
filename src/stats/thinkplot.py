@@ -106,8 +106,14 @@ def PrePlot(num=None, rows=1, cols=1):
         SUBPLOT_COLS = cols
     
 
-def SubPlot(plot_number):
-    pyplot.subplot(SUBPLOT_ROWS, SUBPLOT_COLS, plot_number)
+def SubPlot(rows, cols, plot_number):
+    """Configures the number of subplots and changes the current plot.
+
+    rows: int
+    cols: int
+    plot_number: int
+    """
+    pyplot.subplot(rows, cols, plot_number)
 
 
 class InfiniteList(list):
@@ -223,6 +229,11 @@ def Pmfs(pmfs, **options):
 def Hist(hist, **options):
     """Plots a Pmf or Hist with a bar plot.
 
+    The default width of the bars is based on the minimum difference
+    between values in the Hist.  If that's too small, you can override
+    it by providing a width keyword argument, in the same units
+    as the values.
+
     Args:
       hist: Hist or Pmf object
       options: keyword args passed to pyplot.bar
@@ -240,6 +251,8 @@ def Hist(hist, **options):
                         width=width)
 
     pyplot.bar(xs, fs, **options)
+    values = hist.Values()
+    pyplot.axis = [min(values), max(values), 0, 1]
 
 
 def Hists(hists, **options):
@@ -280,7 +293,7 @@ def Cdf(cdf, complement=False, transform=None, **options):
 
     Returns:
       dictionary with the scale options that should be passed to
-      myplot.Save or myplot.Show
+      Config, Show or Save.
     """
     xs, ps = cdf.Render()
     scale = dict(xscale='linear', yscale='linear')
@@ -403,32 +416,14 @@ def Config(**options):
     """Configures the plot.
 
     Pulls options out of the option dictionary and passes them to
-    title, xlabel, ylabel, xscale, yscale, xticks, yticks, axis, legend,
-    and loc.
+    the corresponding pyplot functions.
     """
-    title = options.get('title', '')
-    pyplot.title(title)
+    names = ['title', 'xlabel', 'ylabel', 'xscale', 'yscale',
+             'xticks', 'yticks', 'axis']
 
-    xlabel = options.get('xlabel', '')
-    pyplot.xlabel(xlabel)
-
-    ylabel = options.get('ylabel', '')
-    pyplot.ylabel(ylabel)
-
-    if 'xscale' in options:
-        pyplot.xscale(options['xscale'])
-
-    if 'xticks' in options:
-        pyplot.xticks(options['xticks'])
-
-    if 'yscale' in options:
-        pyplot.yscale(options['yscale'])
-
-    if 'yticks' in options:
-        pyplot.yticks(options['yticks'])
-
-    if 'axis' in options:
-        pyplot.axis(options['axis'])
+    for name in names:
+        if name in options:
+            getattr(pyplot, name)(options[name])
 
     loc = options.get('loc', 0)
     legend = options.get('legend', True)
