@@ -11,7 +11,7 @@ def FeatureVsCost(data, cost, var):
 	 		plt.ylabel("Cost in dollars")
 	 		plt.savefig("../visuals/feature_v_cost/" + data.lookUp(var = var)[0].replace(" ", "_") + ".png")
 		except:
-		 	print "Plotting " + str(i) + " failed"
+		 	print "Plotting " + var + " failed"
 
 def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
@@ -19,3 +19,6 @@ def AllFeatureVsCost(data):
 			FeatureVsCost("V" + str(i))
 		except:
 			print "Plotting " + str(i) + " failed"
+
+def graphCostPmf(data):
+	return "what"
