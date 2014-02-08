@@ -61,6 +61,7 @@ class Data():
 		self.data = np.array(data)
 		self.costId = self.lookUp(desc = "CHG")[0][0] # V49
 		self.cost = self.getColumn(self.costId)
+		return self.data
 
 	def getColumn(self, var):
 		"""

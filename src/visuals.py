@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 from stats import *
 import numpy as np
 
-def FeatureVsCost(data, cost, var):
+def FeatureVsCost(data, var):
 		try:
-			data = data.getColumn(var)
-			plt.scatter(data, cost)
+			new_data = data.getColumn(var)
+			plt.scatter(new_data, data.cost)
 			print "Plotting " + var + " vs cost plot"
 			plt.xlabel(data.lookUp(var = var)[0])
 			plt.ylabel("Cost in dollars")
@@ -20,10 +20,7 @@ def FeatureVsCost(data, cost, var):
 
 def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
-		try:
-			FeatureVsCost("V" + str(i))
-		except:
-			print "Plotting " + str(i) + " failed"
+		FeatureVsCost(data,"V" + str(i))
 
 def GraphCostPmf(d):
 	pmf = ts2.MakePmfFromList(d.cost)
