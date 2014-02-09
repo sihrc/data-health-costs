@@ -19,7 +19,6 @@ class Data():
 		self.results = dict()
 		self.data = self.loadData(os.path.join("..","data",filename))
 	
-	@debug
 	def createBins(self, data, bins = 10):
 		#Create ranges for data
 		ranges = np.linspace(np.min(data), np.max(data), bins)
@@ -28,7 +27,6 @@ class Data():
 			data[np.where((data > low) * (data < high))] = (low + high)/2.0
 		return data
 
-	@debug
 	def createRefs(self):
 		"""
 		Create Reference Dicts
@@ -40,10 +38,10 @@ class Data():
 		for key,item in self.codebook.iteritems():
 			self.features["V" + str(count)] = [key, item]
 			count += 1
-	@debug
 	def lookUp(self, var = None, desc = None):
 		"""
 		Look up a feature using the variable name or a description
+		returns acroynym-description, indices
 		"""
 		if var:
 			return self.features[var]
@@ -55,7 +53,6 @@ class Data():
 			return results
 		else:
 			return list
-	@debug
 	def loadData(self,filename):
 		"""
 		Loads the Data Set from filename as numpy array
@@ -68,7 +65,6 @@ class Data():
 		self.costId = self.lookUp(desc = "CHG")[0][0] # V49
 		self.cost = self.getColumn(self.costId)
 		return self.data
-	@debug
 	def getColumn(self, var):
 		"""
 		Gets the column of data given by var
@@ -79,13 +75,11 @@ class Data():
 		for i in range(len(rawData)):
 			newFormat[i] = "".join(rawData[i]).strip()
 		return newFormat
-	@debug
 	def save(self, filename):
 		with open(filename, 'wb') as f:
 			p.dump(self, f)
 			print filename + " Saved Successfully"
 
-	@debug
 	def load(self, filename):
 		"""
 		Saves this object as a pickle file for access later

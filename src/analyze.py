@@ -13,7 +13,7 @@ import data as dc
 from wrappers import debug
 
 @debug
-def featureCostRange(d):
+def AllFeatureCostRange(d, bins = 10):
 	"""
 	Returns a dictionary {features: dictionary2}
 	where dicionary2 is {feature ranges: (cost-ranges, count)}
@@ -32,13 +32,16 @@ def featureCostRange(d):
 			data = d.getColumn(var)
 
 			#Grab the ranges for the feature
-			ranges = np.linspace(min(data), max(data), 10)
+			ranges = np.linspace(min(data), max(data), bins)
 
+			feature_dicts[var] = ["classification"] if len(set(data)) < 10 else ["continuous"]
+
+			#Check if Category or Continuous 
 			#Loop through the ranges to get the costs
 			for i,(low, high) in enumerate(zip(ranges[:-1], ranges[1:])):
 				#Grab the costs at those ranges
 				costs = d.cost[np.where((low < data) * (data < high))]
-				feature_dicts[var] = feature_dicts.get(var, []) + [(low, high, costs)]
+				feature_dicts[var] += [(low, high, costs)]
 		except:
 			#If the data contains non-numeral data, catch the exception
 			print var + " is not numeral"

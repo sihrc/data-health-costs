@@ -30,7 +30,7 @@ def AllFeatureVsCost(data):
 		FeatureVsCost(data,"V" + str(i))
 
 @debug
-def GraphCostPmf(subCost):
+def GraphCostPmf(subCost, save, show = True):
 	pmf = ts2.MakePmfFromList(subCost)
 	cdf = ts2.MakeCdfFromPmf(pmf)
 
@@ -56,5 +56,6 @@ def GraphCostPmf(subCost):
 	tp.SubPlot(2, 2, 4)
 	tp.Cdf(cdf)
 	tp.Config(title='CDF')
-
-	tp.Show()
+	if show:
+		tp.Show()
+	tp.Save(filename = save, formats = "jpg")

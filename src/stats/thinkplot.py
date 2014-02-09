@@ -443,7 +443,7 @@ def Show(**options):
     pyplot.show()
 
 
-def Save(root=None, formats=None, **options):
+def Save(filename=None, formats=".jpg", **options):
     """Saves the plot in the given formats.
 
     For options, see Config.
@@ -452,16 +452,10 @@ def Save(root=None, formats=None, **options):
       root: string filename root
       formats: list of string formats
       options: keyword args used to invoke various pyplot functions
+
+    Edited: Chris 2/9/2014
     """
-    Config(**options)
-
-    if formats is None:
-        formats = ['pdf', 'eps']
-
-    if root:
-        for fmt in formats:
-            SaveFormat(root, fmt)
-    Clf()
+    pyplot.savefig(filename, format = formats, dpi=300)
 
 
 def SaveFormat(root, fmt='eps'):
@@ -471,7 +465,7 @@ def SaveFormat(root, fmt='eps'):
       root: string filename root
       fmt: string format
     """
-    filename = '%s.%s' % (root, fmt)
+    filename = os.path.join(root,fmt)
     print 'Writing', filename
     pyplot.savefig(filename, format=fmt, dpi=300)
 
