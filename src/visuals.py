@@ -1,5 +1,7 @@
 """
 Contains visualization data scripts
+
+author: jazmin
 """
 
 #To-DO Create a Visuals module that holds all the visualization TASKS
@@ -7,6 +9,10 @@ import matplotlib.pyplot as plt
 from stats import *
 import numpy as np
 
+#Debug Timer Wrappers
+from wrappers import debug
+
+@debug
 def FeatureVsCost(data, var):
 		try:
 			new_data = data.getColumn(var)
@@ -18,10 +24,12 @@ def FeatureVsCost(data, var):
 		except:
 			print "Plotting " + var + " failed"
 
+@debug
 def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
 		FeatureVsCost(data,"V" + str(i))
 
+@debug
 def GraphCostPmf(subCost):
 	pmf = ts2.MakePmfFromList(subCost)
 	cdf = ts2.MakeCdfFromPmf(pmf)
