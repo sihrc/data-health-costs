@@ -22,15 +22,15 @@ def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
 		FeatureVsCost(data,"V" + str(i))
 
-def GraphCostPmf(d):
-	pmf = ts2.MakePmfFromList(d.cost)
+def GraphCostPmf(subCost):
+	pmf = ts2.MakePmfFromList(subCost)
 	cdf = ts2.MakeCdfFromPmf(pmf)
 
-	new_dats = ts2.BinData(d.cost, min(d.cost), max(d.cost), 100)
+	new_dats = ts2.BinData(subCost, min(subCost), max(subCost), 100)
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
 
-	pdf = thinkstats2.EstimatedPdf(d.cost)
-	xs = np.linspace(min(d.cost), max(d.cost), 101)
+	pdf = thinkstats2.EstimatedPdf(subCost)
+	xs = np.linspace(min(subCost), max(subCost), 101)
 	kde_pmf = pdf.MakePmf(xs)
 
 	tp.SubPlot(2, 2, 1)
