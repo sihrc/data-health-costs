@@ -4,7 +4,7 @@ Main Script for data
 import analyze as an
 import visuals as vis
 import data as dc
-
+import outliers as out
 import os
 
 if __name__ == "__main__":
@@ -14,6 +14,7 @@ if __name__ == "__main__":
 	Extracting and Plotting data from featureCostRange for cost data in each bin of each feature
 	"""
 	for feature, data in an.AllFeatureCostRange(d).iteritems():
+		data = out.rejectoutliers(data, 1)
 		type_ = data[0]
 		for low,high,data in data[1:]:
 			ranges = "_" + str(low) + "-" + str(high)
