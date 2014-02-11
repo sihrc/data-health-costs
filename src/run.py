@@ -4,9 +4,8 @@ Main Script for data
 import analyze as an
 import visuals as vis
 import data as dc
-
+import outliers as out
 import os
-
 
 def GetCostForBinnedFeature(dataL, var):
 	graphData = []
@@ -31,8 +30,6 @@ def GetCostForBinnedFeature(dataL, var):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		vis.GraphPmf(data, os.path.join(path, name.replace("/", "")),100, False)
-
-
 
 if __name__ == "__main__":
 	d = dc.Data(codebook = dc.HC144D, filename = "h144d.dat")
