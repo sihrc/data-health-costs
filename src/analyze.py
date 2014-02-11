@@ -26,15 +26,16 @@ def FeatureCostRange(d,var, mode, bins = 10):
 	#try:
 	#Grab the ranges for the feature
 	data = d.getColumn(var).astype("float")
+
 	if mode:
 		bins = max(data) - min(data) + 1
-	ranges = np.linspace(min(data), max(data), bins) #Unssuport crap
+	ranges = np.linspace(min(data), max(data) + 1, bins) #Unssuport crap
 	cost.append(["classification"] if len(set(data)) < 10 else ["continuous"])
 
 	#Loop through the ranges to get the costs
 	for i,(low, high) in enumerate(zip(ranges[:-1], ranges[1:])):
 		#Grab the costs at those ranges
-		costs = d.cost[np.where((low < data) * (data < high))]
+		costs = d.cost[np.where((low <= data) * (data < high))]
 		cost.append((low, high, costs))
 	#except:
 	#If the data contains non-numeral data, catch the exception
