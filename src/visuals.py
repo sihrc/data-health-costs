@@ -29,12 +29,14 @@ def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
 		FeatureVsCost(data,"V" + str(i))
 
+
+
 @debug
 def GraphPmf(data, save, bins, show = True):
-	
 	if len(set(data)) == 1: 
 		print "Only one Bin Found"
 		return	
+	
 	pmf = ts2.MakePmfFromList(data)
 
 	new_dats = ts2.BinData(data, min(data), max(data), bins)
@@ -51,17 +53,25 @@ def GraphPmf(data, save, bins, show = True):
 	if show:
 		tp.Show()
 	tp.Save(filename = save, formats = "jpg")
+	tp.Clf()
 
-def GraphCostCdf(pmf):
+def GraphCdf(data, save, show = False):
+	pmf = ts2.MakePmfFromList(data)
 	cdf = ts2.MakeCdfFromPmf(pmf)
 	tp.Cdf(cdf)
 	tp.Config(title='CDF')
-	tp.Show()
+	if show:	
+		tp.Show()
+	tp.Save(filename = save, formats = "jpg")
+	tp.Clf()
 
-def GraphCostPdf(data):
+def GraphPdf(data, save, show = False):
 	pdf = thinkstats2.EstimatedPdf(data)
 	xs = np.linspace(min(data), max(data), 101)
 	kde_pmf = pdf.MakePmf(xs)
 	tp.Pmf(kde_pmf)
 	tp.Config(title='KDE PMF')
-	td.Show()
+	if show:
+		tp.Show()
+	tp.Save(filename = save, formats = "jpg")
+	tp.Clf()

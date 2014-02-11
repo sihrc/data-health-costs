@@ -37,22 +37,14 @@ The Agency for Healthcare Research and Quality requests that users cite AHRQ and
 Expenditure Panel Survey as the data source in any publications or research based upon these 
 data.
 
-===============================
-###Code
-data.py
+=================================
+Notes on Results
+=================================
 
-  Currently, this contains String processing methods that analyze the differences and frequency of differences of the strings in the first column of the data set. The Strings are in increasing order (they are long numbers). They appear to behave like time-stamps of some sort, or some kind of special identification number. 
-
-stats
-
-  Contains the modules with thinkstats2.py and thinkplot.py provided by Allen Downey through Green Tea Press.
-
-temp.p
-
-  Currently used for pipelining the dataset. 
+For Var24: Reason Entered Hospital
+-7:REFUSED only has 3 data points and is useless
+-8:DK only has 2 data points and is useless
 
 
-To-Do
-
-  Refactor the String processing methods into its own class or module. 
+Giving birth (Mother) is more expensive than therapy
 
