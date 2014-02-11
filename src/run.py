@@ -16,7 +16,6 @@ if __name__ == "__main__":
 	for feature, data in an.AllFeatureCostRange(d).iteritems():
 		type_ = data[0]
 		for low,high,data in data[1:]:
-			print data
 			ranges = "_" + str(low) + "-" + str(high)
 			name = d.lookUp(var = feature)[0] + ranges + ".jpg"
 			if len(data) <= 2:
@@ -26,7 +25,7 @@ if __name__ == "__main__":
 					f.write(ranges + "\n")
 					f.write(data)
 				continue
-			vis.GraphCostPmf(data, os.path.join("..","visuals","feature_bin_costs", name), False)
+			vis.GraphCostPmf(data, os.path.join("..","visuals","feature_bin_costs", name.replace("/", "")), False)
 
 	#print d.getColumn("V2")
 	#vis.AllFeatureVsCost(d)

@@ -31,31 +31,37 @@ def AllFeatureVsCost(data):
 
 @debug
 def GraphCostPmf(subCost, save, show = True):
+	
+	if len(set(subCost)) == 1: 
+		print "Only one Bin Found"
+		return	
 	pmf = ts2.MakePmfFromList(subCost)
-	cdf = ts2.MakeCdfFromPmf(pmf)
 
 	new_dats = ts2.BinData(subCost, min(subCost), max(subCost), 100)
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
 
-	pdf = thinkstats2.EstimatedPdf(subCost)
-	xs = np.linspace(min(subCost), max(subCost), 101)
-	kde_pmf = pdf.MakePmf(xs)
-
-	tp.SubPlot(2, 2, 1)
-	tp.Hist(pmf, width=0.1)
+	tp.SubPlot(2, 1, 1)
+	tp.Hist(pmf)
 	tp.Config(title='Naive Pmf')
 
-	tp.SubPlot(2, 2, 2)
+	tp.SubPlot(2, 1, 2)
 	tp.Hist(bin_pmf)
 	tp.Config(title='Binned Hist')
 
-	tp.SubPlot(2, 2, 3)
-	tp.Pmf(kde_pmf)
-	tp.Config(title='KDE PDF')
-
-	tp.SubPlot(2, 2, 4)
-	tp.Cdf(cdf)
-	tp.Config(title='CDF')
 	if show:
 		tp.Show()
 	tp.Save(filename = save, formats = "jpg")
+
+def GraphCostCdf(pmf):
+	cdf = ts2.MakeCdfFromPmf(pmf)
+	tp.Cdf(cdf)
+	tp.Config(title='CDF')
+	tp.Show()
+
+def GraphCostPdf(subCost):
+	pdf = thinkstats2.EstimatedPdf(subCost)
+	xs = np.linspace(min(subCost), max(subCost), 101)
+	kde_pmf = pdf.MakePmf(xs)
+	tp.Pmf(kde_pmf)
+	tp.Config(title='KDE PMF')
+	td.Show()
