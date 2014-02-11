@@ -30,14 +30,14 @@ def AllFeatureVsCost(data):
 		FeatureVsCost(data,"V" + str(i))
 
 @debug
-def GraphCostPmf(subCost, save, show = True):
+def GraphPmf(data, save, bins, show = True):
 	
-	if len(set(subCost)) == 1: 
+	if len(set(data)) == 1: 
 		print "Only one Bin Found"
 		return	
-	pmf = ts2.MakePmfFromList(subCost)
+	pmf = ts2.MakePmfFromList(data)
 
-	new_dats = ts2.BinData(subCost, min(subCost), max(subCost), 100)
+	new_dats = ts2.BinData(data, min(data), max(data), bins)
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
 
 	tp.SubPlot(2, 1, 1)
@@ -58,9 +58,9 @@ def GraphCostCdf(pmf):
 	tp.Config(title='CDF')
 	tp.Show()
 
-def GraphCostPdf(subCost):
-	pdf = thinkstats2.EstimatedPdf(subCost)
-	xs = np.linspace(min(subCost), max(subCost), 101)
+def GraphCostPdf(data):
+	pdf = thinkstats2.EstimatedPdf(data)
+	xs = np.linspace(min(data), max(data), 101)
 	kde_pmf = pdf.MakePmf(xs)
 	tp.Pmf(kde_pmf)
 	tp.Config(title='KDE PMF')

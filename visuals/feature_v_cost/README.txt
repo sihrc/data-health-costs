@@ -1,1 +1,0 @@
-These plots are scatter plots of the feature along the x axis and the cost in dollars along the y axis.

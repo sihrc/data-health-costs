@@ -14,4 +14,3 @@ if __name__ == "__main__":
 	        data2 = reject_outliers(data, 1)
 	        print str(i) + " oldmax " + str(data.max())
 	        print "newmax " + str(data2.max())
-	
