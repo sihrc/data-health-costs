@@ -24,6 +24,6 @@ def GetCostForBinnedFeature(dataL, var):
 		vis.GraphCdf(data, os.path.join(path, name.replace("/", "")))
 
 if __name__ == "__main__":
-	d = dc.Data(codebook = dc.HC144D, filename = "h144d.dat")
+	d = dc.Data(codebook = dc.H144D, filename = "h144d.dat")
 	GetCostForBinnedFeature(an.FeatureCostRange(d, "V24", True), "V24")
 	#print data
