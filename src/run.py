@@ -9,10 +9,6 @@ import os
 
 def GetCostForBinnedFeature(dataL, var):
 	graphData = []
-<<<<<<< HEAD
-	print dataL
-=======
->>>>>>> 409606a26b540f2d9df54c6dce1d788a1f2eb3ff
 	for low,high,data in dataL[1:]:
 		ranges = "_" + str(low) + "-" + str(high)
 		name = d.lookUp(var = var)[0] + ranges + ".jpg"
