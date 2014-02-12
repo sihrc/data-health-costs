@@ -1,6 +1,7 @@
 *.py[cod]
-
+visuals\
 *.png
+*.jpg
 *.dat
 
 # C extensions
