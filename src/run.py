@@ -25,7 +25,7 @@ def GetCostForBinnedFeature(dataL, var):
 
 if __name__ == "__main__":
 	datasets = {"Hospital Inpatient Stays":"h144d.dat", "Emergency Room Visits":"h144e.dat", "Prescribed Medicines":"h144a.dat", "General Demographics":"h143.dat"}
-	#dataset = datasets["Hospital Inpatient Stays"]
+	dataset = datasets["Hospital Inpatient Stays"]
 	#dataset = datasets["Emergency Room Visits"]
 	#dataset = datasets["Prescribed Medicines"]
 	#dataset = datasets["General Demographics"]

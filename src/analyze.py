@@ -47,7 +47,7 @@ def reject_outliers(data, m=2):
 	Returns a numpy array with outliers that are further than 
 	m * the std of the data away from the mean
 	"""
-    return data[abs(data - np.mean(data)) < m * np.std(data)]
+	return data[abs(data - np.mean(data)) < m * np.std(data)]
 
 
 if __name__ == "__main__":
