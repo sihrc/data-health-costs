@@ -15,19 +15,19 @@ from wrappers import debug
 @debug
 def FeatureVsCost(data, var):
 		try:
-			new_data = data.getColumn(var)
-			plt.scatter(new_data, data.cost)
+			new_data = data.getColumn(var) #gets the data
+			plt.scatter(new_data, data.cost) #creates a scatterplot of the data vs the cost
 			print "Plotting " + var + " vs cost plot"
-			plt.xlabel(data.lookUp(var = var)[0])
+			plt.xlabel(data.lookUp(var = var)[0]) #labels the x axis
 			plt.ylabel("Cost in dollars")
-			plt.savefig("../visuals/feature_v_cost/" + data.lookUp(var = var)[0].replace(" ", "_") + ".png")
+			plt.savefig("../visuals/feature_v_cost/" + data.lookUp(var = var)[0].replace(" ", "_") + ".png") #saves the scatter plot
 		except:
 			print "Plotting " + var + " failed"
 
 @debug
 def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
-		FeatureVsCost(data,"V" + str(i))
+		FeatureVsCost(data,"V" + str(i)) #runs featurevscost for all features
 
 
 
@@ -38,6 +38,10 @@ def GraphPmf(data, save, bins, show = True):
 		return	
 	
 	pmf = ts2.MakePmfFromList(data)
+	
+	"""
+	Question: what's ts2 and tp? -CJ
+	"""
 
 	new_dats = ts2.BinData(data, min(data), max(data), bins)
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
