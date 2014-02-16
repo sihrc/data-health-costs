@@ -4,7 +4,7 @@ Main Script for data
 import analyze as an
 import visuals as vis
 import data as dc
-import outliers as out
+#import outliers as out
 import os
 
 def GetCostForBinnedFeature(dataL, var):
