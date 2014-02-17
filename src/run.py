@@ -4,7 +4,6 @@ Main Script for data
 import analyze as an
 import visuals as vis
 import data as dc
-#import outliers as out
 import os
 
 def GetCostForBinnedFeature(dataL, var):
@@ -32,4 +31,6 @@ if __name__ == "__main__":
 
 	d = dc.Data(codebook = dc.H144D, filename = dataset)
 	GetCostForBinnedFeature(an.FeatureCostRange(d, "V24", True), "V24") #gets cost for feature V24
+	
+	"""What is V24? -CJ """
 	#print data
