@@ -39,9 +39,6 @@ def GraphPmf(data, save, bins, show = True):
 	
 	pmf = ts2.MakePmfFromList(data)
 	
-	"""
-	Question: what's ts2 and tp? -CJ
-	"""
 
 	new_dats = ts2.BinData(data, min(data), max(data), bins)
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
