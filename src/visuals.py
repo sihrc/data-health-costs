@@ -35,7 +35,7 @@ def AllFeatureVsCost(data):
 
 @debug
 def GraphPmf(data, save, bins, show = True):
-	if len(set(data)) == 1: 
+	if len(set(data)) == 1: #makes sure there's enough data to graph
 		print "Only one Bin Found"
 		return	
 	
@@ -45,11 +45,11 @@ def GraphPmf(data, save, bins, show = True):
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
 
 	tp.SubPlot(2, 1, 1)
-	tp.Hist(pmf)
+	tp.Hist(pmf) #makes a histogram from pmf
 	tp.Config(title='Naive Pmf')
 
 	tp.SubPlot(2, 1, 2)
-	tp.Hist(bin_pmf)
+	tp.Hist(bin_pmf) #makes a binned histogram from pmf
 	tp.Config(title='Binned Hist')
 
 	if show:
@@ -59,9 +59,9 @@ def GraphPmf(data, save, bins, show = True):
 	tp.Clf()
 
 def GraphCdf(data, save, show = False):
-	pmf = ts2.MakePmfFromList(data)
-	cdf = ts2.MakeCdfFromPmf(pmf)
-	tp.Cdf(cdf)
+	pmf = ts2.MakePmfFromList(data) #makes pmf from data
+	cdf = ts2.MakeCdfFromPmf(pmf) #makes cdf from the pdf
+	tp.Cdf(cdf) #plots the cdf
 	tp.Config(title='CDF')
 	if show:	
 		tp.Show()
