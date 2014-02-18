@@ -13,7 +13,7 @@ import data as dc
 from wrappers import debug
 
 @debug
-def FeatureCostRange(d,var, mode, bins = 10):
+def FeatureCostRange(d,var, bins = 0):
 	"""
 	Returns a dictionary {features: dictionary2}
 	where dicionary2 is {feature ranges: (cost-ranges, count)}
@@ -27,9 +27,11 @@ def FeatureCostRange(d,var, mode, bins = 10):
 	#Grab the ranges for the feature
 	data = d.getColumn(var).astype("float")
 
-	if mode:
-		bins = max(data) - min(data) + 1
-	ranges = np.linspace(min(data), max(data) + 1, bins) #Unssuport crap
+	if bins == 0:
+		bins = (max(data) - min(data) + 1)
+		bins = 50 if bins > 50 else 50
+
+	ranges = np.linspace(min(data), max(data) + 1, bins)
 	cost.append(["classification"] if len(set(data)) < 10 else ["continuous"])
 
 	#Loop through the ranges to get the costs

@@ -3,6 +3,7 @@ visuals\
 *.png
 *.jpg
 *.dat
+data\
 
 # C extensions
 *.so

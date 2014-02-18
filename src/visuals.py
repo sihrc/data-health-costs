@@ -8,6 +8,8 @@ author: jazmin
 import matplotlib.pyplot as plt
 from stats import *
 import numpy as np
+import os
+import re
 
 #Debug Timer Wrappers
 from wrappers import debug
@@ -38,10 +40,6 @@ def GraphPmf(data, save, bins, show = True):
 		return	
 	
 	pmf = ts2.MakePmfFromList(data)
-	
-	"""
-	Question: what's ts2 and tp? -CJ
-	"""
 
 	new_dats = ts2.BinData(data, min(data), max(data), bins)
 	bin_pmf = ts2.MakePmfFromList(list(new_dats))
@@ -56,7 +54,8 @@ def GraphPmf(data, save, bins, show = True):
 
 	if show:
 		tp.Show()
-	tp.Save(filename = save, formats = "jpg")
+	# tp.Save(filename = save, formats = "png")
+	tp.Save(filename = save)
 	tp.Clf()
 
 def GraphCdf(data, save, show = False):
@@ -66,7 +65,8 @@ def GraphCdf(data, save, show = False):
 	tp.Config(title='CDF')
 	if show:	
 		tp.Show()
-	tp.Save(filename = save, formats = "jpg")
+	# tp.Save(filename = save, formats = "png")
+	tp.Save(filename = save)
 	tp.Clf()
 
 def GraphPdf(data, save, show = False):
@@ -77,5 +77,21 @@ def GraphPdf(data, save, show = False):
 	tp.Config(title='KDE PMF')
 	if show:
 		tp.Show()
-	tp.Save(filename = save, formats = "jpg")
+	# tp.Save(filename = save, formats = "png")
+	tp.Save(filename = save)
 	tp.Clf()
+
+def GetCostForBinnedFeature(d,data, var):
+	for low,high,data in data[1:]:
+		ranges = "_" + str(low) + "-" + str(high)
+		name = d.lookUp(var = var)[0]
+		name = re.sub(r'([^\s\w]|_)+', '', name).replace(" ","_") #only retains alphanumeric characters and whitespace
+		#name.replace(" ","_").replace(":","").replace("/","") 
+		if len(data) <= 2: #if the data doesn't have multiple data points
+			print var + ranges, " does not have multiple data points!"
+			continue
+		path = os.path.join("..","visuals","feature_bin_costs",d.datafile[:-4],name)
+		if not os.path.exists(path):
+			os.makedirs(path)
+		#GraphPmf(data, os.path.join(path,  ranges + ".jpg"),10000, False)
+		GraphCdf(data, os.path.join(path,  ranges + ".jpg")) #creates cdf

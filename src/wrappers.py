@@ -9,11 +9,11 @@ import data as d
 author: chris
 """
 def debug(func):
-	def wrapper(*arg):
+	def wrapper(*arg, **kwargs):
 		print "======================================="
 		print "Currently Running:",func.func_name
 		t1 = time.time()
-		res = func(*arg)
+		res = func(*arg,**kwargs)
 		t2 = time.time()
 		print '%s took %0.3f ms' % (func.func_name, (t2-t1)*1000.0)
 		print "\nFinished"

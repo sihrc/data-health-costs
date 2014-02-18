@@ -1,3 +1,4 @@
+
 """This file contains code for use with "Think Stats",
 by Allen B. Downey, available from greenteapress.com
 
@@ -443,7 +444,7 @@ def Show(**options):
     pyplot.show()
 
 
-def Save(filename=None, formats=".jpg", **options):
+def Save(filename=None, **options):
     """Saves the plot in the given formats.
 
     For options, see Config.
@@ -455,7 +456,7 @@ def Save(filename=None, formats=".jpg", **options):
 
     Edited: Chris 2/9/2014
     """
-    pyplot.savefig(filename, format = formats, dpi=300)
+    pyplot.savefig(filename, dpi=300)
 
 
 def SaveFormat(root, fmt='eps'):
