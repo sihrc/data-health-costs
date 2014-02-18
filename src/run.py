@@ -16,8 +16,8 @@ if __name__ == "__main__":
 	#datafile, codebook = datasets["Emergency Room Visits"]
 	#datafile = datasets["Prescribed Medicines"]
 	#datafile = datasets["General Demographics"]
-	for datafile, codebook in datasets.iteritems():
-		d = dc.Data(codebook = codebook, filename = datafile)
+	for dataset, datafile in datasets.iteritems():
+		d = dc.Data(codebook = datafile[1], filename = datafile[0])
 		for row in d.features:
 			if row in ["V43","V49"]:
 				continue
