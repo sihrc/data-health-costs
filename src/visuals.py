@@ -31,8 +31,6 @@ def AllFeatureVsCost(data):
 	for i in range (len(data.features)):
 		FeatureVsCost(data,"V" + str(i)) #runs featurevscost for all features
 
-
-
 @debug
 def GraphPmf(data, save, bins, show = True):
 	if len(set(data)) == 1: #makes sure there's enough data to graph
@@ -65,8 +63,6 @@ def GraphCdf(data, show = False):
 	tp.Config(title='CDF')
 	if show:	
 		tp.Show()
-	# tp.Save(filename = save, formats = "png")
-
 
 def GraphPdf(data, show = False):
 	pdf = thinkstats2.EstimatedPdf(data)
@@ -76,10 +72,8 @@ def GraphPdf(data, show = False):
 	tp.Config(title='KDE PMF')
 	if show:
 		tp.Show()
-	# tp.Save(filename = save, formats = "png")
 
-
-def GetCostForBinnedFeature(d, data, var, ignored = []):
+def GetCostForBinnedFeature(d, data, var):
 	for low,high,data in data[1:]:
 		ranges = "_" + str(low) + "-" + str(high)
 		name = d.lookUp(var = var)[0]

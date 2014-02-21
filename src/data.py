@@ -23,21 +23,13 @@ class Data():
 	saving and loading temporary sessions
 	"""
 	@debug
-	def __init__ (self, data = dict(), codebook = H144D, filename = os.path.join("..","data","h144d.dat")):
-		self.datafile = filename
+	def __init__ (self, data = dict(), codebook = H144D, datafile = os.path.join("..","data","h144d.dat")):
+		self.datafile = datafile
 		self.codebook = codebook
 		self.createRefs()
 		self.results = dict()
 		self.ignored = []
-		self.data = self.loadData(os.path.join("..","data",filename))
-
-	def createBins(self, data, bins = 10):
-		#Create ranges for data
-		ranges = np.linspace(np.min(data), np.max(data), bins)
-		#Ranges between ranges
-		for low,high in zip(ranges[:1], ranges[1:]):
-			data[np.where((data > low) * (data < high))] = (low + high)/2.0
-		return data
+		self.data = self.loadData(datafile)
 
 	@debug
 	def createRefs(self):
@@ -72,7 +64,11 @@ class Data():
 		Loads the Data Set from filename as numpy array
 		"""
 		data = []
-		with open(filename, 'rb') as f:
+		path = os.path.join("..","data",filename)
+		if os.path.exists(path[:-3] + ".p"):
+			self.load(path[:-3] + ".p")
+			return self.data
+		with open(os.path.join("..","data",filename), 'rb') as f:
 			for line in f:
 				data.append(list(line.strip()))
 		self.data = np.array(data)
@@ -87,18 +83,22 @@ class Data():
 		ranges = self.lookUp(var = var)[1]
 		rawData = self.data[:,ranges[0] - 1:ranges[1]]
 		newFormat = np.zeros(shape = (rawData.shape[0]))
-		print var
 		for i in range(len(rawData)):
 			try:
 				newFormat[i] = "".join(rawData[i]).strip()
 			except:
 				print "data is not a number"
+				break
+
 		return newFormat
+
+	@debug
 	def save(self, filename):
 		with open(filename, 'wb') as f:
 			p.dump(self, f)
 			print filename + " Saved Successfully"
 
+	@debug
 	def load(self, filename):
 		"""
 		Saves this object as a pickle file for access later
