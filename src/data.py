@@ -40,7 +40,7 @@ class Data():
 		count = 0
 		self.features = dict()
 		for key,item in self.codebook.iteritems():
-			self.features["V" + str(count)] = [key, item]
+			self.features[key.split()[0]] = [key, item]
 			count += 1
 
 	def lookUp(self, var = None, desc = None):
@@ -65,8 +65,8 @@ class Data():
 		"""
 		data = []
 		path = os.path.join("..","data",filename)
-		if os.path.exists(path[:-3] + ".p"):
-			self.load(path[:-3] + ".p")
+		if os.path.exists(path[:-4] + ".p"):
+			self.load(path[:-4] + ".p")
 			return self.data
 		with open(os.path.join("..","data",filename), 'rb') as f:
 			for line in f:

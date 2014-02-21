@@ -28,8 +28,8 @@ def FeatureVsCost(data, var):
 
 @debug
 def AllFeatureVsCost(data):
-	for i in range (len(data.features)):
-		FeatureVsCost(data,"V" + str(i)) #runs featurevscost for all features
+	for tag in data.features:
+		FeatureVsCost(data, tag) #runs featurevscost for all features
 
 @debug
 def GraphPmf(data, save, bins, show = True):
