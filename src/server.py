@@ -4,24 +4,17 @@ Use template to access data
 Chris Lee
 """
 
-import csv, sys
 import numpy as np
 from multiprocessing.connection import Listener
-from timer import print_timing
+import os
+
 #Import data from csv file
-@print_timing
 def importData(filename):
-	with open(filename + ".csv", "rb") as f:
-		print "Importing Data ..."
-		reader = csv.reader(f)
-		trainX, trainY = [], []
-		count = 0
-		for line in reader:
-			trainY.append(line[0])
-			trainX.append(line[1:])
-			count += 1
-		print "Loaded ", count, "records"
-		return np.array(trainX).astype('int'), np.array(trainY).astype('int'), count
+	data = []
+	with open(os.path.join("..","data",filename), 'rb') as f:
+		for line in f:
+			data.append(list(line.strip()))
+	return np.array(data)
 
 #Main program loop to listener for commands
 def loopListener(old):
@@ -35,18 +28,20 @@ def loopListener(old):
 			print "Make sure that script exists and has a run() function!"
 
 #Server Listener
-def hostServer(features, targets, records):
+def hostServer(data):
 	print "Hosting data on localhost:5000"
 	serv = Listener(('',5000))
 	while True:
 		client = serv.accept()
-		client.send((features, targets, records))
+		client.send(data)
 
 if __name__ == "__main__":
-	filename = sys.argv[1]
 	#Grabbing Data from CSV
-	trainX, trainY, m = importData(filename)
+	data = dict()
+	filenames = ["h143.dat", "h144a.dat", "h144e.dat", "h144d.dat"]
+	for datafile in filenames:
+		print "Importing " + datafile
+		data[datafile] = importData(os.path.join("..","data",datafile))
 	print "Finished loading data \n ==================================="
-
-	hostServer(trainX, trainY, m)
+	hostServer(data)
 	print "Server started!"

@@ -21,7 +21,7 @@ def CDF_COST_FOR_FEATURE():
 				f.write(str(line))
 				f.write("\n")
 		d.save(d.datafile[:-3] + ".p")
-class Config: pass
+		
 if __name__ == "__main__":
 	CDF_COST_FOR_FEATURE()
 

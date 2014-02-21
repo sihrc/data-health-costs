@@ -6,6 +6,7 @@ author:chris
 import pickle as p
 import numpy as np
 import os
+import client
 
 #Debug Timer Wrappers
 from wrappers import debug
@@ -63,15 +64,8 @@ class Data():
 		"""
 		Loads the Data Set from filename as numpy array
 		"""
-		data = []
 		path = os.path.join("..","data",filename)
-		if os.path.exists(path[:-3] + ".p"):
-			self.load(path[:-3] + ".p")
-			return self.data
-		with open(os.path.join("..","data",filename), 'rb') as f:
-			for line in f:
-				data.append(list(line.strip()))
-		self.data = np.array(data)
+		self.data = client.receiveData()[filename]
 		self.costId = self.lookUp(desc = "CHG")[0][0] # V49
 		self.cost = self.getColumn(self.costId)
 		return self.data
