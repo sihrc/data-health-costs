@@ -24,15 +24,15 @@ def FeatureVsCost(d, tag):
 
 	author: chris
 	"""
-		try:
-			new_data = data.getColumn(tag) #gets the data
-			plt.scatter(new_data, data.cost) #creates a scatterplot of the data vs the cost
-			print "Plotting " + tag + " vs cost plot"
-			plt.xlabel(data.lookUp(tag = tag)[0]) #labels the x axis
-			plt.ylabel("Cost in dollars")
-			plt.savefig("../visuals/feature_v_cost/" + data.lookUp(tag = tag)[0].replace(" ", "_") + ".png") #saves the scatter plot
-		except:
-			d.ignored.append(tag, data.getColumn(tag))
+	try:
+		new_data = data.getColumn(tag) #gets the data
+		plt.scatter(new_data, data.cost) #creates a scatterplot of the data vs the cost
+		print "Plotting " + tag + " vs cost plot"
+		plt.xlabel(data.lookUp(tag = tag)[0]) #labels the x axis
+		plt.ylabel("Cost in dollars")
+		plt.savefig("../visuals/feature_v_cost/" + data.lookUp(tag = tag)[0].replace(" ", "_") + ".png") #saves the scatter plot
+	except:
+		d.ignored.append(tag, data.getColumn(tag))
 
 @debug
 def GraphPmf(data, save, bins, show = True):
@@ -79,7 +79,6 @@ def GraphCdf(data, name):
 def GraphPdf(data, name):
 	"""
 	Given numpy array, plots a PDF graph
-
 	author: Jazmin/Chris
 	"""
 	pdf = thinkstats2.EstimatedPdf(data)
