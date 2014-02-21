@@ -27,6 +27,7 @@ class Data():
 		self.codebook = codebook
 		self.createRefs()
 		self.results = dict()
+		self.ignored = []
 		self.data = self.loadData(os.path.join("..","data",filename))
 
 	def createBins(self, data, bins = 10):

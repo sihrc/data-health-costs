@@ -81,7 +81,7 @@ def GraphPdf(data, save, show = False):
 	tp.Save(filename = save)
 	tp.Clf()
 
-def GetCostForBinnedFeature(d, data, var):
+def GetCostForBinnedFeature(d, data, var, ignored = []):
 	for low,high,data in data[1:]:
 		ranges = "_" + str(low) + "-" + str(high)
 		name = d.lookUp(var = var)[0]
@@ -89,6 +89,7 @@ def GetCostForBinnedFeature(d, data, var):
 		#name.replace(" ","_").replace(":","").replace("/","") 
 		if len(data) <= 2: #if the data doesn't have multiple data points
 			print var + ranges, " does not have multiple data points!"
+			d.ignored.append((d.datafile,(name, ranges)))
 			continue
 		path = os.path.join("..","visuals","feature_bin_costs",d.datafile[:-4],name)
 		if not os.path.exists(path):
