@@ -12,12 +12,13 @@ from host import client
 
 @debug
 def CDF_COST_FOR_FEATURE():
-	for dataset, datafile in config.datasets.iteritems():
-		d = dc.Data(codebook = datafile[0], datapath = os.path.join("..", "data" , dataset), costId = datafile[1])
+	for datafile in config.datafiles:
+		dataconfig = config.datasets[datafile]
+		d = dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
 		for row in d.features:
 			costRangeData = an.FeatureCostRange(d, row)
 			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
-		with open(datafile[0] + "_ignored.txt", 'wb') as f:
+		with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
 			for line in d.ignored:
 				f.write(str(line))
 				f.write("\n")
