@@ -44,6 +44,7 @@ def FeatureCostRange(d,var, bins = 0):
 	#print "data is not numeral"
 	return cost
 
+@debug
 def reject_outliers(data, m=2):
 	"""
 	Returns a numpy array with outliers that are further than 
@@ -51,6 +52,18 @@ def reject_outliers(data, m=2):
 	"""
 	return data[abs(data - np.mean(data)) < m * np.std(data)]
 
+@debug
+def createBins(data, bins = 10):
+	"""
+	CreateBins (data = np.array, bins = int)
+	Returns a binned version of the data
+	"""
+	#Create ranges for data
+	ranges = np.linspace(np.min(data), np.max(data), bins)
+	#Ranges between ranges
+	for low,high in zip(ranges[:1], ranges[1:]):
+		data[np.where((data > low) * (data < high))] = (low + high)/2.0
+	return data
 
 if __name__ == "__main__":
 	d = dc.Data(codebook = dc.HC144D)

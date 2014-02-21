@@ -58,7 +58,7 @@ def GraphPmf(data, save, bins, show = True):
 	tp.Save(filename = save)
 	tp.Clf()
 
-def GraphCdf(data, save, show = False):
+def GraphCdf(data, show = False):
 	pmf = ts2.MakePmfFromList(data) #makes pmf from data
 	cdf = ts2.MakeCdfFromPmf(pmf) #makes cdf from the pdf
 	tp.Cdf(cdf) #plots the cdf
@@ -66,10 +66,9 @@ def GraphCdf(data, save, show = False):
 	if show:	
 		tp.Show()
 	# tp.Save(filename = save, formats = "png")
-	tp.Save(filename = save)
-	tp.Clf()
 
-def GraphPdf(data, save, show = False):
+
+def GraphPdf(data, show = False):
 	pdf = thinkstats2.EstimatedPdf(data)
 	xs = np.linspace(min(data), max(data), 101)
 	kde_pmf = pdf.MakePmf(xs)
@@ -78,8 +77,7 @@ def GraphPdf(data, save, show = False):
 	if show:
 		tp.Show()
 	# tp.Save(filename = save, formats = "png")
-	tp.Save(filename = save)
-	tp.Clf()
+
 
 def GetCostForBinnedFeature(d, data, var, ignored = []):
 	for low,high,data in data[1:]:
@@ -91,8 +89,11 @@ def GetCostForBinnedFeature(d, data, var, ignored = []):
 			print var + ranges, " does not have multiple data points!"
 			d.ignored.append((d.datafile,(name, ranges)))
 			continue
-		path = os.path.join("..","visuals","feature_bin_costs",d.datafile[:-4],name)
+		path = os.path.join("..","visuals","feature_bin_costs",d.datafile[:-4])
 		if not os.path.exists(path):
 			os.makedirs(path)
-		#GraphPmf(data, os.path.join(path,  ranges + ".jpg"),10000, False)
-		GraphCdf(data, os.path.join(path,  ranges + ".jpg")) #creates cdf
+		#GraphPmf(data, False)
+		GraphCdf(data) #creates cdf
+	tp.Save(filename = os.path.join(path,  ranges + ".jpg"))
+	tp.Clf()
+	return d

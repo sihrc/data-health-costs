@@ -22,6 +22,7 @@ class Data():
 	getting data for features as well as loading data, 
 	saving and loading temporary sessions
 	"""
+	@debug
 	def __init__ (self, data = dict(), codebook = H144D, filename = os.path.join("..","data","h144d.dat")):
 		self.datafile = filename
 		self.codebook = codebook
@@ -38,6 +39,7 @@ class Data():
 			data[np.where((data > low) * (data < high))] = (low + high)/2.0
 		return data
 
+	@debug
 	def createRefs(self):
 		"""
 		Create Reference Dicts
