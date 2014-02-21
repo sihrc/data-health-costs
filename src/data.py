@@ -24,13 +24,16 @@ class Data():
 	saving and loading temporary sessions
 	"""
 	@debug
-	def __init__ (self, data = dict(), codebook = H144D, datafile = os.path.join("..","data","h144d.dat")):
-		self.datafile = datafile
+	def __init__ (self, data = False, codebook = H144D, datapath = os.path.join("..","data","h144d.dat")):
+		self.datapath = datapath
+		self.datafile = datapath.split("data")[-1][1:]
 		self.codebook = codebook
 		self.createRefs()
 		self.results = dict()
 		self.ignored = []
-		self.data = self.loadData(datafile)
+		self.data = self.loadData(data)
+		self.costId = self.lookUp(desc = "CHG")[0][0]
+		self.cost = self.getColumn(self.costId)
 
 	@debug
 	def createRefs(self):
@@ -41,7 +44,7 @@ class Data():
 		count = 0
 		self.features = dict()
 		for key,item in self.codebook.iteritems():
-			self.features["V" + str(count)] = [key, item]
+			self.features[key.split()[0]] = [key, item]
 			count += 1
 
 	def lookUp(self, var = None, desc = None):
@@ -60,15 +63,18 @@ class Data():
 		else:
 			return list
 
-	def loadData(self,filename):
+	def loadData(self, data):
 		"""
 		Loads the Data Set from filename as numpy array
 		"""
-		path = os.path.join("..","data",filename)
-		self.data = client.receiveData()[filename]
-		self.costId = self.lookUp(desc = "CHG")[0][0] # V49
-		self.cost = self.getColumn(self.costId)
-		return self.data
+		if type(data) == bool:
+			data = []
+			with open(os.path.join("..","data",filename), 'rb') as f:
+				for line in f:
+					data.append(list(line.strip()))
+			data = np.array(data)
+		return data
+		
 
 	def getColumn(self, var):
 		"""
@@ -83,7 +89,6 @@ class Data():
 			except:
 				print "data is not a number"
 				break
-
 		return newFormat
 
 	@debug

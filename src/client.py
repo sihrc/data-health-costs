@@ -6,7 +6,7 @@ Chris Lee
 from multiprocessing.connection import Client
 from wrappers import debug
 @debug
-def ReceiveData():
+def receiveData():
 	c = Client(('127.0.0.1', 5000))
 	c.send('data')
 	return c.recv()

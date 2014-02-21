@@ -3,6 +3,7 @@ visuals\
 *.png
 *.jpg
 *.dat
+*.p
 data\
 
 # C extensions

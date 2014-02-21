@@ -7,12 +7,14 @@ import data as dc
 import config
 import os
 from wrappers import debug
+import client
 
 
 @debug
 def CDF_COST_FOR_FEATURE():
+	received = client.receiveData()
 	for dataset, datafile in config.datasets.iteritems():
-		d = dc.Data(codebook = datafile[1], datafile = datafile[0])
+		d = dc.Data(codebook = datafile[1], datapath = os.path.join("..", "data" , datafile[0]), data = received[datafile[0]])
 		for row in d.features:
 			costRangeData = an.FeatureCostRange(d, row)
 			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
@@ -20,8 +22,8 @@ def CDF_COST_FOR_FEATURE():
 			for line in d.ignored:
 				f.write(str(line))
 				f.write("\n")
-		d.save(d.datafile[:-3] + ".p")
-		
+		d.save(d.datapath[:-4] + ".p")
+class Config: pass
 if __name__ == "__main__":
 	CDF_COST_FOR_FEATURE()
 
