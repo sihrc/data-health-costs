@@ -9,7 +9,7 @@ import os
 from wrappers import debug
 import client
 
-@debug
+
 def CDF_COST_FOR_FEATURE():
 	received = client.receiveData()
 	for dataset, datafile in config.datasets.iteritems():

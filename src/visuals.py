@@ -15,7 +15,6 @@ from stats import *
 #Debug Timer Wrappers
 from wrappers import debug
 
-@debug
 def FeatureVsCost(d, tag):
 	"""
 	FeatureVsCost 
@@ -34,7 +33,7 @@ def FeatureVsCost(d, tag):
 	except:
 		d.ignored.append(tag, data.getColumn(tag))
 
-@debug
+
 def GraphPmf(data, save, bins, show = True):
 	"""
 	Given the a numpy array, a filepath to save, the number of bins to create, and whether or not to display the PMF
@@ -98,7 +97,7 @@ def GetCostForBinnedFeature(d, data, tag):
 	for low,high,data in data: #Grab the split ranges in data
 		data = an.reject_outliers(data)
 		if len(data) <= 2: #if the data doesn't have multiple data points
-			d.ignored.append((d.datafile,(tag, str(low,high))))
+			d.ignored.append((d.datafile,(tag, str((low,high)))))
 			continue
 		GraphCdf(data, str(low)) #creates cdf
 	path = config.makedirs("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
