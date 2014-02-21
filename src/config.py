@@ -6,8 +6,8 @@ import data as dc
 import os
 
 datafiles = ["h144d.dat","h144e.dat","h144a.dat","h143.dat"]
-datasets = {"h144d.dat":(dc.H144D, "IPTC11X", "1000"), "h144e.dat": (dc.H144E,"ERTC11X","2000"), "h144a.dat":(dc.H144A,"RXMD11X","3000"), "h143.dat": (dc.H143,"RTHLTH13","4000")}
-
+configuration = {"h144d.dat":(dc.H144D, "IPTC11X", "1000"), "h144e.dat": (dc.H144E,"ERTC11X","2000"), "h144a.dat":(dc.H144A,"RXMD11X","3000"), "h143.dat": (dc.H143,"RTHLTH13","4000")}
+	
 def makedirs(*path):
 	"""
 	Header for makedirs
