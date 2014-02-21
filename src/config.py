@@ -5,7 +5,8 @@ Also contains notes on the data sets
 import data as dc
 import os
 
-datasets = {"Hospital Inpatient Stays":("h144d.dat",dc.H144D, "IPTC11X"), "Emergency Room Visits":("h144e.dat", dc.H144E,"ERTC11X"), "Prescribed Medicines":("h144a.dat", dc.H144A,"RXMD11X"), "General Demographics":("h143.dat", dc.H143,"RTHLTH13")}
+datafiles = ["h144d.dat","h144e.dat","h144a.dat","h143.dat"]
+datasets = {"h144d.dat":(dc.H144D, "IPTC11X", "1000"), "h144e.dat": (dc.H144E,"ERTC11X","2000"), "h144a.dat":(dc.H144A,"RXMD11X","3000"), "h143.dat": (dc.H143,"RTHLTH13","4000")}
 
 def makedirs(*path):
 	"""
@@ -31,12 +32,19 @@ HOSPITAL INPATIENT STAYS h144d
 	Actual sum of money for treatment covered by other things (that we are not going to plot because it's part of the hospital funds provided by government, too)
 EXP (expense) - doctor amount paid by family + doctor amount paid by other isurance + faculty amount paid by family insurace + faculty amount paid by other insurance
 	How much is paid by insurance
+ 
+EMERGENCY ROOM STAYS h144e
+-------------------------------
 
 
 GENERAL DEMOGRAPHICS STAYS h143
 -------------------------------
 RTHLTH13 - health condition
 1 - 5 poor to excellent
+
+PRESCRIBED MEDICATION h144a
+-------------------------------
+
 """
 
 

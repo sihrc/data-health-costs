@@ -9,11 +9,11 @@ import os
 from wrappers import debug
 import client
 
+
 @debug
 def CDF_COST_FOR_FEATURE():
-	received = client.receiveData()
 	for dataset, datafile in config.datasets.iteritems():
-		d = dc.Data(codebook = datafile[1], datapath = os.path.join("..", "data" , datafile[0]), data = received[datafile[0]], costId = datafile[2])
+		d = dc.Data(codebook = datafile[1], datapath = os.path.join("..", "data" , datafile[0]), data = client.receiveData(datafile[3]), costId = datafile[2])
 		for row in d.features:
 			costRangeData = an.FeatureCostRange(d, row)
 			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
