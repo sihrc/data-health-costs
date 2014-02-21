@@ -95,7 +95,7 @@ def GetCostForBinnedFeature(d, data, tag):
 		d: modified data object
 	"""
 	for low,high,data in data: #Grab the split ranges in data
-		data = an.reject_outliers(data)
+		#data = an.reject_outliers(data)
 		if len(data) <= 2: #if the data doesn't have multiple data points
 			d.ignored.append((d.datafile,(tag, str((low,high)))))
 			continue

@@ -20,6 +20,7 @@ def FeatureCostRange(d,tag, bins = 0):
 	author: chris
 	"""
 	cost = []
+	bin_max = 20
 
 	#Grab the ranges for the feature
 	try:
@@ -32,8 +33,8 @@ def FeatureCostRange(d,tag, bins = 0):
 
 	#Automation for bin fitting
 	if bins == 0:
-		bins = (max(data) - min(data) + 1)
-		bins = 50 if bins > 50 else 50
+		bins = int(max(data) - min(data) + 1)
+		bins = bin_max if bins > bin_max else bins
 
 	#Loop through the ranges to get the costs
 	ranges = np.linspace(min(data), max(data) + 1, bins)
