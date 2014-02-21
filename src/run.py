@@ -19,7 +19,5 @@ if __name__ == "__main__":
 	for dataset, datafile in datasets.iteritems():
 		d = dc.Data(codebook = datafile[1], filename = datafile[0])
 		for row in d.features:
-			if row in ["V43","V49"]:
-				continue
 			costRangeData = an.FeatureCostRange(d, row)
 			vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
