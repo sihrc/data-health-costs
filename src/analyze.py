@@ -28,7 +28,16 @@ def FeatureCostRange(d,tag, bins = 0):
 		data = d.getColumn(tag).astype("float")
 	except:
 		#Feature data is categorical (we want to decode this into numbers) TODO!
-		d.ignored.append(tag, d.getColumn(tag))
+		data = d.getColumn(tag)
+		if len(data[0][0]) == 1:
+			row,col = data.shape
+			new = np.zeros(shape=(row,col))
+
+			for i in xrange(row):
+				for j in xrange(col):
+					new[i,j] = ord(data[i,j])
+			return new
+		d.ignored.append(d.getColumn(tag=tag))
 		return cost
 
 	#Automation for bin fitting
