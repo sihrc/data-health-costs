@@ -12,6 +12,7 @@ import data as dc
 #Debug Timer Wrappers
 from wrappers import debug
 
+@debug
 def FeatureCostRange(d,tag, bins = 0):
 	"""
 	Takes in the data object, the feature tag, and number of features (automatically fitted if 0)

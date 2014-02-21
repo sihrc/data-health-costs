@@ -27,8 +27,9 @@ def CDF_COST_FOR_FEATURE(datafile):
 		d.save(d.datapath[:-4] + ".p")
 class Config: pass
 if __name__ == "__main__":
-	CDF_COST_FOR_FEATURE(config.datafiles[3])
-	# for datafile in config.datafiles:
-	# 	CDF_COST_FOR_FEATURE(datafile)
+	# CDF_COST_FOR_FEATURE(config.datafiles[3])
+	for datafile in config.datafiles:
+		CDF_COST_FOR_FEATURE(datafile)
+
 
 
