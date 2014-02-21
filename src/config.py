@@ -4,7 +4,7 @@ Also contains notes on the data sets
 """
 import data as dc
 
-datasets = {"Hospital Inpatient Stays":("h144d.dat",dc.H144D), "Emergency Room Visits":("h144e.dat", dc.H144E), "Prescribed Medicines":("h144a.dat", dc.H144A)}#, "General Demographics":("h143.dat", dc.H143)}
+datasets = {"Hospital Inpatient Stays":("h144d.dat",dc.H144D, "IPTC11X"), "Emergency Room Visits":("h144e.dat", dc.H144E,"ERTC11X"), "Prescribed Medicines":("h144a.dat", dc.H144A,"RXMD11X"), "General Demographics":("h143.dat", dc.H143,"RTHLTH13")}
 
 
 """
@@ -15,6 +15,11 @@ HOSPITAL INPATIENT STAYS h144d
 EXP (expense) - doctor amount paid by family + doctor amount paid by other isurance + faculty amount paid by family insurace + faculty amount paid by other insurance
 	How much is paid by insurance
 
+
+GENERAL DEMOGRAPHICS STAYS h143
+-------------------------------
+RTHLTH13 - health condition
+1 - 5 poor to excellent
 """
 
 

@@ -15,16 +15,16 @@ import re
 from wrappers import debug
 
 @debug
-def FeatureVsCost(data, var):
+def FeatureVsCost(d, data, tag):
 		try:
-			new_data = data.getColumn(var) #gets the data
+			new_data = data.getColumn(tag) #gets the data
 			plt.scatter(new_data, data.cost) #creates a scatterplot of the data vs the cost
-			print "Plotting " + var + " vs cost plot"
-			plt.xlabel(data.lookUp(var = var)[0]) #labels the x axis
+			print "Plotting " + tag + " vs cost plot"
+			plt.xlabel(data.lookUp(tag = tag)[0]) #labels the x axis
 			plt.ylabel("Cost in dollars")
-			plt.savefig("../visuals/feature_v_cost/" + data.lookUp(var = var)[0].replace(" ", "_") + ".png") #saves the scatter plot
+			plt.savefig("../visuals/feature_v_cost/" + data.lookUp(tag = tag)[0].replace(" ", "_") + ".png") #saves the scatter plot
 		except:
-			print "Plotting " + var + " failed"
+			d.ignored.append(tag)
 
 @debug
 def AllFeatureVsCost(data):
@@ -73,14 +73,13 @@ def GraphPdf(data, show = False):
 	if show:
 		tp.Show()
 
-def GetCostForBinnedFeature(d, data, var):
+def GetCostForBinnedFeature(d, data, tag):
 	for low,high,data in data[1:]:
 		ranges = "_" + str(low) + "-" + str(high)
-		name = d.lookUp(var = var)[0]
+		name = d.lookUp(tag = tag)[0]
 		name = re.sub(r'([^\s\w]|_)+', '', name).replace(" ","_") #only retains alphanumeric characters and whitespace
 		#name.replace(" ","_").replace(":","").replace("/","") 
 		if len(data) <= 2: #if the data doesn't have multiple data points
-			print var + ranges, " does not have multiple data points!"
 			d.ignored.append((d.datafile,(name, ranges)))
 			continue
 		path = os.path.join("..","visuals","feature_bin_costs",d.datafile[:-4])
