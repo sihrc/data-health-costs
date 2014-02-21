@@ -10,9 +10,10 @@ from wrappers import debug
 from host import client
 
 
+
+
 @debug
-def CDF_COST_FOR_FEATURE():
-	for datafile in config.datafiles:
+def CDF_COST_FOR_FEATURE(datafile):
 		dataconfig = config.datasets[datafile]
 		d = dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
 		for row in d.features:
@@ -25,9 +26,8 @@ def CDF_COST_FOR_FEATURE():
 		d.save(d.datapath[:-4] + ".p")
 class Config: pass
 if __name__ == "__main__":
-	CDF_COST_FOR_FEATURE()
-
-
-
+	CDF_COST_FOR_FEATURE(config.datafiles[3])
+	# for datafile in config.datafiles:
+	# 	CDF_COST_FOR_FEATURE(datafile)
 
 
