@@ -13,35 +13,35 @@ import data as dc
 from wrappers import debug
 
 @debug
-def FeatureCostRange(d,var, bins = 0):
+def FeatureCostRange(d,tag, bins = 0):
 	"""
-	Returns a dictionary {features: dictionary2}
-	where dicionary2 is {feature ranges: (cost-ranges, count)}
-
-	These results will show which feature ranges result in the greater number of higher cost ranges
+	Takes in the data object, the feature tag, and number of features (automatically fitted if 0)
+	Returns a list of (low feature, high feature, cost list)
 
 	author: chris
 	"""
 	cost = []
-	#try:
-	#Grab the ranges for the feature
-	data = d.getColumn(var).astype("float")
 
+	#Grab the ranges for the feature
+	try:
+		#Feature data is numeral
+		data = d.getColumn(tag).astype("float")
+	except:
+		#Feature data is categorical (we want to decode this into numbers) TODO!
+		d.ignored.append(tag, d.getColumn(tag))
+		return cost
+
+	#Automation for bin fitting
 	if bins == 0:
 		bins = (max(data) - min(data) + 1)
 		bins = 50 if bins > 50 else 50
 
-	ranges = np.linspace(min(data), max(data) + 1, bins)
-	cost.append(["classification"] if len(set(data)) < 10 else ["continuous"])
-
 	#Loop through the ranges to get the costs
-	for i,(low, high) in enumerate(zip(ranges[:-1], ranges[1:])):
-		#Grab the costs at those ranges
+	ranges = np.linspace(min(data), max(data) + 1, bins)
+	for i in xrange(bins - 1):
+		low,high = ranges[i], ranges[i+1]
 		costs = d.cost[np.where((low <= data) * (data < high))]
 		cost.append((low, high, costs))
-	#except:
-	#If the data contains non-numeral data, catch the exception
-	#print "data is not numeral"
 	return cost
 
 @debug

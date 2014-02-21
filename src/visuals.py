@@ -1,21 +1,29 @@
 """
 Contains visualization data scripts
-
-author: jazmin
 """
 
 #To-DO Create a Visuals module that holds all the visualization TASKS
 import matplotlib.pyplot as plt
-from stats import *
 import numpy as np
-import os
-import re
+import re,os
+
+#Local Modules
+import analyze as an
+import config
+from stats import *
 
 #Debug Timer Wrappers
 from wrappers import debug
 
 @debug
-def FeatureVsCost(d, data, tag):
+def FeatureVsCost(d, tag):
+	"""
+	FeatureVsCost 
+	Takes in the data manager object and a feature tag.
+	Returns a visual of the scatter plot between feature and cost
+
+	author: chris
+	"""
 		try:
 			new_data = data.getColumn(tag) #gets the data
 			plt.scatter(new_data, data.cost) #creates a scatterplot of the data vs the cost
@@ -24,15 +32,16 @@ def FeatureVsCost(d, data, tag):
 			plt.ylabel("Cost in dollars")
 			plt.savefig("../visuals/feature_v_cost/" + data.lookUp(tag = tag)[0].replace(" ", "_") + ".png") #saves the scatter plot
 		except:
-			d.ignored.append(tag)
-
-@debug
-def AllFeatureVsCost(data):
-	for tag in data.features:
-		FeatureVsCost(data, tag) #runs featurevscost for all features
+			d.ignored.append(tag, data.getColumn(tag))
 
 @debug
 def GraphPmf(data, save, bins, show = True):
+	"""
+	Given the a numpy array, a filepath to save, the number of bins to create, and whether or not to display the PMF
+	Returns a saved PMF plot
+
+	author: Jazmin
+	"""
 	if len(set(data)) == 1: #makes sure there's enough data to graph
 		print "Only one Bin Found"
 		return	
@@ -56,37 +65,45 @@ def GraphPmf(data, save, bins, show = True):
 	tp.Save(filename = save)
 	tp.Clf()
 
-def GraphCdf(data, name, show = False):
+def GraphCdf(data, name):
+	"""
+	Given a numpy array, a legend label for the graph
+	Plots a CDF plot
+
+	author: Jazmin
+	"""
 	pmf = ts2.MakePmfFromList(data) #makes pmf from data
 	cdf = ts2.MakeCdfFromPmf(pmf) #makes cdf from the pdf
-	tp.Cdf(cdf, label = name) #plots the cdf
-	tp.Config(title='CDF')
-	if show:	
-		tp.Show()
+	tp.Cdf(cdf,label = name) #plots the cdf
 
-def GraphPdf(data, show = False):
+def GraphPdf(data, name):
+	"""
+	Given numpy array, plots a PDF graph
+
+	author: Jazmin/Chris
+	"""
 	pdf = thinkstats2.EstimatedPdf(data)
 	xs = np.linspace(min(data), max(data), 101)
 	kde_pmf = pdf.MakePmf(xs)
-	tp.Pmf(kde_pmf)
-	tp.Config(title='KDE PMF')
-	if show:
-		tp.Show()
+	tp.Pmf(kde_pmf, label = name)
 
 def GetCostForBinnedFeature(d, data, tag):
-	for low,high,data in data[1:]:
-		ranges = "_" + str(low) + "-" + str(high)
-		name = d.lookUp(tag = tag)[0]
-		name = re.sub(r'([^\s\w]|_)+', '', name).replace(" ","_") #only retains alphanumeric characters and whitespace
-		#name.replace(" ","_").replace(":","").replace("/","") 
+	"""
+	Inputs:
+		Cost: Cost for binned Feature Data (low,high,actualData)
+		d: data object
+		tag: feature tag
+	Outputs:
+		d: modified data object
+	"""
+	for low,high,data in data: #Grab the split ranges in data
+		data = an.reject_outliers(data)
 		if len(data) <= 2: #if the data doesn't have multiple data points
-			d.ignored.append((d.datafile,(name, ranges)))
+			d.ignored.append((d.datafile,(tag, str(low,high))))
 			continue
-		path = os.path.join("..","visuals","feature_bin_costs",d.datafile[:-4])
-		if not os.path.exists(path):
-			os.makedirs(path)
-		#GraphPmf(data, False)
 		GraphCdf(data, str(low)) #creates cdf
-	tp.Save(filename = os.path.join(path, name + ".jpg"))
+	path = config.makedirs("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
+	tp.Config(title = tag)
+	tp.Save(filename = path)
 	tp.Clf()
 	return d
