@@ -4,6 +4,7 @@ visuals\
 *.jpg
 *.dat
 *.p
+*.txt
 data\
 
 # C extensions

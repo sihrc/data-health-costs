@@ -13,6 +13,7 @@ from host import client
 
 
 @debug
+
 def CDF_COST_FOR_FEATURE(datafile):
 		dataconfig = config.datasets[datafile]
 		d = dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
