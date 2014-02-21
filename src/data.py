@@ -36,13 +36,13 @@ class Data():
 		self.cost = self.getColumn(self.costId)
 		self.filterData()
 		
-	@debug
+	
 	def filterData(self):
 		applicable = np.where(self.cost > 0)
 		self.data = self.data[applicable]
 		self.cost = self.cost[applicable]
 
-	@debug
+	
 	def createRefs(self):
 		"""
 		Create Reference Dicts
@@ -98,13 +98,13 @@ class Data():
 				break
 		return newFormat
 
-	@debug
+	
 	def save(self, filename):
 		with open(filename, 'wb') as f:
 			p.dump(self, f)
 			print filename + " Saved Successfully"
 
-	@debug
+	
 	def load(self, filename):
 		"""
 		Saves this object as a pickle file for access later

@@ -12,7 +12,6 @@ import data as dc
 #Debug Timer Wrappers
 from wrappers import debug
 
-@debug
 def FeatureCostRange(d,tag, bins = 0):
 	"""
 	Takes in the data object, the feature tag, and number of features (automatically fitted if 0)
@@ -44,7 +43,7 @@ def FeatureCostRange(d,tag, bins = 0):
 		cost.append((low, high, costs))
 	return cost
 
-@debug
+
 def reject_outliers(data, m=2):
 	"""
 	Returns a numpy array with outliers that are further than 
@@ -52,7 +51,7 @@ def reject_outliers(data, m=2):
 	"""
 	return data[abs(data - np.mean(data)) < m * np.std(data)]
 
-@debug
+
 def createBins(data, bins = 10):
 	"""
 	CreateBins (data = np.array, bins = int)
