@@ -456,7 +456,7 @@ def Save(filename=None, **options):
 
     Edited: Chris 2/9/2014
     """
-    pyplot.legend()
+    # pyplot.legend()
     pyplot.savefig(filename, dpi=300)
 
 

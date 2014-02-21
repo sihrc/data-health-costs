@@ -85,7 +85,7 @@ def GraphPdf(data, name):
 	kde_pmf = pdf.MakePmf(xs)
 	tp.Pmf(kde_pmf, label = name)
 @debug
-def GetCostForBinnedFeature(d, data, tag):
+def GetCostForBinnedFeature(d, data, tag, outliers = True):
 	"""
 	Inputs:
 		Cost: Cost for binned Feature Data (low,high,actualData)
@@ -95,7 +95,8 @@ def GetCostForBinnedFeature(d, data, tag):
 		d: modified data object
 	"""
 	for low,high,data in data: #Grab the split ranges in data
-		data = an.reject_outliers(data)
+		if outliers:
+			data = an.reject_outliers(data)
 		if len(data) <= 2: #if the data doesn't have multiple data points
 			d.ignored.append((d.datafile,(tag, str((low,high)))))
 			continue
