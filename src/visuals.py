@@ -56,10 +56,10 @@ def GraphPmf(data, save, bins, show = True):
 	tp.Save(filename = save)
 	tp.Clf()
 
-def GraphCdf(data, show = False):
+def GraphCdf(data, name, show = False):
 	pmf = ts2.MakePmfFromList(data) #makes pmf from data
 	cdf = ts2.MakeCdfFromPmf(pmf) #makes cdf from the pdf
-	tp.Cdf(cdf) #plots the cdf
+	tp.Cdf(cdf, label = name) #plots the cdf
 	tp.Config(title='CDF')
 	if show:	
 		tp.Show()
@@ -87,7 +87,7 @@ def GetCostForBinnedFeature(d, data, var):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		#GraphPmf(data, False)
-		GraphCdf(data) #creates cdf
-	tp.Save(filename = os.path.join(path,  ranges + ".jpg"))
+		GraphCdf(data, str(low)) #creates cdf
+	tp.Save(filename = os.path.join(path, name + ".jpg"))
 	tp.Clf()
 	return d
