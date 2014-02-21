@@ -81,7 +81,7 @@ def GraphPdf(data, save, show = False):
 	tp.Save(filename = save)
 	tp.Clf()
 
-def GetCostForBinnedFeature(d,data, var):
+def GetCostForBinnedFeature(d, data, var):
 	for low,high,data in data[1:]:
 		ranges = "_" + str(low) + "-" + str(high)
 		name = d.lookUp(var = var)[0]
