@@ -10,6 +10,7 @@ import os, sys
 sys.path.append("..")
 import config, threading
 from subprocess import call
+import pickle as p
 
 #Import data from csv file
 def importData(filename):
@@ -38,16 +39,26 @@ def hostServer(datafile, dataset):
 		client = serv.accept()
 		client.send(dataset)
 
-def main(datafile):
+def run(ind):
 	#Grabbing Data from CS
+	datafile = config.datafiles[ind]
 	print "Importing " + datafile
 	data = importData(os.path.join("..","..","data",datafile))
 	print "Finished loading data \n ==================================="
 	hostServer(datafile, data)
 	print "Server started!"
 
+def save(ind):
+	#Grabbing Data from CS
+	datafile = config.datafiles[ind]
+	print "Importing " + datafile
+	data = importData(os.path.join("..","..","data",datafile))
+	print "Finished loading data \n ==================================="
+	with open(datafile[:-4]+".p", 'wb') as f:
+		p.dump(data, f)
+	
 if __name__ == "__main__":
-	for datafile in config.datafiles:
-		t = threading.Thread(target=main,args=datafile)
+	for x in xrange(len(config.datafiles)):
+		t = threading.Thread(target=save, args=(x,))
 		t.daemon = False
 		t.start()

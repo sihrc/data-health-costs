@@ -76,7 +76,7 @@ class Data():
 		"""
 		if type(data) == bool:
 			data = []
-			with open(os.path.join("..","data",filename), 'rb') as f:
+			with open(os.path.join("..","data",self.datapath), 'rb') as f:
 				for line in f:
 					data.append(list(line.strip()))
 			data = np.array(data)

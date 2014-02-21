@@ -5,8 +5,15 @@ Chris Lee
 
 from multiprocessing.connection import Client
 from wrappers import debug
+import pickle as p
+
 @debug
-def receiveData():
-	c = Client(('127.0.0.1', 5000))
+def receiveData(port):
+	c = Client(('127.0.0.1', port))
 	c.send('data')
 	return c.recv()
+
+def loadData(filepath):
+	with open(filepath, 'rb') as f:
+		data = p.load(f)
+	return data
