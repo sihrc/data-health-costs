@@ -17,15 +17,14 @@ def CDF_COST_FOR_FEATURE(datafile):
 		for row in d.features:
 			costRangeData = an.FeatureCostRange(d, row)
 			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
-		with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
-			for line in d.ignored:
-				f.write(str(line))
-				f.write("\n")
+		# with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
+		# 	for line in d.ignored:
+		# 		f.write(str(line))
+		# 		f.write("\n")
 		d.save(d.datapath[:-4] + ".p")
 if __name__ == "__main__":
 	# CDF_COST_FOR_FEATURE(config.datafiles[3])
 	for datafile in config.datafiles:
 		CDF_COST_FOR_FEATURE(datafile)
-
 
 
