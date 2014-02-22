@@ -20,7 +20,9 @@ def makedirs(*path):
 	if "." in path[-1]:
 		path = path[:-1]
 	targetdirs = os.path.join(*path)
-
+	if os.path.exists(targetpath):
+		os.remove(targetpath)
+		
 	if not os.path.exists(targetdirs):
 		os.makedirs(targetdirs)
 	return targetpath

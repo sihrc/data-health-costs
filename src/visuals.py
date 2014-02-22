@@ -73,7 +73,7 @@ def GraphCdf(data, name):
 	"""
 	pmf = ts2.MakePmfFromList(data) #makes pmf from data
 	cdf = ts2.MakeCdfFromPmf(pmf) #makes cdf from the pdf
-	tp.Cdf(cdf,label = name) #plots the cdf
+	tp.Cdf(cdf)#,label = name) #plots the cdf
 
 def GraphPdf(data, name):
 	"""
@@ -83,7 +83,7 @@ def GraphPdf(data, name):
 	pdf = thinkstats2.EstimatedPdf(data)
 	xs = np.linspace(min(data), max(data), 101)
 	kde_pmf = pdf.MakePmf(xs)
-	tp.Pmf(kde_pmf, label = name)
+	tp.Pmf(kde_pmf)#, label = name)
 @debug
 def GetCostForBinnedFeature(d, data, tag, outliers = True):
 	"""
@@ -102,7 +102,7 @@ def GetCostForBinnedFeature(d, data, tag, outliers = True):
 			continue
 		GraphCdf(data, str(low)) #creates cdf
 	path = config.makedirs("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
-	tp.Config(title = tag)
+	tp.Config(title = tag, axis = [0,max(d.cost) + 1, 0, 1])
 	tp.Save(filename = path)
 	tp.Clf()
 	return d

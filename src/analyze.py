@@ -47,8 +47,9 @@ def FeatureCostRange(d,tag, bins = 0):
 		bins = bin_max if bins > bin_max else bins
 
 	#Loop through the ranges to get the costs
-	ranges = np.linspace(min(data), max(data) + 1, bins)
-	for i in xrange(bins - 1):
+	ranges = list(np.linspace(min(data), max(data), bins))
+	ranges.append(ranges[-1]+.01)
+	for i in xrange(len(ranges)-1):
 		low,high = ranges[i], ranges[i+1]
 		costs = d.cost[np.where((low <= data) * (data < high))]
 		cost.append((low, high, costs))
