@@ -11,7 +11,6 @@ from host import client
 
 @debug
 def getData(datafile):
-	print datafile
 	dataconfig = config.configuration[datafile]
 	return dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
 
@@ -26,7 +25,7 @@ def CDF_COST_FOR_FEATURE(datafile):
 		# 	for line in d.ignored:
 		# 		f.write(str(line))
 		# 		f.write("\n")
-		d.save(d.datapath[:-4] + ".p")
+		# d.save(d.datapath[:-4] + ".p")
 
 if __name__ == "__main__":
 	# CDF_COST_FOR_FEATURE(config.datafiles[-1])
