@@ -48,13 +48,13 @@ def print_variable(decoded):
 
 if __name__ == "__main__":
 	#0. h144d.dat 
-	#1. h1443.dat 
+	#1. h144e.dat 
 	#2. h144a.dat 
 	#3. h143.dat 
 
-	m = 3
+	m = 1
 	dataset = config.datafiles[m]
-	variables = ["RTHLTH13"]
+	variables = ["RCVVAC"]
 
 	for variable in variables:
 		print_variable(getDetails(dataset, variable))

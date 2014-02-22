@@ -18,7 +18,7 @@ def debug(func):
 		# print '%s took %0.3f ms' % (func.func_name, (t2-t1)*1000.0)
 		# print "\nFinished"
 		# print "=======================================\n"
-		# return res
+		return res
 	return wrapper
 
 """
