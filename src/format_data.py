@@ -13,14 +13,8 @@ import data
 #Wrapper for debug function (timing and debug print statements)
 from wrappers import debug
 
-
-@debug
-def getData(datafile):
-	dataconfig = config.configuration[datafile]
-	return dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
-
 def formatData(datafile, features):
-	d = getData(datafile)
+	d = dc.getData(datafile)
 	dataX = np.zeros(shape=(len(d.cost), len(features)))
 	for i,feature in enumerate(features):
 		dataX[:,i] = d.getColumn(tag = feature).astype("float")
