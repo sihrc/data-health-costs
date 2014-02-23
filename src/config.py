@@ -1,6 +1,8 @@
 """
 Config.py contains configuration data like constants
 Also contains notes on the data sets
+
+author: chris
 """
 import data as dc
 import os
