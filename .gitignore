@@ -1,4 +1,4 @@
-
+*.npy
 *.py[cod]
 visuals\
 *.png
