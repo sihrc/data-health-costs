@@ -1,13 +1,16 @@
 """
 Formats the data for training the model
 """
+#System level modules
 import os
+import numpy as np
 
+#Local Modules
 import data as dc
 import config
-import numpy as np
 import data
 
+#Wrapper for debug function (timing and debug print statements)
 from wrappers import debug
 
 

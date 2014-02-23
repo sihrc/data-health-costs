@@ -1,6 +1,5 @@
 import time
 import data as d
-
 """
 * Debug/Timer Wrapper
 	prints debug statements

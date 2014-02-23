@@ -5,9 +5,13 @@ author: chris
 
 #Useful Libraries
 import numpy as np
+import os
 
-#Data Library
+#Local Library
+import config
+from host import client
 import data as dc
+import visuals as vis
 
 #Debug Timer Wrappers
 from wrappers import debug
@@ -76,16 +80,27 @@ def createBins(data, bins = 10):
 		data[np.where((data > low) * (data < high))] = (low + high)/2.0
 	return data
 
+@debug
+def getData(datafile):
+	dataconfig = config.configuration[datafile]
+	return dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
+
+@debug
+def CDF_COST_FOR_FEATURE(datafile):
+		dataconfig = config.configuration[datafile]
+		d = dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
+		for row in d.features:
+			costRangeData = FeatureCostRange(d, row)
+			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
+		# with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
+		# 	for line in d.ignored:
+		# 		f.write(str(line))
+		# 		f.write("\n")
+		# d.save(d.datapath[:-4] + ".p")
 if __name__ == "__main__":
-	d = dc.Data(codebook = dc.HC144D)
-	d.createRefs()
-	d.loadData("../data/h144d.dat")
+	# CDF_COST_FOR_FEATURE(config.datafiles[-1])
+	# for datafile in config.datafiles:
+	# 	CDF_COST_FOR_FEATURE(datafile)
 
-	#Save feature dictionary in dataholder
-	d.results["featureCostRange"] = featureCostRange(d)
-
-	#Save the current State of the dataholder (including data)
-	d.save("temp.p")
-
-	#Load previously saved state of the dataholder (including data)
-	#d.load("temp.p")
+	d = getData(config.H144E)
+	
