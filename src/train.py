@@ -14,7 +14,7 @@ def train(trainFeature, trainCost):
 	"""
 	Creates a model and trains it with the training features and costs
 	"""
-	model = RandomForestRegressor()
+	model = RandomForestRegressor(n_estimators = 500)
 	model.fit(trainFeature, trainCost)
 	return model
 
@@ -27,7 +27,8 @@ def predict(model, testFeature, testCost):
 	predicts = model.predict(testFeature)
 	with open("predictions.txt", 'wb') as f:
 		p.dump(predicts, f)
-	return metrics.mean_absolute_error(testCost, predicts)
+	#return metrics.mean_squared_error(testCost, predicts)
+	return metrics.explained_variance_score(testCost, predicts)
 
 @debug
 def loadData(filename, test = .1):
@@ -42,7 +43,7 @@ def loadData(filename, test = .1):
 	return  X[cut:], Y[cut:], X[:cut], Y[:cut]
 
 if __name__ == "__main__":
-	trainFeature, trainCost, testFeature, testCost = loadData(config.H144D)
+	trainFeature, trainCost, testFeature, testCost = loadData(config.H144D, test = .1)
 
 	# print trainFeature.shape
 	# print trainCost.shape
