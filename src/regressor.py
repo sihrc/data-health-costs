@@ -14,7 +14,7 @@ def train(trainFeature, trainCost):
 	"""
 	Creates a model and trains it with the training features and costs
 	"""
-	model = RandomForestRegressor(n_estimators = 500)
+	model = RandomForestRegressor(n_estimators = 100)
 	model.fit(trainFeature, trainCost)
 	return model
 
@@ -25,8 +25,6 @@ def predict(model, testFeature, testCost):
 	Returns the accuracy score
 	"""
 	predicts = model.predict(testFeature)
-	with open("predictions.txt", 'wb') as f:
-		p.dump(predicts, f)
 	#return metrics.mean_squared_error(testCost, predicts)
 	return metrics.explained_variance_score(testCost, predicts)
 
@@ -54,6 +52,6 @@ if __name__ == "__main__":
 	model = train(trainFeature, trainCost)
 	error = predict(model, testFeature, testCost)
 
-	print error # Currently only around 1000 dollars
+	print error
 
 

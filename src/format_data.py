@@ -9,10 +9,17 @@ import numpy as np
 import data as dc
 import config
 import data
+import lookup
 
 #Wrapper for debug function (timing and debug print statements)
 from wrappers import debug
 
+@debug
+def filterNegatives(X,Y):
+	positive = np.where(np.prod(X > 0, axis = 1))
+	return X[positive], Y[positive]
+
+@debug
 def formatData(datafile, features):
 	d = dc.getData(datafile)
 	dataX = np.zeros(shape=(len(d.cost), len(features)))
@@ -20,7 +27,7 @@ def formatData(datafile, features):
 		dataX[:,i] = d.getColumn(tag = feature).astype("float")
 	return dataX, d.cost
 
-
+@debug
 def crossReference(datafile, features):
 	all_features = [key.split()[0] for key in config.configuration[datafile][0].keys()]
 	for feature in features:
@@ -31,6 +38,12 @@ def crossReference(datafile, features):
 			if feature in features[i + 1:] + features[:i]:
 				print feature, " is duplicated"
 		print datafile, "features has duplicates"
+
+@debug
+def lookUpFeatures(datafile, features):
+	for feature in feature_dict[datafile]:
+	 	lookup.print_variable(lookup.getDetails(datafile, feature))
+	 	raw_input()
 
 if __name__ == "__main__":
 	feature_dict = {}
