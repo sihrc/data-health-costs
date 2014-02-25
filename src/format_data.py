@@ -32,6 +32,7 @@ def formatData(datafile, features):
 
 	author: chris
 	"""
+	tags = config.datafiles[datafile]
 	d = dc.getData(datafile)
 	dataX = np.zeros(shape=(len(d.cost), len(features)))
 	for i,feature in enumerate(features):

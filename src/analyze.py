@@ -83,15 +83,15 @@ def createBins(data, bins = 10):
 	return data
 
 @debug
-def CDF_COST_FOR_FEATURE(datafile, costId):
+def CDF_COST_FOR_FEATURE(datafile):
 	"""
 	Runs CDF feature bins vs cost for all features
 	author: chris
 	"""
-	d = dc.getData(datafile, costId)
+	d = dc.getData(datafile)
 	for row in d.features:
 		costRangeData = FeatureCostRange(d, row)
-		d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
+		d = vis.getCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
 	# with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
 	# 	for line in d.ignored:
 	# 		f.write(str(line))
@@ -99,7 +99,7 @@ def CDF_COST_FOR_FEATURE(datafile, costId):
 	# d.save(d.datapath[:-4] + ".p")
 
 if __name__ == "__main__":
-	for datafile, costId in config.datafiles:
-		CDF_COST_FOR_FEATURE(datafile, costId)
+	for datafile in config.datafiles:
+		CDF_COST_FOR_FEATURE(datafile)
 
 	

@@ -16,7 +16,7 @@ def path(*path):
 	"""
 	Replacement for os.path.join
 	It performs makedirs on paths that don't exists
-	Returns the os.path.join() result
+	Returns the os.path.join() result	
 	author:chris
 	"""
 	if len(path) == 0:
@@ -83,8 +83,8 @@ def getData(datafiles):
 	author: chris
 	"""
 	data = dict()
-	for datafile, cost in datafiles:
-		data[datafile] = (loadCodebooks(datafile),cost)
+	for datafile, tags in datafiles.iteritems():
+		data[datafile] = (loadCodebooks(datafile),tags[0], tags[1])
 	return data
 
 
@@ -93,5 +93,5 @@ if __name__ == "__main__":
 	for datafile, url in datasets.iteritems():
 		saveCodebooks(datafile, getCodebook(url))
 else:
-	datafiles = [("H144D", "IPTC11X"), ("H144E","ERTC11X"),("H144A","RXMD11X"),("H143","RTHLTH13")]
+	datafiles = {"H144D":("IPTC11X",["IPBEGYR","IPBEGMM","IPBEGDD"]), "H144E":("ERTC11X",["ERDATEYR","ERDATEMM","ERDATEDD"]),"H144A":("RXMD11X",["RXBEGYXR", "RXBEGMM","RXBEGDD"]),"H143":("RTHLTH13",["BEGRFY13","BEGRFM13","BEGRFD13"])}
 	data = getData(datafiles)

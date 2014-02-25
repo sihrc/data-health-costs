@@ -34,7 +34,7 @@ def FeatureVsCost(d, tag):
 		d.ignored.append(tag, data.getColumn(tag))
 
 
-def GraphPmf(data, save, bins, show = True):
+def graphPmf(data, save, bins, show = True):
 	"""
 	Given the a numpy array, a filepath to save, the number of bins to create, and whether or not to display the PMF
 	Returns a saved PMF plot
@@ -64,7 +64,7 @@ def GraphPmf(data, save, bins, show = True):
 	tp.Save(filename = save)
 	tp.Clf()
 
-def GraphCdf(data, name):
+def graphCdf(data, name):
 	"""
 	Given a numpy array, a legend label for the graph
 	Plots a CDF plot
@@ -75,7 +75,7 @@ def GraphCdf(data, name):
 	cdf = ts2.MakeCdfFromPmf(pmf) #makes cdf from the pdf
 	tp.Cdf(cdf)#,label = name) #plots the cdf
 
-def GraphPdf(data, name):
+def graphPdf(data, name):
 	"""
 	Given numpy array, plots a PDF graph
 	author: Jazmin/Chris
@@ -85,7 +85,7 @@ def GraphPdf(data, name):
 	kde_pmf = pdf.MakePmf(xs)
 	tp.Pmf(kde_pmf)#, label = name)
 @debug
-def GetCostForBinnedFeature(d, data, tag, outliers = True):
+def getCostForBinnedFeature(d, data, tag, outliers = True):
 	"""
 	Inputs:
 		Cost: Cost for binned Feature Data (low,high,actualData)
@@ -100,7 +100,7 @@ def GetCostForBinnedFeature(d, data, tag, outliers = True):
 		if len(data) <= 2: #if the data doesn't have multiple data points
 			d.ignored.append((d.datafile,(tag, str((low,high)))))
 			continue
-		GraphCdf(data, str(low)) #creates cdf
+		graphCdf(data, str(low)) #creates cdf
 	path = config.path("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
 	tp.Config(title = tag, axis = [0,max(d.cost) + 1, 0, 1])
 	tp.Save(filename = path)

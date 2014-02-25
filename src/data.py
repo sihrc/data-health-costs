@@ -17,7 +17,8 @@ class Data():
 	saving and loading temporary sessions
 	"""
 	@debug
-	def __init__ (self, data = False, codebook = "", datafile = "", costId = ""):
+	def __init__ (self, data = False, codebook = "", datafile = "", costId = "", timeTags = []):
+		self.timeTags = timeTags
 		self.datafile = datafile
 		self.codebook = codebook
 		self.createRefs()
@@ -104,9 +105,12 @@ class Data():
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary"
 
 @debug
-def getData(datafile, costId):
-	return Data(codebook = config.data[datafile][0], datafile = datafile, costId = costId)
+def getData(datafile):
+	tags = config.datafiles[datafile]
+	return Data(codebook = config.data[datafile][0], datafile = datafile, costId = tags[0] , timeTags = tags[1])
 
 if __name__ == "__main__":
+	d = getData("H144D")
+	print d.getColumn("IPBEGMM")
 	print "See Documentation"
 	
