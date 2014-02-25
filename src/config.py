@@ -14,7 +14,9 @@ from bs4 import BeautifulSoup
 
 def path(*path):
 	"""
-	Header for path
+	Replacement for os.path.join
+	It performs makedirs on paths that don't exists
+	Returns the os.path.join() result
 	author:chris
 	"""
 	if len(path) == 0:
