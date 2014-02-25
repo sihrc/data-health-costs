@@ -78,7 +78,7 @@ def createBins(data, bins = 10):
 		data[np.where((data > low) * (data < high))] = (low + high)/2.0
 	return data
 
-s@debug
+@debug
 def CDF_COST_FOR_FEATURE(datafile):
 		d = dc.getData(datafile)
 		for row in d.features:
@@ -94,5 +94,4 @@ if __name__ == "__main__":
 	for datafile, costId in config.datafiles:
 		CDF_COST_FOR_FEATURE(datafile)
 
-	# d = getData(config.H144E)
 	
