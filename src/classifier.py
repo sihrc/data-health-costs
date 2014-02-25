@@ -8,7 +8,6 @@ from sklearn import metrics
 
 import pickle as p
 import numpy as np
-import os
 
 @debug
 def one_hot(array):
@@ -21,14 +20,14 @@ def one_hot(array):
         return output
 
 @debug
-def loadData(filename, test = .1):
+def loadData(datafile, test = .1):
 	"""
 	Loads data from .npy binaries representative of our data created by format_data.py
-	Takes in filename (i.e. 144d.dat) and a test size (percentage)
+	Takes in datafile (i.e. 144d.dat) and a test size (percentage)
 	returns trainX, trainY, testX, testY
 	"""
-	X = np.load(os.path.join("..","data",filename[:-4] + "_dataX.npy"))
-	Y = np.load(os.path.join("..","data",filename[:-4] + "_dataY.npy"))
+	X = np.load(config.path("..","data",datafile, datafile + "_dataX.npy"))
+	Y = np.load(config.path("..","data",datafile, datafile + "_dataY.npy"))
 	for line in Y:
 		if line < 0:
 			print line

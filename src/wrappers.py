@@ -1,5 +1,4 @@
 import time
-import data as d
 """
 * Debug/Timer Wrapper
 	prints debug statements
@@ -19,21 +18,3 @@ def debug(func):
 		return res
 	return wrapper
 
-"""
-* Session Saving Wrapper for Data Dict
-	loads previous session of data holder
-	runs function
-	saves previous session of data holder
-
-author: chris
-"""
-def develop(func):
-	def wrapper(*arg):
-		dc = d.Data()
-		print "Loading previous data session"
-		dc = dc.load()
-		res = func(dc, *arg)
-		print "Saving new data session"
-		dc.save()
-		return res
-	return wrapper

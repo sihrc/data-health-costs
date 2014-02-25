@@ -1,5 +1,5 @@
 import config
 import data as dc
-import analyze as analyze
+import analyze as an
 import visuals as vis
-import wrappers
+from wrappers import debug

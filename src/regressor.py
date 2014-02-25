@@ -7,7 +7,6 @@ from sklearn import metrics
 
 import pickle as p
 import numpy as np
-import os
 
 @debug
 def train(trainFeature, trainCost):
@@ -35,13 +34,13 @@ def loadData(filename, test = .1):
 	Takes in filename (i.e. 144d.dat) and a test size (percentage)
 	returns trainX, trainY, testX, testY
 	"""
-	X = np.load(os.path.join("..","data",filename[:-4] + "_dataX.npy"))
-	Y = np.load(os.path.join("..","data",filename[:-4] + "_dataY.npy"))
+	X = np.load(config.path("..","data",filename, filename + "_dataX.npy"))
+	Y = np.load(config.path("..","data",filename, filename + "_dataY.npy"))
 	cut = int(X.shape[0] * test)
 	return  X[cut:], Y[cut:], X[:cut], Y[:cut]
 
 if __name__ == "__main__":
-	trainFeature, trainCost, testFeature, testCost = loadData(config.H144D, test = .1)
+	trainFeature, trainCost, testFeature, testCost = loadData("H144D", test = .1)
 
 	# print trainFeature.shape
 	# print trainCost.shape

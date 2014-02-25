@@ -5,7 +5,7 @@ Contains visualization data scripts
 #To-DO Create a Visuals module that holds all the visualization TASKS
 import matplotlib.pyplot as plt
 import numpy as np
-import re,os
+import re
 
 #Local Modules
 import analyze as an

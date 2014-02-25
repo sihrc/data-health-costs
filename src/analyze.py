@@ -5,11 +5,9 @@ author: chris
 
 #Useful Libraries
 import numpy as np
-import os
 
 #Local Library
 import config
-from host import client
 import data as dc
 import visuals as vis
 
@@ -80,15 +78,9 @@ def createBins(data, bins = 10):
 		data[np.where((data > low) * (data < high))] = (low + high)/2.0
 	return data
 
-@debug
-def getData(datafile):
-	dataconfig = config.configuration[datafile]
-	return dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
-
-@debug
+s@debug
 def CDF_COST_FOR_FEATURE(datafile):
-		dataconfig = config.configuration[datafile]
-		d = dc.Data(codebook = dataconfig[0], datapath = os.path.join("..", "data" , datafile), costId = dataconfig[1])
+		d = dc.getData(datafile)
 		for row in d.features:
 			costRangeData = FeatureCostRange(d, row)
 			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
@@ -98,8 +90,8 @@ def CDF_COST_FOR_FEATURE(datafile):
 		# 		f.write("\n")
 		# d.save(d.datapath[:-4] + ".p")
 if __name__ == "__main__":
-	CDF_COST_FOR_FEATURE(config.datafiles[-1])
-	for datafile in config.datafiles:
+	CDF_COST_FOR_FEATURE(config.datafiles)
+	for datafile, costId in config.datafiles:
 		CDF_COST_FOR_FEATURE(datafile)
 
 	# d = getData(config.H144E)

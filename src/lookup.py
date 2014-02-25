@@ -26,7 +26,6 @@ def getDetails(dataset, variable):
 	Performs the HTTP GET Request and returns a list of decoded values
 	"""
 
-	dataset = dataset[:-4].upper()
 	url = "http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=%s&varName=%s" % (dataset, variable)
 	page = urllib2.urlopen(url)
 	soup = BeautifulSoup(page.read())
@@ -52,9 +51,9 @@ if __name__ == "__main__":
 	#2. h144a.dat 
 	#3. h143.dat 
 
-	m = 1
-	dataset = config.datafiles[m]
-	variables = ["RCVVAC"]
+	m = 0
+	dataset = config.datafiles[m][0]
+	variables = ["RSNINHOS"]
 
 	for variable in variables:
 		print_variable(getDetails(dataset, variable))
