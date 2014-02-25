@@ -29,7 +29,7 @@ def FeatureVsCost(d, tag):
 		print "Plotting " + tag + " vs cost plot"
 		plt.xlabel(data.lookUp(tag = tag)[0]) #labels the x axis
 		plt.ylabel("Cost in dollars")
-		plt.savefig("../visuals/feature_v_cost/" + data.lookUp(tag = tag)[0].replace(" ", "_") + ".png") #saves the scatter plot
+		plt.savefig(config.path("..","visuals","feature_v_cost", data.lookUp(tag = tag)[0].replace(" ", "_") + ".png")) #saves the scatter plot
 	except:
 		d.ignored.append(tag, data.getColumn(tag))
 
@@ -101,7 +101,7 @@ def GetCostForBinnedFeature(d, data, tag, outliers = True):
 			d.ignored.append((d.datafile,(tag, str((low,high)))))
 			continue
 		GraphCdf(data, str(low)) #creates cdf
-	path = config.makedirs("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
+	path = config.path("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
 	tp.Config(title = tag, axis = [0,max(d.cost) + 1, 0, 1])
 	tp.Save(filename = path)
 	tp.Clf()

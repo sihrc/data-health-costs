@@ -83,12 +83,12 @@ def createBins(data, bins = 10):
 	return data
 
 @debug
-def CDF_COST_FOR_FEATURE(datafile):
+def CDF_COST_FOR_FEATURE(datafile, costId):
 	"""
 	Runs CDF feature bins vs cost for all features
 	author: chris
 	"""
-	d = dc.getData(datafile)
+	d = dc.getData(datafile, costId)
 	for row in d.features:
 		costRangeData = FeatureCostRange(d, row)
 		d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
@@ -99,8 +99,7 @@ def CDF_COST_FOR_FEATURE(datafile):
 	# d.save(d.datapath[:-4] + ".p")
 
 if __name__ == "__main__":
-	CDF_COST_FOR_FEATURE(config.datafiles)
 	for datafile, costId in config.datafiles:
-		CDF_COST_FOR_FEATURE(datafile)
+		CDF_COST_FOR_FEATURE(datafile, costId)
 
 	

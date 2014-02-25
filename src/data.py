@@ -9,8 +9,6 @@ import config
 #Debug Timer Wrappers
 from wrappers import debug
 
-
-
 class Data():
 	"""
 	Data Handler object that has methods for handling references 
@@ -48,21 +46,12 @@ class Data():
 			self.features[key.split()[0]] = [key, item]
 			count += 1
 
-	def lookUp(self, tag = None, desc = None):
+	def lookUp(self, tag = None):
 		"""
 		Look up a feature using the tag name or a description
 		returns acroynym-description, indices
 		"""
-		if tag:
-			return self.features[tag]
-		elif desc:
-			results = []
-			for key,item in self.features.iteritems():
-				if desc.lower() in item[0].lower():
-					results.append((key,item))
-			return results
-		else:
-			return list
+		return self.features[tag]
 
 	def loadData(self, data):
 		"""
@@ -92,12 +81,10 @@ class Data():
 				break
 		return newFormat
 
-	
 	def save(self, filename):
 		with open(filename, 'wb') as f:
 			p.dump(self, f)
 			print filename + " Saved Successfully"
-
 	
 	def load(self, filename):
 		"""
@@ -117,8 +104,8 @@ class Data():
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary"
 
 @debug
-def getData(datafile):
-	return Data(codebook = config.data[datafile][0], datafile = datafile, costId = config.data[datafile][1])
+def getData(datafile, costId):
+	return Data(codebook = config.data[datafile][0], datafile = datafile, costId = costId)
 
 if __name__ == "__main__":
 	print "See Documentation"
