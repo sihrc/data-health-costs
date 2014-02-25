@@ -62,6 +62,8 @@ def reject_outliers(data, m=5):
 	"""
 	Returns a numpy array with outliers that are further than 
 	m * the std of the data away from the mean
+
+	author: CJ
 	"""
 	return data[abs(data - np.mean(data)) < m * np.std(data)]
 
@@ -70,6 +72,8 @@ def createBins(data, bins = 10):
 	"""
 	CreateBins (data = np.array, bins = int)
 	Returns a binned version of the data
+
+	author: chris
 	"""
 	#Create ranges for data
 	ranges = np.linspace(np.min(data), np.max(data), bins)
@@ -80,15 +84,20 @@ def createBins(data, bins = 10):
 
 @debug
 def CDF_COST_FOR_FEATURE(datafile):
-		d = dc.getData(datafile)
-		for row in d.features:
-			costRangeData = FeatureCostRange(d, row)
-			d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
-		# with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
-		# 	for line in d.ignored:
-		# 		f.write(str(line))
-		# 		f.write("\n")
-		# d.save(d.datapath[:-4] + ".p")
+	"""
+	Runs CDF feature bins vs cost for all features
+	author: chris
+	"""
+	d = dc.getData(datafile)
+	for row in d.features:
+		costRangeData = FeatureCostRange(d, row)
+		d = vis.GetCostForBinnedFeature(d,costRangeData, row) #gets cost for feature V24
+	# with open(datafile[:-4] + "_ignored.txt", 'wb') as f:
+	# 	for line in d.ignored:
+	# 		f.write(str(line))
+	# 		f.write("\n")
+	# d.save(d.datapath[:-4] + ".p")
+
 if __name__ == "__main__":
 	CDF_COST_FOR_FEATURE(config.datafiles)
 	for datafile, costId in config.datafiles:

@@ -7,7 +7,7 @@ visuals\
 *.p
 *.txt
 data\
-
+!notes.txt
 # C extensions
 *.so
 
