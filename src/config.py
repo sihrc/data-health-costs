@@ -5,12 +5,6 @@ Also contains notes on the data sets
 author: chris
 """
 import os
-import pickle as p
-import urllib2
-
-from wrappers import debug
-from bs4 import BeautifulSoup
-
 
 def path(*path):
 	"""
@@ -28,70 +22,20 @@ def path(*path):
 	targetdirs = os.path.join(*path)
 	
 	if not os.path.exists(targetdirs):
-		os.makedirs(targetdirs)
+		os.makedirs(targetdirs)	
 	return targetpath
 
-@debug
-def getCodebook(url):
-	"""
-	Given the datafile name, returns the codebook needed
-	author: chris
-	"""
-	page = urllib2.urlopen(url)
-	soup = BeautifulSoup(page.read())
-	details = []	
-	tags = []
+"""
+Data sets
+"""
+baseA = "http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId="
+baseB = "http://meps.ahrq.gov/mepsweb/data_stats/download_data_files_codebook.jsp?PUFId="
 
-	found = soup.findAll('font', {'class':"smallBlack"})[3:]
-	for i in xrange(0,len(found),3):
-		low = found[i].text.encode('utf8').strip()
-		low = int(repr(low)[1:repr(low).find("\\")])
-		high = found[i + 1].text.encode('utf8').strip()
-		high = int(repr(high)[1:repr(high).find("\\")])
-		desc = found[i + 2].text.encode('utf8').strip()
-		details.append((desc, (low,high)))
+download = "http://meps.ahrq.gov/data_files/pufs/%sdat.zip"
 
-	for line in soup.findAll('a', href = True):
-		if "download_data_files_codebook.jsp?" in line['href']:
-			tags.append(line.text.encode('utf8').strip())
-
-	return dict(zip(tags[5:], details))
-
-@debug
-def saveCodebooks(datafile, codebook):
-	"""
-	Saves the codebook dictionary as a pickle
-	author: chris
-	"""
-	with open(path("..","data",datafile,datafile + ".p"), 'wb') as f:
-		p.dump(codebook, f)
-
-@debug
-def loadCodebooks(datafile):
-	"""
-	Loads pickled codebook
-	author: chris
-	"""
-	with open(path("..","data",datafile,datafile + ".p"), 'rb') as f:
-		d = p.load(f)
-	return d
-
-@debug
-def getData(datafiles):
-	"""
-	Gets the data from pickled files for use in other scripts
-	author: chris
-	"""
-	data = dict()
-	for datafile, tags in datafiles.iteritems():
-		data[datafile] = (loadCodebooks(datafile),tags[0], tags[1])
-	return data
-
-
-if __name__ == "__main__":
-	datasets = {"H144D":"http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=H144D", "H144A":"http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=H144A", "H144E":"http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=H144E", "H143":"http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=H143"}
-	for datafile, url in datasets.iteritems():
-		saveCodebooks(datafile, getCodebook(url))
-else:
-	datafiles = {"H144D":("IPTC11X",["IPBEGYR","IPBEGMM","IPBEGDD"]), "H144E":("ERTC11X",["ERDATEYR","ERDATEMM","ERDATEDD"]),"H144A":("RXMD11X",["RXBEGYXR", "RXBEGMM","RXBEGDD"]),"H143":("RTHLTH13",["BEGRFY13","BEGRFM13","BEGRFD13"])}
-	data = getData(datafiles)
+datafiles = {}
+datafiles["H144D"] = ("IPTC11X",["IPBEGYR","IPBEGMM","IPBEGDD"], baseA + "H144D")
+datafiles["H144E"] = ("ERTC11X",["ERDATEYR","ERDATEMM","ERDATEDD"], baseA + "H144E")
+datafiles["H144A"] = ("RXMD11X",["RXBEGYXR", "RXBEGMM","RXBEGDD"], baseA + "H144A")
+datafiles["H143"]  = ("RTHLTH13",["BEGRFY13","BEGRFM13","BEGRFD13"], baseA + "H143")
+datafiles["PROJYR02"]  = (None,[], baseB + "PROJYR02")

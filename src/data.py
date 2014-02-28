@@ -8,6 +8,7 @@ import config
 
 #Debug Timer Wrappers
 from wrappers import debug
+import datasets
 
 class Data():
 	"""
@@ -106,11 +107,9 @@ class Data():
 
 @debug
 def getData(datafile):
-	tags = config.datafiles[datafile]
-	return Data(codebook = config.data[datafile][0], datafile = datafile, costId = tags[0] , timeTags = tags[1])
+	dataconfig = datasets.getData(datafile)
+	return Data(codebook = dataconfig[0], datafile = datafile, costId = dataconfig[1] , timeTags = dataconfig[2])
 
 if __name__ == "__main__":
-	d = getData("H144D")
-	print d.getColumn("IPBEGMM")
 	print "See Documentation"
 	
