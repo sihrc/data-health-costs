@@ -1,3 +1,10 @@
+"""
+Datasets.py 
+Handles downloading datasets and codebook
+
+author:chris
+"""
+
 from wrappers import debug
 import config
 
@@ -57,7 +64,7 @@ def downloadData(datafile):
 	"""
 	Download data
 	"""
-	dfile = config.path("..","data",datafile.upper(), datafile + ".zip")
+	dfile = config.path("..","data",datafile.upper(),  + ".zip")
 	urllib.urlretrieve(config.download % datafile.lower(), dfile)
 	with zipfile.ZipFile(dfile) as zf:
 		zf.extractall(config.path("..","data",datafile.upper()))
