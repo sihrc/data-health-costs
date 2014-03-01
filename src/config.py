@@ -38,4 +38,5 @@ datafiles["H144D"] = ("IPTC11X",["IPBEGYR","IPBEGMM","IPBEGDD"], baseA + "H144D"
 datafiles["H144E"] = ("ERTC11X",["ERDATEYR","ERDATEMM","ERDATEDD"], baseA + "H144E")
 datafiles["H144A"] = ("RXMD11X",["RXBEGYXR", "RXBEGMM","RXBEGDD"], baseA + "H144A")
 datafiles["H143"]  = ("RTHLTH13",["BEGRFY13","BEGRFM13","BEGRFD13"], baseA + "H143")
+datafiles["H147"] = ("TOTTCH11",[], baseA + "H147")
 datafiles["PROJYR02"]  = (None,[], baseB + "PROJYR02")

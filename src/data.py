@@ -61,7 +61,7 @@ class Data():
 		"""
 		if type(data) == bool:
 			data = []
-			with open(config.path("..","data",self.datafile, self.datafile + ".dat"), 'rb') as f:
+			with open(config.path("..","data",self.datafile, self.datafile.lower() + ".dat"), 'rb') as f:
 				for line in f:
 					data.append(list(line.strip()))
 			data = np.array(data)

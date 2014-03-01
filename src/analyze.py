@@ -99,7 +99,8 @@ def CDF_COST_FOR_FEATURE(datafile):
 	# d.save(d.datapath[:-4] + ".p")
 
 if __name__ == "__main__":
-	for datafile in config.datafiles:
-		CDF_COST_FOR_FEATURE(datafile)
+	# for datafile in config.datafiles:
+	# 	CDF_COST_FOR_FEATURE(datafile)
+	CDF_COST_FOR_FEATURE("H147")
 
 	

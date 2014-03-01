@@ -29,7 +29,7 @@ def FeatureVsCost(d, tag):
 		print "Plotting " + tag + " vs cost plot"
 		plt.xlabel(data.lookUp(tag = tag)[0]) #labels the x axis
 		plt.ylabel("Cost in dollars")
-		plt.savefig(config.path("..","visuals","feature_v_cost", data.lookUp(tag = tag)[0].replace(" ", "_") + ".png")) #saves the scatter plot
+		plt.savefig(config.path("..","visuals","feature_v_cost", d.datafile, data.lookUp(tag = tag)[0].replace(" ", "_") + ".png")) #saves the scatter plot
 	except:
 		d.ignored.append(tag, data.getColumn(tag))
 
