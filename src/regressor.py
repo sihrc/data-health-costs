@@ -40,7 +40,7 @@ def loadData(filename, test = .1):
 	return  X[cut:], Y[cut:], X[:cut], Y[:cut]
 
 if __name__ == "__main__":
-	trainFeature, trainCost, testFeature, testCost = loadData("H144D", test = .1)
+	trainFeature, trainCost, testFeature, testCost = loadData("H147", test = .1)
 
 	# print trainFeature.shape
 	# print trainCost.shape

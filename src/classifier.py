@@ -56,7 +56,7 @@ def predict(model, testFeature, testCost):
 
 
 if __name__ == "__main__":
-	trainFeature, trainCost, testFeature, testCost = loadData(config.H143, test = .1)
+	trainFeature, trainCost, testFeature, testCost = loadData(config.getData("H143"), test = .1)
 
 	# print trainFeature.shape
 	# print trainCost.shape

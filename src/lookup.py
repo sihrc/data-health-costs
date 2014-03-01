@@ -7,6 +7,7 @@ author: chris @ sihrc
 import config
 from bs4 import BeautifulSoup
 import urllib2
+import datasets as ds
 
 def threeColumnString(line):
 	"""
@@ -19,7 +20,18 @@ def threeColumnString(line):
 	body = ["\t".join([(maxLengths[x] - len(cols[x])) * " " + cols[x] for x in xrange(3)]) for cols in line]
 	return "\n".join(body[:-1]) + "\n\n" + body[-1]
 
-		
+def writeFeatureList(datafile):
+	"""
+	Function that creates a file that lists out all variable names 
+	author: Jazmin @ JazminGonzalez-Rivero
+	"""
+	features = ds.getData(datafile)[0].keys()
+	with open(config.path("..", "data", datafile, "features.txt"), "wb") as f:
+		for feature in features:
+			f.write(feature + "\n")
+
+	
+
 def getDetails(dataset, variable):
 	"""
 	Takes in the dataset filename and the variable name 
@@ -46,15 +58,5 @@ def print_variable(decoded):
 		print "\n"	
 
 if __name__ == "__main__":
-	#0. h144d.dat 
-	#1. h144e.dat 
-	#2. h144a.dat 
-	#3. h143.dat 
-
-	m = 0
-	dataset = config.datafiles[m][0]
-	variables = ["RSNINHOS"]
-
-	for variable in variables:
-		print_variable(getDetails(dataset, variable))
-	
+	datafile = "H147"
+	writeFeatureList(datafile)

@@ -59,6 +59,7 @@ def loadCodebooks(datafile):
 	with open(config.path("..","data",datafile,datafile + ".p"), 'rb') as f:
 		d = p.load(f)
 	return d
+
 @debug
 def downloadData(datafile):
 	"""
