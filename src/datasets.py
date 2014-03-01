@@ -65,7 +65,7 @@ def downloadData(datafile):
 	"""
 	Download data
 	"""
-	dfile = config.path("..","data",datafile.upper(),  + ".zip")
+	dfile = config.path("..","data",datafile.upper() + ".zip")
 	urllib.urlretrieve(config.download % datafile.lower(), dfile)
 	with zipfile.ZipFile(dfile) as zf:
 		zf.extractall(config.path("..","data",datafile.upper()))

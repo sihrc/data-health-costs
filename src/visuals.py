@@ -101,7 +101,7 @@ def getCostForBinnedFeature(d, data, tag, outliers = True):
 			d.ignored.append((d.datafile,(tag, str((low,high)))))
 			continue
 		graphCdf(data, str(low)) #creates cdf
-	path = config.path("..","visuals","feature_bin_costs",d.datafile[:-4], tag + ".jpg")
+	path = config.path("..","visuals","feature_bin_costs",d.datafile, tag + ".jpg")
 	tp.Config(title = tag, axis = [0,max(d.cost) + 1, 0, 1])
 	tp.Save(filename = path)
 	tp.Clf()

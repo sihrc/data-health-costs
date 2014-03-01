@@ -7,7 +7,7 @@ author: chris @ sihrc
 import config
 from bs4 import BeautifulSoup
 import urllib2
-import datasets as ds
+import datasets as dc
 
 def threeColumnString(line):
 	"""
@@ -25,12 +25,25 @@ def writeFeatureList(datafile):
 	Function that creates a file that lists out all variable names 
 	author: Jazmin @ JazminGonzalez-Rivero
 	"""
-	features = ds.getData(datafile)[0].keys()
-	with open(config.path("..", "data", datafile, "features.txt"), "wb") as f:
+	features = dc.getData(datafile)[0].keys()
+	with open(config.path("..", "data", datafile, "features.py"), "wb") as f:
+		f.write("features = [")
 		for feature in features:
-			f.write(feature + "\n")
+			f.write('"' + feature + '", ')
+		f.write("]")
 
-	
+def writeChosenFeatures(datafile):
+	"""
+	Function that looks for CDF graphs remaining (ones that have not been deleted)
+
+	author: chris
+	"""
+	with open(config.path("..","data",datafile,"chosen_features.py"), 'wb') as f:
+		f.write("features = [")
+		for dfile in config.os.listdir(config.path("..","visuals","feature_bin_costs",datafile)):
+			f.write('"' + dfile[:-4] + '", ')
+		f.write("]")
+
 
 def getDetails(dataset, variable):
 	"""
@@ -60,3 +73,4 @@ def print_variable(decoded):
 if __name__ == "__main__":
 	datafile = "H147"
 	writeFeatureList(datafile)
+	writeChosenFeatures(datafile)
