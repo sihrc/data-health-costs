@@ -1,5 +1,4 @@
-"""
-Looks up Variables off the online MEPS database
+"""Looks up Variables off the online MEPS database
 
 author: chris @ sihrc
 """
@@ -8,6 +7,9 @@ import config
 from bs4 import BeautifulSoup
 import urllib2
 import datasets as dc
+from format_data import feature_dict
+from wrappers import debug
+from operator import itemgetter
 
 def threeColumnString(line):
 	"""
@@ -59,7 +61,6 @@ def getDetails(dataset, variable):
 		details.append(line.text.encode('utf8').strip())
 	return [("Title", "\n".join(details[:3])), ("Name", details[4]), ("Description", details[6]), ("Format", details[8]), ("Type", details[10]), ("Range", details[12] + "~" + details[14]), ("Values", threeColumnString([details[n:n+3] for n in xrange(15,len(details),3)]))]
 
-
 def print_variable(decoded):
 	"""
 	Format prints decoded values for getDetails
@@ -69,6 +70,23 @@ def print_variable(decoded):
 		print "================================================="
 		print body
 		print "\n"	
+@debug
+
+
+def writeFeatureImportance(model, trainFeature, datafile):
+		"""
+	Formats and prints the importance of each feature
+	author: Jazmin 
+	TODO: right now it gets the actual name of the features in a HORRIBLE NOT EFFICIENT WAY make it better
+	"""
+	importances = zip (range(trainFeature.shape[1]), model.feature_importances_)
+	importances.sort(key = itemgetter(1))
+	with open(config.path("..", "data", datafile, "featureImportance.py"), "wb") as f:
+		f.write("importance = ")
+		for featureIndex,importance in importances[::-1]:
+			variable = feature_dict["H147"][featureIndex]
+			f.write(" " + str(variable) + " " + str(importance) + " " + str(getDetails(datafile, variable)[0][1]) + " \n")
+
 
 if __name__ == "__main__":
 	datafile = "H147"
