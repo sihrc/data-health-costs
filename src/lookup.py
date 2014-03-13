@@ -7,7 +7,6 @@ import config
 from bs4 import BeautifulSoup
 import urllib2
 import datasets as dc
-from format_data import feature_dict
 from wrappers import debug
 from operator import itemgetter
 
@@ -71,21 +70,19 @@ def print_variable(decoded):
 		print body
 		print "\n"	
 @debug
-
-
 def writeFeatureImportance(model, trainFeature, datafile):
-		"""
+	"""
 	Formats and prints the importance of each feature
 	author: Jazmin 
 	TODO: right now it gets the actual name of the features in a HORRIBLE NOT EFFICIENT WAY make it better
 	"""
-	importances = zip (range(trainFeature.shape[1]), model.feature_importances_)
+	importances = zip(range(trainFeature.shape[1]), model.feature_importances_)
 	importances.sort(key = itemgetter(1))
 	with open(config.path("..", "data", datafile, "featureImportance.py"), "wb") as f:
 		f.write("importance = ")
 		for featureIndex,importance in importances[::-1]:
-			variable = feature_dict["H147"][featureIndex]
-			f.write(" " + str(variable) + " " + str(importance) + " " + str(getDetails(datafile, variable)[0][1]) + " \n")
+			variable = config.feature_dict["H147"][featureIndex]
+			f.write(" " + str(variable) + " " + str(importance) + " " + str(dc.getData(datafile)[0][variable][0]) + " \n")
 
 
 if __name__ == "__main__":
