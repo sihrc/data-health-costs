@@ -5,7 +5,7 @@ Also contains notes on the data sets
 author: chris @ sihrc
 """
 import os
-import cPickle as p
+import pickle as p
 
 
 """
