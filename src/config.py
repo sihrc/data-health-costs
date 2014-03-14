@@ -5,6 +5,7 @@ Also contains notes on the data sets
 author: chris
 """
 import os
+import cPickle as p
 
 def path(*path):
 	"""
@@ -24,6 +25,20 @@ def path(*path):
 	if not os.path.exists(targetdirs):
 		os.makedirs(targetdirs)	
 	return targetpath
+
+def get(fpath, func, **kwargs):
+	if os.path.exists(fpath):
+		return p.load(open(fpath, 'rb'))
+	res = func(**kwargs)
+	try:
+		with open(fpath, 'wb') as f:
+			p.dump(res, f)
+	except:
+		print "Data file too large."
+	return res
+	
+
+
 
 """
 Data sets

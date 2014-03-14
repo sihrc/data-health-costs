@@ -2,13 +2,18 @@
 Contains data holder class
 author:chris
 """
-import pickle as p
+#Local Modules
+import datasets
 import numpy as np
 import config
-
-#Debug Timer Wrappers
+import lookup as L
 from wrappers import debug
-import datasets
+
+#Python Modules
+import cPickle as p
+import os
+from bs4 import BeautifulSoup
+import urllib2, urllib, zipfile
 
 class Data():
 	"""
@@ -18,83 +23,73 @@ class Data():
 	saving and loading temporary sessions
 	"""
 	@debug
-	def __init__ (self, data = False, codebook = "", datafile = "", costId = "", timeTags = []):
-		self.timeTags = timeTags
+	def __init__ (self, datafile = ""):
 		self.datafile = datafile
-		self.codebook = codebook
-		self.createRefs()
-		self.results = dict()
-		self.ignored = []
-		self.data = self.loadData(data)
-		self.costId = costId
-		self.cost = self.getColumn(self.costId)
-		self.filterData()
+		self.codebook = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
+		self.data = config.get(config.path("..","data",datafile,"data.p"), self.downloadData)
+		self.targetCosts = config.get(config.path("..","data",datafile,"targetCost.p"), self.getTargetCosts)
+
+	@debug
+	def downloadCodebook(self):
+		"""
+		Given the datafile name, returns the codebook needed
+		author: chris
+		"""
+		page = urllib2.urlopen(config.datafiles[self.datafile][-1])
+		soup = BeautifulSoup(page.read())
+		details = []	
+		tags = []
+
+		found = soup.findAll('font', {'class':"smallBlack"})[3:]
+		for i in xrange(0,len(found),3):
+			low = found[i].text.encode('utf8').strip()
+			low = int(repr(low)[1:repr(low).find("\\")])
+			high = found[i + 1].text.encode('utf8').strip()
+			high = int(repr(high)[1:repr(high).find("\\")])
+			desc = found[i + 2].text.encode('utf8').strip()
+			details.append((desc, (low,high)))
+
+		for line in soup.findAll('a', href = True):
+			if "download_data_files_codebook.jsp?" in line['href']:
+				tags.append(line.text.encode('utf8').strip())
+
+		return dict(zip(tags[5:], details))
+
+	@debug
+	def downloadData(self):
+		"""
+		Download data
+		"""
+		def download(self):
+			dfile = config.path("..","data",self.datafile.upper() + ".zip")
+			urllib.urlretrieve(config.download % self.datafile.lower(), dfile)
+			with zipfile.ZipFile(dfile) as zf:
+				zf.extractall(config.path("..","data",self.datafile.upper()))
+
+		path = config.path("..","data",self.datafile, self.datafile.lower() + ".dat")
 		
-	
-	def filterData(self):
-		applicable = np.where(self.cost > 0)
-		self.data = self.data[applicable]
-		self.cost = self.cost[applicable]
+		if not os.path.exists(path):
+			download(self)
 
-	
-	def createRefs(self):
-		"""
-		Create Reference Dicts
-		Feature - Tag:(Description, Index)
-		"""
-		count = 0
-		self.features = dict()
-		for key,item in self.codebook.iteritems():
-			self.features[key.split()[0]] = [key, item]
-			count += 1
-
-	def lookUp(self, tag = None):
-		"""
-		Look up a feature using the tag name or a description
-		returns acroynym-description, indices
-		"""
-		return self.features[tag]
-
-	def loadData(self, data):
-		"""
-		Loads the Data Set from filename as numpy array
-		"""
-		if type(data) == bool:
-			data = []
-			with open(config.path("..","data",self.datafile, self.datafile.lower() + ".dat"), 'rb') as f:
-				for line in f:
-					data.append(list(line.strip()))
-			data = np.array(data)
+		data = []
+		with open(path, 'rb') as f:
+			for line in f:
+				data.append(list(line.strip()))
+		data = np.array(data)
 		return data
-		
 
-	def getColumn(self, tag):
+	@debug
+	def getTargetCosts(self):
 		"""
-		Gets the column of data given by tag
+		Get target cost features from data set
+		author: chris
 		"""
-		ranges = self.lookUp(tag = tag)[1][1]
-		rawData = self.data[:,ranges[0] - 1:ranges[1]]
-		newFormat = np.zeros(shape = (rawData.shape[0]))
-		for i in range(len(rawData)):
-			try:
-				newFormat[i] = "".join(rawData[i]).strip()
-			except:
-				print "data is not a number"
-				break
-		return newFormat
-
-	def save(self, filename):
-		with open(filename, 'wb') as f:
-			p.dump(self, f)
-			print filename + " Saved Successfully"
-	
-	def load(self, filename):
-		"""
-		Saves this object as a pickle file for access later
-		"""
-		with open(filename, 'rb') as f:
-			self = p.load(f)
-			print filename + " Loaded Successfully"
+		costFeatures = []
+		for feature in self.codebook.keys():
+			featureDetails = L.getDetails(self.datafile, feature)
+			if  "$" in featureDetails["Values"]:
+				costFeatures.append(feature)
+		return costFeatures
 
 	"""
 	Class native methods
@@ -105,11 +100,11 @@ class Data():
 	def __str__(self):
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary"
 
-@debug
 def getData(datafile):
-	dataconfig = datasets.getData(datafile)
-	return Data(codebook = dataconfig[0], datafile = datafile, costId = dataconfig[1] , timeTags = dataconfig[2])
+	def makeDataObject(datafile):
+		return Data(datafile)
+	return config.get(config.path("..","data",datafile,"object.p"), makeDataObject, datafile = datafile)
+
 
 if __name__ == "__main__":
-	print "See Documentation"
-	
+	data = getData("H147")
