@@ -27,8 +27,6 @@ class Data():
 		self.datafile = datafile
 		self.codebook = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
 		self.featureIndices = dict([(tag[1],i) for i,tag in enumerate(sorted([(feature[1][1],feature[0]) for feature in self.codebook]))])
-
-		print self.featureIndices
 		self.data = config.get(config.path("..","data",datafile,"data.p"), self.downloadData)
 		self.targetCosts = config.get(config.path("..","data",datafile,"targetCost.p"), self.getTargetCosts)
 
@@ -78,7 +76,7 @@ class Data():
 		with open(path, 'rb') as f:
 			for line in f:
 				data.append(list(line.strip()))
-		data = np.array(data)
+		data = np.ma.array(data, mask = False)
 		return data
 
 	@debug
@@ -113,3 +111,6 @@ if __name__ == "__main__":
 	import shutil
 	shutil.rmtree(config.path("..","data"))
 	data = getData("H144D")
+
+
+
