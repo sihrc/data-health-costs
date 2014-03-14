@@ -7,6 +7,7 @@ author: chris @ sihrc
 import os
 import cPickle as p
 
+
 """
 Data sets
 """
@@ -48,7 +49,8 @@ def get(fpath, func, **kwargs):
 	res = func(**kwargs)
 	try:
 		with open(fpath, 'wb') as f:
-			p.dump(res, f)
+			pickle = p.Pickler(f)
+			p.dump(res)
 	except:
 		print "Data file too large."
 	return res

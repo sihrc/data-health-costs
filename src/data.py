@@ -10,9 +10,9 @@ import lookup as L
 from wrappers import debug
 
 #Python Modules
-import cPickle as p
 import os
 from bs4 import BeautifulSoup
+from operator import itemgetter
 import urllib2, urllib, zipfile
 
 class Data():
@@ -26,6 +26,9 @@ class Data():
 	def __init__ (self, datafile = ""):
 		self.datafile = datafile
 		self.codebook = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
+		self.featureIndices = dict([(tag[1],i) for i,tag in enumerate(sorted([(feature[1][1],feature[0]) for feature in self.codebook]))])
+
+		print self.featureIndices
 		self.data = config.get(config.path("..","data",datafile,"data.p"), self.downloadData)
 		self.targetCosts = config.get(config.path("..","data",datafile,"targetCost.p"), self.getTargetCosts)
 
@@ -53,7 +56,7 @@ class Data():
 			if "download_data_files_codebook.jsp?" in line['href']:
 				tags.append(line.text.encode('utf8').strip())
 
-		return dict(zip(tags[5:], details))
+		return zip(tags[5:], details)
 
 	@debug
 	def downloadData(self):
@@ -85,10 +88,10 @@ class Data():
 		author: chris
 		"""
 		costFeatures = []
-		for feature in self.codebook.keys():
-			featureDetails = L.getDetails(self.datafile, feature)
+		for feature in self.codebook:
+			featureDetails = L.getDetails(self.datafile, feature[0])
 			if  "$" in featureDetails["Values"]:
-				costFeatures.append(feature)
+				costFeatures.append(feature[0])
 		return costFeatures
 
 	"""
@@ -107,4 +110,6 @@ def getData(datafile):
 
 
 if __name__ == "__main__":
-	data = getData("H147")
+	import shutil
+	shutil.rmtree(config.path("..","data"))
+	data = getData("H144D")
