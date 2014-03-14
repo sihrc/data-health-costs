@@ -26,7 +26,8 @@ class Data():
 	def __init__ (self, datafile = ""):
 		self.datafile = datafile
 		self.codebook = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
-		self.featureIndices = dict([(tag[1],i) for i,tag in enumerate(sorted([(feature[1][1],feature[0]) for feature in self.codebook]))])
+		self.featureList = list(enumerate(sorted([(feature[1][1],feature[0]) for feature in self.codebook])))
+		self.featureIndices = dict([(tag[1],i) for i,tag in self.featureList])
 		self.data = config.get(config.path("..","data",datafile,"data.p"), self.downloadData)
 		self.targetCosts = config.get(config.path("..","data",datafile,"targetCost.p"), self.getTargetCosts)
 
@@ -76,8 +77,24 @@ class Data():
 		with open(path, 'rb') as f:
 			for line in f:
 				data.append(list(line.strip()))
-		data = np.ma.array(data, mask = False)
-		return data
+		
+		data = np.array(data)
+		formatted = np.zeros(shape=(data.shape[0], len(self.featureList)))
+		counter = []
+		
+		for i,feature in self.featureList:
+			print formatted.shape
+			print data.shape
+			try:
+				formatted[:,i] = [("".join(row)) for row in data[:,feature[0][0]:feature[0][1]]]
+			except:
+				counter.append(i)
+				pass
+
+		for count in sorted(counter)[::-1]:
+			del(self.featureList[count])
+
+		return np.ma.array(formatted[:-len(counter)])
 
 	@debug
 	def getTargetCosts(self):
@@ -91,6 +108,23 @@ class Data():
 			if  "$" in featureDetails["Values"]:
 				costFeatures.append(feature[0])
 		return costFeatures
+
+
+	@debug
+	def getColumn(self, tag):
+		"""
+		Gets the column of data given by tag
+		"""
+		ranges = self.lookUp(tag = tag)[1][1]
+		rawData = self.data[:,ranges[0] - 1:ranges[1]]
+		newFormat = np.zeros(shape = (rawData.shape[0]))
+		for i in range(len(rawData)):
+			try:
+				newFormat[i] = "".join(rawData[i]).strip()
+			except:
+				print "data is not a number"
+				break
+		return newFormat
 
 	"""
 	Class native methods
