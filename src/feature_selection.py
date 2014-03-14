@@ -17,6 +17,8 @@ def predict(model, testFeatures, targetFeature):
 	return metrics.explained_variance_score(targetFeature, predictions)
 
 if __name__ == "__main__":
+	import shutil
+	shutil.rmtree(config.path("..","data"))
 	d = dc.getData("H147")
 	targetFeatureData = d.data[d.featureIndices[random.choice(d.targetCosts)]]
 	trainX = d.data.copy()
