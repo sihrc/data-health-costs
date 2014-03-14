@@ -26,9 +26,9 @@ class Data():
 	def __init__ (self, datafile = ""):
 		self.datafile = datafile
 		self.codebook = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
-		self.featureList = list(enumerate(sorted([(feature[1][1],feature[0]) for feature in self.codebook])))
-		self.featureIndices = dict([(tag[1],i) for i,tag in self.featureList])
+		self.featureList = (sorted([(feature[1][1],feature[0]) for feature in self.codebook]))
 		self.data = config.get(config.path("..","data",datafile,"data.p"), self.downloadData)
+		self.featureIndices = dict([(tag[1],i) for i,tag in enumerate(self.featureList)])
 		self.targetCosts = config.get(config.path("..","data",datafile,"targetCost.p"), self.getTargetCosts)
 
 	@debug
@@ -81,12 +81,10 @@ class Data():
 		data = np.array(data)
 		formatted = np.zeros(shape=(data.shape[0], len(self.featureList)))
 		counter = []
-		
-		for i,feature in self.featureList:
-			print formatted.shape
-			print data.shape
+
+		for i in xrange(len(self.featureList)):
 			try:
-				formatted[:,i] = [("".join(row)) for row in data[:,feature[0][0]:feature[0][1]]]
+				formatted[:,i] = [("".join(row)) for row in data[:,self.featureList[i][0][0]:self.featureList[i][0][1]]]
 			except:
 				counter.append(i)
 				pass
