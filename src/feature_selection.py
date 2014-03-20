@@ -31,10 +31,14 @@ def main(datafile):
 
 	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
 
+	#Get feature and target data
 	dataFeatures = panda[[feature for feature in panda.columns.values if feature not in d.costs]].as_matrix().astype("float")
 	targetFeatures = panda[d.costs].as_matrix().astype("float")
 
+	#Split the data
 	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,random.randint(0,targetFeatures.shape[1])], test_size=0.15, random_state=42)
+
+	#Create Models
 	model = train(x_train, y_train)
 	# model = config.get(config.path("..","data",datafile,"model.p"), train, trainFeatures = x_train, targetFeature = y_train)
 
