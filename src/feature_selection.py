@@ -1,6 +1,7 @@
 #Python Modules
 from sklearn.ensemble import GradientBoostingRegressor
 import pandas as pd
+# import numpy as np
 
 #Local Modules
 from wrappers import debug
@@ -17,13 +18,18 @@ def predict(model, testFeatures, targetFeature):
 	return metrics.explained_variance_score(targetFeature, predictions)
 
 @debug
-def readData(path):
-	return pd.read_csv(path)
-
-@debug
 def main(datafile):
-	d = dc.getData(datafilez)
-	data = readData(d.panda)
+	# Getting Data
+	d = dc.getData(datafile)
+	# Reading Data into a Panda Table
+	panda = pd.read_csv(d.panda, low_memory=False, delimiter = ",")
+	# data = panda.as_matrix()
+
+	targetFeatures = panda[d.costs].as_matrix()
+	trainFeatures = panda[[feature for feature in d.tags if feature not in d.costs]].as_matrix()
+
+	print targetFeatures.shape
+	print trainFeatures.shape
 
 if __name__ == "__main__":
 	main("H144D")

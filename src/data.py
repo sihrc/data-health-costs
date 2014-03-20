@@ -3,8 +3,8 @@ Contains data holder class
 author:chris
 """
 #Local Modules
-import numpy as np
 import config
+import lookup
 from wrappers import debug
 
 #Python Modules
@@ -21,6 +21,7 @@ class Data():
 	def __init__ (self, datafile = ""):
 		self.datafile = datafile
 		self.codebook, self.lookup, self.tags = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
+		self.costs = config.get(config.path("..","data",datafile,"target_costs.p"), self.getTargetCosts)
 		self.panda = config.get(config.path("..","data",datafile,"panda.p"), self.downloadData)
 
 	@debug
@@ -72,38 +73,22 @@ class Data():
 			g.write(",".join(self.tags) + "\n")
 			with open(path + ".dat", 'rb') as f:
 				for line in f:
-					g.write(printFormat % tuple(line.strip()))
+					g.write(printFormat % tuple(line.strip()) + "\n")
 		return path + ".csv"
 
-	# @debug
-	# def getTargetCosts(self):
-	# 	"""
-	# 	Get target cost features from data set
-	# 	author: chris
-	# 	"""
-	# 	costFeatures = []
-	# 	for feature in self.codebook:
-	# 		featureDetails = L.getDetails(self.datafile, feature[0])
-	# 		if  "$" in featureDetails["Values"]:
-	# 			costFeatures.append(feature[0])
-	# 	return costFeatures
+	@debug
+	def getTargetCosts(self):
+		"""
+		Get target cost features from data set
+		author: chris
+		"""
+		costFeatures = []
+		for feature in self.tags:
+			featureDetails = lookup.getDetails(self.datafile, feature)
+			if  "$" in featureDetails["Values"]:
+				costFeatures.append(feature)
+		return costFeatures
 
-
-	# @debug
-	# def getColumn(self, tag):
-	# 	"""
-	# 	Gets the column of data given by tag
-	# 	"""
-	# 	ranges = self.lookUp(tag = tag)[1][1]
-	# 	rawData = self.data[:,ranges[0] - 1:ranges[1]]
-	# 	newFormat = np.zeros(shape = (rawData.shape[0]))
-	# 	for i in range(len(rawData)):
-	# 		try:
-	# 			newFormat[i] = "".join(rawData[i]).strip()
-	# 		except:
-	# 			print "data is not a number"
-	# 			break
-	# 	return newFormat
 
 	"""
 	Class native methods
