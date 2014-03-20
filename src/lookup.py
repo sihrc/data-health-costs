@@ -6,7 +6,6 @@ author: chris @ sihrc
 import config
 from bs4 import BeautifulSoup
 import urllib2
-import datasets as dc
 from wrappers import debug
 from operator import itemgetter
 
