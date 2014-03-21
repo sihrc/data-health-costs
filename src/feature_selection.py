@@ -50,6 +50,7 @@ def main(datafile):
 	model = train(x_train, y_train)
 	# model = config.get(config.path("..","data",datafile,"model.p"), train, trainFeatures = x_train, targetFeature = y_train)
 
+	#Sorting and Writing Important Features
 	sortedFeatures = sorted(zip(panda.columns.values, model.feature_importances_), key = itemgetter(1))[::-1]
 	writeFeatures(sortedFeatures, datafile)
 
