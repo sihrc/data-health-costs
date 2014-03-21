@@ -3,6 +3,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import explained_variance_score
 import pandas as pd
+from operator import itemgetter
 
 #Local Modules
 from wrappers import debug
@@ -20,6 +21,13 @@ def train(trainFeatures, targetFeature):
 def predict(model, trainFeatures, targetFeature):
 	predicts = model.predict(trainFeatures)
 	return explained_variance_score(targetFeature, targetFeature)
+
+@debug
+def writeFeatures(features, datafile):
+	with open(config.path("..","data",datafile,"feature_importance.txt"),'wb') as f:
+		for feature, importance in features:
+			write = "%s#%f\n" % (feature, importance)
+			f.write(write.replace("#", (24 - len(write)) * " "))
 
 @debug
 def main(datafile):
@@ -42,7 +50,8 @@ def main(datafile):
 	model = train(x_train, y_train)
 	# model = config.get(config.path("..","data",datafile,"model.p"), train, trainFeatures = x_train, targetFeature = y_train)
 
-	print predict(model, x_test, y_test)
+	sortedFeatures = sorted(zip(panda.columns.values, model.feature_importances_), key = itemgetter(1))[::-1]
+	writeFeatures(sortedFeatures, datafile)
 
 if __name__ == "__main__":
 	main("H144D")
