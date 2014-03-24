@@ -18,11 +18,14 @@ class Data():
 	saving and loading temporary sessions
 	"""
 	@debug
-	def __init__ (self, datafile = ""):
+	def __init__ (self, datafile = "", limit = 2000):
 		self.datafile = datafile
+		self.limit = limit
 		self.codebook, self.lookup, self.tags = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
 		self.costs = config.get(config.path("..","data",datafile,"target_costs.p"), self.getTargetCosts)
-		self.panda = config.get(config.path("..","data",datafile,"panda.p"), self.downloadData)
+		self.path = config.get(config.path("..","data",datafile,"data.p"), self.downloadData)
+		self.paths, self.lines = config.get(config.path("..","data",datafile,"csv.p"), self.writeToCSV)
+		self.tail = self.lines % self.limit
 
 	@debug
 	def downloadCodebook(self):
@@ -63,19 +66,30 @@ class Data():
 				zf.extractall(config.path("..","data",self.datafile.upper()))
 
 		import pandas as pd
-
 		path = config.path("..","data",self.datafile, self.datafile.lower())
-		
 		if not os.path.exists(path + ".dat"):	download(self)
+		return path
 		
+	@debug
+	def writeToCSV(self):
 		printFormat = "".join(["%s" * (high - low + 1) + "," for low,high in self.codebook])[:-1]
-		with open(path+".csv", 'wb') as g:
-			g.write(",".join(self.tags) + "\n")
-			with open(path + ".dat", 'rb') as f:
-				for line in f:
-					g.write(printFormat % tuple(line.strip()) + "\n")
-		return path + ".csv"
-
+		
+		counter = 0
+		file_num = 0
+		with open(self.path + ".dat", 'rb') as src:
+			line = "Not Null"
+			while line:
+				with open(self.path + "_%d.csv" % file_num, 'wb') as g:
+					file_num += 1
+					g.write(",".join(self.tags) + "\n")
+					while True:
+						counter += 1
+						line = src.readline()
+						if line.strip() == "":
+							break
+						g.write(printFormat % tuple(line.strip()) + "\n")			
+						if counter % self.limit == 0: break
+		return [self.path + "_%d.csv" % count for count in xrange((counter/self.limit)+1)], counter
 	@debug
 	def getTargetCosts(self):
 		"""
@@ -99,12 +113,9 @@ class Data():
 	def __str__(self):
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at %s" % self.panda
 
-def getData(datafile):
-	return Data(datafile)
-
 
 if __name__ == "__main__":
-	data = getData("H144D")
+	data = Data("H144D")
 
 
 

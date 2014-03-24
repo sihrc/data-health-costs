@@ -6,21 +6,52 @@ import pandas as pd
 from operator import itemgetter
 
 #Local Modules
-from wrappers import debug
+from wrappers import debug 
+import gc
 import data as dc
 import config
 import random
 
 @debug
-def train(trainFeatures, targetFeature):
-	model = GradientBoostingRegressor()
-	model.fit(trainFeatures, targetFeature)
-	return model
-
-@debug
 def predict(model, trainFeatures, targetFeature):
 	predicts = model.predict(trainFeatures)
 	return explained_variance_score(targetFeature, targetFeature)
+
+@debug
+def train(model, data, test_train_split = .1):
+	targetIndex = random.randint(0, len(data.costs))
+	num_training = float(test_train_split * data.lines)
+	splits = [0] * len(data.paths)
+	splits[-1] = num_training/data.tail if num_training < data.tail else 1
+	counter = 1
+	while num_training > 0:
+		counter += 1
+		splits[-counter] = num_training/data.limit if num_training < data.limit else 1
+		num_training -= data.limit
+
+	for path,split in zip(data.paths, splits):
+		model, columns = chunk_train(model, path, data.costs, targetIndex, split = split)
+		gc.collect()
+	return model, columns
+
+@debug
+def chunk_train(model, path, costs, targetIndex, split = 0):
+	# Reading Data into a Panda Table - Do this in chunks - d.panda -> List of csv files
+	raw_panda = pd.read_csv(path, low_memory=False, delimiter = ",")
+	panda = raw_panda._get_numeric_data()
+
+	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
+
+	#Get feature and target data
+	dataFeatures = panda[[feature for feature in panda.columns.values if feature not in costs]].as_matrix().astype("float")
+	targetFeatures = panda[costs].as_matrix().astype("float")
+
+	#Split the data
+	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,targetIndex], test_size= split, random_state=42)
+
+	#Create Models
+	model.fit(x_train, y_train)
+	return model, panda.columns.values
 
 @debug
 def writeFeatures(features, datafile):
@@ -31,28 +62,21 @@ def writeFeatures(features, datafile):
 
 @debug
 def main(datafile):
+	#Creating the model
+	model = GradientBoostingRegressor()
+
 	# Getting Data
-	d = dc.getData(datafile)
-	# Reading Data into a Panda Table
-	raw_panda = pd.read_csv(d.panda, low_memory=False, delimiter = ",")
-	panda = raw_panda._get_numeric_data()
+	d = dc.Data(datafile = datafile, limit = 2000)
+	gc.collect()
 
-	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
+	# Training the model
+	# train(model, d, test_train_split = .1)
+	model, columms = config.get(config.path("..","data",datafile,"model.p"), train, model = model, data = d, test_train_split = .1)
 
-	#Get feature and target data
-	dataFeatures = panda[[feature for feature in panda.columns.values if feature not in d.costs]].as_matrix().astype("float")
-	targetFeatures = panda[d.costs].as_matrix().astype("float")
-
-	#Split the data
-	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,random.randint(0,targetFeatures.shape[1])], test_size=0.15, random_state=42)
-
-	#Create Models
-	model = train(x_train, y_train)
-	# model = config.get(config.path("..","data",datafile,"model.p"), train, trainFeatures = x_train, targetFeature = y_train)
 
 	#Sorting and Writing Important Features
-	sortedFeatures = sorted(zip(panda.columns.values, model.feature_importances_), key = itemgetter(1))[::-1]
+	sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
 	writeFeatures(sortedFeatures, datafile)
 
 if __name__ == "__main__":
-	main("H144D")
+	main("H147")
