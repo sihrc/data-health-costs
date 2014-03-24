@@ -30,9 +30,12 @@ def train(model, data, test_train_split = .1):
 		num_training -= data.limit
 
 	for path,split in zip(data.paths, splits):
-		model, columns = chunk_train(model, path, data.costs, targetIndex, split = split)
+		model, columns, x_test, y_test = chunk_train(model, path, data.costs, targetIndex, split = split)
+		x_tests = np.concatenate(x_tests, x_test)
+		y_tests = np.concatenate(y_tests, y_test)
 		gc.collect()
-	return model, columns
+
+	return model, columns, x_tests, y_tests
 
 @debug
 def chunk_train(model, path, costs, targetIndex, split = 0):
@@ -50,8 +53,9 @@ def chunk_train(model, path, costs, targetIndex, split = 0):
 	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,targetIndex], test_size= split, random_state=42)
 
 	#Create Models
-	model.fit(x_train, y_train)
-	return model, panda.columns.values
+	print "Training ... "
+	model = model.fit(x_train, y_train)
+	return model, panda.columns.values, x_test, y_test
 
 @debug
 def writeFeatures(features, datafile):
@@ -71,8 +75,7 @@ def main(datafile):
 
 	# Training the model
 	# train(model, d, test_train_split = .1)
-	model, columms = config.get(config.path("..","data",datafile,"model.p"), train, model = model, data = d, test_train_split = .1)
-
+	model, columns, x_tests, y_tests = config.get(config.path("..","data",datafile,"model.p"), train, model = model, data = d, test_train_split = .1)
 
 	#Sorting and Writing Important Features
 	sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
