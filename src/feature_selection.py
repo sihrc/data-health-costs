@@ -29,10 +29,14 @@ def train(model, data, test_train_split = .1):
 		splits[-counter] = num_training/data.limit if num_training < data.limit else 1
 		num_training -= data.limit
 
-	for path,split in zip(data.paths, splits):
+	import numpy as np
+	x_tests, y_tests = None, None
+	for i,(path,split) in enumerate(zip(data.paths, splits)):
+		print "Training ... %d of %d chunks" % (i+1,len(data.paths))
+		print i,path,split
 		model, columns, x_test, y_test = chunk_train(model, path, data.costs, targetIndex, split = split)
-		x_tests = np.concatenate(x_tests, x_test)
-		y_tests = np.concatenate(y_tests, y_test)
+		x_tests = np.vstack((x_tests, x_test)) if type(x_tests) != np.ndarray else x_test
+		y_tests = np.vstack((y_tests, y_test)) if type(y_tests) != np.ndarray else y_test
 		gc.collect()
 
 	return model, columns, x_tests, y_tests
@@ -53,7 +57,6 @@ def chunk_train(model, path, costs, targetIndex, split = 0):
 	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,targetIndex], test_size= split, random_state=42)
 
 	#Create Models
-	print "Training ... "
 	model = model.fit(x_train, y_train)
 	return model, panda.columns.values, x_test, y_test
 
