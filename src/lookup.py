@@ -85,8 +85,12 @@ def writeFeatureImportance(model, trainFeature, datafile):
 			variable = config.feature_dict["H147"][featureIndex]
 			f.write(" " + str(variable) + " " + str(importance) + " " + str(dc.getData(datafile)[0][variable][0]) + " \n")
 
-
+@debug
+def lookUpVariable(datafile, variable):
+	return print_variable(getDetails(datafile, variable))
 if __name__ == "__main__":
 	datafile = "H147"
-	writeFeatureList(datafile)
-	writeChosenFeatures(datafile)
+	# writeFeatureList(datafile)
+	# writeChosenFeatures(datafile)
+	# lookUpVariable(datafile,"PMEDPY42")
+	print  getDetails(datafile, "PMEDPP53")["Description"]

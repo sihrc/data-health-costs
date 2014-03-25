@@ -46,7 +46,7 @@ class Data():
 			codebook.append((int(details[1]), int(details[2])))
 			tags.append(details[0])
 			lookup[details[0]] = details[3]
- 	
+
  		return codebook, lookup, tags
 
 	@debug
@@ -85,7 +85,7 @@ class Data():
 		costFeatures = []
 		for feature in self.tags:
 			featureDetails = lookup.getDetails(self.datafile, feature)
-			if  "$" in featureDetails["Values"]:
+			if sum([x in featureDetails["Description"].lower() for x in ["payment", "cost", "chg", "fee"]]) > 0:
 				costFeatures.append(feature)
 		return costFeatures
 
