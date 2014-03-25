@@ -6,11 +6,16 @@ import pandas as pd
 from operator import itemgetter
 
 #Local Modules
-from wrappers import debug 
-import gc
+from wrappers import debug
 import data as dc
 import config
 import random
+
+@debug
+def train(trainFeatures, targetFeature):
+	model = GradientBoostingRegressor()
+	model.fit(trainFeatures, targetFeature)
+	return model
 
 @debug
 def predict(model, trainFeatures, targetFeature):
@@ -18,74 +23,35 @@ def predict(model, trainFeatures, targetFeature):
 	return explained_variance_score(targetFeature, targetFeature)
 
 @debug
-def train(model, targetIndex, data, test_train_split = .1):
-	# targetIndex = random.randint(0, len(data.costs))
-	num_training = float(test_train_split * data.lines)
-	splits = [0] * len(data.paths)
-	splits[-1] = num_training/data.tail if num_training < data.tail else 1
-	counter = 1
-	while num_training > 0:
-		counter += 1
-		splits[-counter] = num_training/data.limit if num_training < data.limit else 1
-		num_training -= data.limit
-
-	import numpy as np
-	x_tests, y_tests = None, None
-	for i,(path,split) in enumerate(zip(data.paths, splits)):
-		print "Training ... %d of %d chunks" % (i+1,len(data.paths))
-		model, columns, x_test, y_test = chunk_train(model, path, data.costs, targetIndex, split = split)
-		if type(x_tests) == type(None) :
-			x_tests = x_test
-			y_tests = y_test
-		else :	
-			x_tests = np.concatenate((x_tests, x_test)) if type(x_tests) != np.ndarray else x_test
-			y_tests = np.concatenate((y_tests, y_test)) if type(y_tests) != np.ndarray else y_test
-		gc.collect()
-
-	return model, columns, x_tests, y_tests
-
-@debug
-def chunk_train(model, path, costs, targetIndex, split = 0):
-	# Reading Data into a Panda Table - Do this in chunks - d.panda -> List of csv files
-	raw_panda = pd.read_csv(path, delimiter = ",")
-	panda = raw_panda._get_numeric_data()
-
-	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
-
-	#Get feature and target data
-	dataFeatures = panda[[feature for feature in panda.columns.values if feature not in costs]].as_matrix().astype("float")
-	targetFeatures = panda[costs].as_matrix().astype("float")
-
-	#Split the data
-	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,targetIndex], test_size= split, random_state=42)
-
-	#Create Models
-	model = model.fit(x_train, y_train)
-	return model, panda.columns.values, x_test, y_test
-
-@debug
-def writeFeatures(features, datafile, costName):
-	with open(config.path("..","data",datafile,"feature_importance" + costName + ".txt"),'wb') as f:
+def writeFeatures(features, targetName, datafile):
+	with open(config.path("..","data",datafile,"feature_importance%s.txt" % (targetName)),'wb')as f:
 		for feature, importance in features:
 			write = "%s#%f\n" % (feature, importance)
 			f.write(write.replace("#", (24 - len(write)) * " "))
 
 @debug
 def main(datafile):
-	#Creating the model
-	model = GradientBoostingRegressor()
-
 	# Getting Data
-	d = dc.Data(datafile = datafile, limit = 2000)
-	gc.collect()
+	d = dc.getData(datafile)
+	# Reading Data into a Panda Table
+	raw_panda = pd.read_csv(d.panda, delimiter = ",")
+	panda = raw_panda._get_numeric_data()
 
-	# Training the model
-	# train(model, d, test_train_split = .1)
-	for target in xrange(len(d.costs)) :
-		model, columns, x_tests, y_tests = config.get(config.path("..","data",datafile,"model" + str(target) + ".p"), train, model = model, targetIndex = target, data = d, test_train_split = .1)
+	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
+
+	#Get feature and target data
+	dataFeatures = panda[[feature for feature in panda.columns.values if feature not in d.costs]].as_matrix().astype("float")
+	targetFeatures = panda[d.costs].as_matrix().astype("float")
+
+	for target in xrange(targetFeatures.shape[1]):
+		#Split the data
+		x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,target], test_size=0.15, random_state=42)
+		#Create Models
+		model = train(x_train, y_train)
+		# model = config.get(config.path("..","data",datafile,"model.p"), train, trainFeatures = x_train, targetFeature = y_train)
 		#Sorting and Writing Important Features
-		sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
-		writeFeatures(sortedFeatures, datafile, d.costs[target])
+		sortedFeatures = sorted(zip(panda.columns.values, model.feature_importances_), key = itemgetter(1))[::-1]
+		writeFeatures(sortedFeatures, d.costs[target], datafile)
 
 if __name__ == "__main__":
 	main("H147")
