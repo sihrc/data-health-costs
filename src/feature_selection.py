@@ -2,14 +2,13 @@
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import explained_variance_score
-import pandas as pd
+from pandas import read_csv
 from operator import itemgetter
 
 #Local Modules
 from wrappers import debug
 import data as dc
 import config
-import random
 
 @debug
 def train(trainFeatures, targetFeature):
@@ -34,7 +33,7 @@ def main(datafile):
 	# Getting Data
 	d = dc.Data(datafile)
 	# Reading Data into a Panda Table
-	raw_panda = pd.read_csv(d.panda, delimiter = ",")
+	raw_panda = read_csv(d.panda, delimiter = ",")
 	panda = raw_panda._get_numeric_data()
 
 	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)

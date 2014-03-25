@@ -8,7 +8,7 @@ import lookup
 from wrappers import debug
 
 #Python Modules
-import os
+from os import path as os
 
 class Data():
 	"""
@@ -66,7 +66,7 @@ class Data():
 
 		path = config.path("..","data",self.datafile, self.datafile.lower())
 
-		if not os.path.exists(path + ".dat"):	download(self)
+		if not os.exists(path + ".dat"):	download(self)
 
 		printFormat = "".join(["%s" * (high - low + 1) + "," for low,high in self.codebook])[:-1]
 		with open(path+".csv", 'wb') as g:

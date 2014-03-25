@@ -2,12 +2,14 @@
 
 author: chris @ sihrc
 """
-
-import config
+#Python Modules
 from bs4 import BeautifulSoup
-import urllib2
-from wrappers import debug
 from operator import itemgetter
+from urllib2 import urlopen 
+
+#Local Modules
+import config
+from wrappers import debug
 
 def threeColumnString(line):
 	"""
@@ -52,7 +54,7 @@ def getDetails(dataset, variable):
 	"""
 
 	url = "http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=%s&varName=%s" % (dataset, variable)
-	page = urllib2.urlopen(url)
+	page = urlopen(url)
 	soup = BeautifulSoup(page.read())
 	details = []
 	for line in soup.findAll('font', {'class':"smallBlack"}):
