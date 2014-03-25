@@ -3,6 +3,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import explained_variance_score
 from pandas import read_csv
+import numpy as np
 from operator import itemgetter
 import random
 
@@ -12,15 +13,15 @@ import data as dc
 import config
 
 @debug
+def predict(model, trainFeatures, targetFeature):
+	predicts = model.predict(trainFeatures)
+	return explained_variance_score(targetFeature, targetFeature)
+
+@debug
 def train(trainFeatures, targetFeature):
 	model = GradientBoostingRegressor()
 	model.fit(trainFeatures, targetFeature)
 	return model
-
-@debug
-def predict(model, trainFeatures, targetFeature):
-	predicts = model.predict(trainFeatures)
-	return explained_variance_score(targetFeature, targetFeature)
 
 @debug
 def writeFeatures(features, targetName, datafile):
@@ -30,6 +31,7 @@ def writeFeatures(features, targetName, datafile):
 			f.write(write.replace("#", (24 - len(write)) * " "))
 
 def runModel(dataFeatures, targetFeatures, target, panda, d, datafile):
+
 	#Split the data
 	x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,target], test_size=0.15, random_state=42)
 	#Create Models
