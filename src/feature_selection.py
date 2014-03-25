@@ -32,7 +32,7 @@ def writeFeatures(features, targetName, datafile):
 @debug
 def main(datafile):
 	# Getting Data
-	d = dc.getData(datafile)
+	d = dc.Data(datafile)
 	# Reading Data into a Panda Table
 	raw_panda = pd.read_csv(d.panda, delimiter = ",")
 	panda = raw_panda._get_numeric_data()

@@ -99,10 +99,6 @@ class Data():
 	def __str__(self):
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at %s" % self.panda
 
-def getData(datafile):
-	return Data(datafile)
-
-
 if __name__ == "__main__":
 	data = getData("H144D")
 
