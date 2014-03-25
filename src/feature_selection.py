@@ -18,8 +18,8 @@ def predict(model, trainFeatures, targetFeature):
 	return explained_variance_score(targetFeature, targetFeature)
 
 @debug
-def train(model, data, test_train_split = .1):
-	targetIndex = random.randint(0, len(data.costs))
+def train(model, targetIndex, data, test_train_split = .1):
+	# targetIndex = random.randint(0, len(data.costs))
 	num_training = float(test_train_split * data.lines)
 	splits = [0] * len(data.paths)
 	splits[-1] = num_training/data.tail if num_training < data.tail else 1
@@ -33,10 +33,13 @@ def train(model, data, test_train_split = .1):
 	x_tests, y_tests = None, None
 	for i,(path,split) in enumerate(zip(data.paths, splits)):
 		print "Training ... %d of %d chunks" % (i+1,len(data.paths))
-		print i,path,split
 		model, columns, x_test, y_test = chunk_train(model, path, data.costs, targetIndex, split = split)
-		x_tests = np.vstack((x_tests, x_test)) if type(x_tests) != np.ndarray else x_test
-		y_tests = np.vstack((y_tests, y_test)) if type(y_tests) != np.ndarray else y_test
+		if type(x_tests) == type(None) :
+			x_tests = x_test
+			y_tests = y_test
+		else :	
+			x_tests = np.concatenate((x_tests, x_test)) if type(x_tests) != np.ndarray else x_test
+			y_tests = np.concatenate((y_tests, y_test)) if type(y_tests) != np.ndarray else y_test
 		gc.collect()
 
 	return model, columns, x_tests, y_tests
@@ -44,7 +47,7 @@ def train(model, data, test_train_split = .1):
 @debug
 def chunk_train(model, path, costs, targetIndex, split = 0):
 	# Reading Data into a Panda Table - Do this in chunks - d.panda -> List of csv files
-	raw_panda = pd.read_csv(path, low_memory=False, delimiter = ",")
+	raw_panda = pd.read_csv(path, delimiter = ",")
 	panda = raw_panda._get_numeric_data()
 
 	print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
@@ -61,8 +64,8 @@ def chunk_train(model, path, costs, targetIndex, split = 0):
 	return model, panda.columns.values, x_test, y_test
 
 @debug
-def writeFeatures(features, datafile):
-	with open(config.path("..","data",datafile,"feature_importance.txt"),'wb') as f:
+def writeFeatures(features, datafile, costName):
+	with open(config.path("..","data",datafile,"feature_importance" + costName + ".txt"),'wb') as f:
 		for feature, importance in features:
 			write = "%s#%f\n" % (feature, importance)
 			f.write(write.replace("#", (24 - len(write)) * " "))
@@ -78,11 +81,11 @@ def main(datafile):
 
 	# Training the model
 	# train(model, d, test_train_split = .1)
-	model, columns, x_tests, y_tests = config.get(config.path("..","data",datafile,"model.p"), train, model = model, data = d, test_train_split = .1)
-
-	#Sorting and Writing Important Features
-	sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
-	writeFeatures(sortedFeatures, datafile)
+	for target in xrange(len(d.costs)) :
+		model, columns, x_tests, y_tests = config.get(config.path("..","data",datafile,"model" + str(target) + ".p"), train, model = model, targetIndex = target, data = d, test_train_split = .1)
+		#Sorting and Writing Important Features
+		sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
+		writeFeatures(sortedFeatures, datafile, d.costs[target])
 
 if __name__ == "__main__":
 	main("H147")
