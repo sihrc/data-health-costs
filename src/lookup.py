@@ -6,7 +6,7 @@ author: chris @ sihrc
 from bs4 import BeautifulSoup
 from operator import itemgetter
 from urllib2 import urlopen 
-
+import sys
 #Local Modules
 import config
 from wrappers import debug
@@ -89,8 +89,9 @@ def writeFeatureImportance(model, trainFeature, datafile):
 def lookUpVariable(datafile, variable):
 	return print_variable(getDetails(datafile, variable))
 if __name__ == "__main__":
-	datafile = "H147"
+	datafile = "H144D"
 	# writeFeatureList(datafile)
 	# writeChosenFeatures(datafile)
 	# lookUpVariable(datafile,"PMEDPY42")
-	print  getDetails(datafile, "PMEDPP53")["Description"]
+	print  getDetails(datafile, sys.argv[1])["Values"]
+	print  getDetails(datafile, sys.argv[1])["Description"]

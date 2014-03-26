@@ -9,6 +9,7 @@ from wrappers import debug
 
 #Python Modules
 from os import path as os
+from re import search
 
 class Data():
 	"""
@@ -85,7 +86,7 @@ class Data():
 		costFeatures = []
 		for feature in self.tags:
 			featureDetails = lookup.getDetails(self.datafile, feature)
-			if sum([x in featureDetails["Description"].lower() for x in ["payment", "cost", "chg", "fee"]]) > 0:
+			if "$" in featureDetails["Values"] and sum([type(search("\W?%s\W?" % x, featureDetails["Description"])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE"]]) > 0:
 				costFeatures.append(feature)
 		return costFeatures
 
