@@ -102,7 +102,7 @@ def writeFeatureImportance(model, trainFeature, datafile):
 def lookUpVariable(datafile, variable):
 	return print_variable(getDetails(datafile, variable))
 if __name__ == "__main__":
-	datafile = "H144D"
+	datafile = "H147"
 	# writeFeatureList(datafile)
 	# writeChosenFeatures(datafile)
 	# lookUpVariable(datafile,"PMEDPY42")

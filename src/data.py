@@ -48,7 +48,7 @@ class Data():
 			codebook.append((int(details[1]), int(details[2])))
 			tags.append(details[0])
 			lookup[details[0]] = details[3]
-			if sum([type(search("\W?%s\W?" % x, details[3])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE", "AMT","PD", "AMOUNT","PAID"]]) > 0:
+			if sum([type(search("\W+%s\W+" % x, details[3])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE", "PD","PAID"]]) > 0:
 				costs.append(details[0])
  		return codebook, lookup, costs, tags
 
@@ -86,10 +86,12 @@ class Data():
 		author: chris
 		"""
 		costFeatures = []
-		for feature in self.costs:
+		for i,feature in enumerate(self.costs):
 			values = lookup.getValues(self.datafile, feature)
 			if "$" in values:
+				print "Looking up values for %s %d of %d..." % (feature, i, len(self.costs))
 				costFeatures.append(feature)
+		print "\nFound %d cost features of %d potential cost features\n" % (len(costFeatures), len(self.costs))
 		return costFeatures
 
 

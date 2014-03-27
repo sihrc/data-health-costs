@@ -1,6 +1,6 @@
 #Python Modules
 from sklearn.preprocessing import normalize
-from sklearn.linear_model import LinearRegression as Model
+from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import explained_variance_score
 from pandas import read_csv
@@ -36,7 +36,10 @@ def runModel(x_train, y_train, costTag, columns):
     # model = train(x_train, y_train)
     model = config.get(config.path(path,"model_%s.p" % costTag), train, trainFeatures = x_train, targetFeature = y_train)
     #Sorting and Writing Important Features
-    sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
+    try:
+        sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
+    except:
+        sortedFeatures = sorted(zip(columns, model.feature_importances_))
     writeFeatures(sortedFeatures, costTag)
     return model
 
@@ -45,10 +48,8 @@ def clean(*args):
     import os
     if not os.path.exists(path): return
     for cfile in os.listdir(path):
-        print cfile
         if sum([arg in cfile for arg in args]) > 0:
             filepath = config.path(path, cfile)
-            print filepath
             os.chmod(filepath, 0777)
             os.remove(filepath)
             print "Cleaning %s" % filepath
@@ -57,11 +58,11 @@ def clean(*args):
 def main():
     # Clean Past Data
     clean(\
-        #"codebook",\
+        "codebook",\
         "model",\
         #"csv",\
         "costs",\
-        #"feature",\
+        "feature",\
         )
 
     # Getting Data
@@ -76,7 +77,6 @@ def main():
     dataFeatures = normalize(panda[[feature for feature in columns if feature not in d.costs]].as_matrix().astype("float"), axis = 0)
     targetFeatures = normalize(panda[d.costs].as_matrix().astype("float"), axis = 0)
     x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures, test_size=0.15, random_state=42)
-
     # runModel on all cost features
     for target in xrange(y_train.shape[1]):
       model = runModel(x_train, y_train[:,target], d.costs[target], columns)
@@ -90,6 +90,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    datafile = "H147"
     path = config.path("..","data",datafile)
     main()
