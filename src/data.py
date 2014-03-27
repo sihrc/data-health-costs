@@ -2,13 +2,14 @@
 Contains data holder class
 author:chris
 """
-import pickle as p
-import numpy as np
+#Local Modules
 import config
-
-#Debug Timer Wrappers
+import lookup
 from wrappers import debug
-import datasets
+
+#Python Modules
+from os import path as os
+from re import search
 
 class Data():
 	"""
@@ -18,83 +19,81 @@ class Data():
 	saving and loading temporary sessions
 	"""
 	@debug
-	def __init__ (self, data = False, codebook = "", datafile = "", costId = "", timeTags = []):
-		self.timeTags = timeTags
+	def __init__ (self, datafile = ""):
 		self.datafile = datafile
-		self.codebook = codebook
-		self.createRefs()
-		self.results = dict()
-		self.ignored = []
-		self.data = self.loadData(data)
-		self.costId = costId
-		self.cost = self.getColumn(self.costId)
-		self.filterData()
-		
-	
-	def filterData(self):
-		applicable = np.where(self.cost > 0)
-		self.data = self.data[applicable]
-		self.cost = self.cost[applicable]
+		self.codebook, self.lookup, self.costs, self.tags = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
+		self.costs = config.get(config.path("..","data",datafile,"target_costs.p"), self.filterTargetCosts)
+		self.csv = config.get(config.path("..","data",datafile,"csv.p"), self.downloadData)
 
-	
-	def createRefs(self):
+	@debug
+	def downloadCodebook(self):
 		"""
-		Create Reference Dicts
-		Feature - Tag:(Description, Index)
+		Given the datafile name, returns the codebook needed
+		author: chris
 		"""
-		count = 0
-		self.features = dict()
-		for key,item in self.codebook.iteritems():
-			self.features[key.split()[0]] = [key, item]
-			count += 1
+		import urllib2, unicodedata
+		from bs4 import BeautifulSoup
 
-	def lookUp(self, tag = None):
-		"""
-		Look up a feature using the tag name or a description
-		returns acroynym-description, indices
-		"""
-		return self.features[tag]
+		page = urllib2.urlopen(config.datafiles[self.datafile][-1])
+		soup = BeautifulSoup(page.read())
 
-	def loadData(self, data):
+		tags = []
+		codebook = []
+		lookup = {}
+		costs = []
+
+		for found in soup.find_all("tr",{"id":"faqRoll_neoTD3"}):
+			text = unicodedata.normalize('NFKD',found.text).encode("ascii",'ignore')
+			details = text.strip().replace("   ","").split("\n")
+			codebook.append((int(details[1]), int(details[2])))
+			tags.append(details[0])
+			lookup[details[0]] = details[3]
+			if sum([type(search("\W+%s\W+" % x, details[3])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE", "PD","PAID"]]) > 0:
+				costs.append(details[0])
+ 		return codebook, lookup, costs, tags
+
+	@debug
+	def downloadData(self):
 		"""
-		Loads the Data Set from filename as numpy array
+		Download data
 		"""
-		if type(data) == bool:
-			data = []
-			with open(config.path("..","data",self.datafile, self.datafile.lower() + ".dat"), 'rb') as f:
+		def download(self):
+			import zipfile
+			import urllib
+			dfile = config.path("..","data",self.datafile.upper() + ".zip")
+			urllib.urlretrieve(config.download % self.datafile.lower(), dfile)
+			with zipfile.ZipFile(dfile) as zf:
+				zf.extractall(config.path("..","data",self.datafile.upper()))
+
+		import pandas as pd
+
+		path = config.path("..","data",self.datafile, self.datafile.lower())
+
+		if not os.exists(path + ".dat"):	download(self)
+
+		printFormat = "".join(["%s" * (high - low + 1) + "," for low,high in self.codebook])[:-1]
+		with open(path+".csv", 'wb') as g:
+			g.write(",".join(self.tags) + "\n")
+			with open(path + ".dat", 'rb') as f:
 				for line in f:
-					data.append(list(line.strip()))
-			data = np.array(data)
-		return data
-		
+					g.write(printFormat % tuple(line.strip()) + "\n")
+		return path + ".csv"
 
-	def getColumn(self, tag):
+	@debug
+	def filterTargetCosts(self):
 		"""
-		Gets the column of data given by tag
+		Get target cost features from data set
+		author: chris
 		"""
-		ranges = self.lookUp(tag = tag)[1][1]
-		rawData = self.data[:,ranges[0] - 1:ranges[1]]
-		newFormat = np.zeros(shape = (rawData.shape[0]))
-		for i in range(len(rawData)):
-			try:
-				newFormat[i] = "".join(rawData[i]).strip()
-			except:
-				print "data is not a number"
-				break
-		return newFormat
+		costFeatures = []
+		for i,feature in enumerate(self.costs):
+			values = lookup.getValues(self.datafile, feature)
+			if "$" in values:
+				print "Looking up values for %s %d of %d..." % (feature, i, len(self.costs))
+				costFeatures.append(feature)
+		print "\nFound %d cost features of %d potential cost features\n" % (len(costFeatures), len(self.costs))
+		return costFeatures
 
-	def save(self, filename):
-		with open(filename, 'wb') as f:
-			p.dump(self, f)
-			print filename + " Saved Successfully"
-	
-	def load(self, filename):
-		"""
-		Saves this object as a pickle file for access later
-		"""
-		with open(filename, 'rb') as f:
-			self = p.load(f)
-			print filename + " Loaded Successfully"
 
 	"""
 	Class native methods
@@ -103,13 +102,8 @@ class Data():
 		return "Data Handler Object"
 
 	def __str__(self):
-		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary"
-
-@debug
-def getData(datafile):
-	dataconfig = datasets.getData(datafile)
-	return Data(codebook = dataconfig[0], datafile = datafile, costId = dataconfig[1] , timeTags = dataconfig[2])
+		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at %s" % self.csv
 
 if __name__ == "__main__":
-	print "See Documentation"
-	
+	data = getData("H144D")
+

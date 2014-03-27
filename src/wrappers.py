@@ -1,4 +1,5 @@
 import time
+
 """
 * Debug/Timer Wrapper
 	prints debug statements
@@ -18,3 +19,7 @@ def debug(func):
 		return res
 	return wrapper
 
+
+def pickling(path):
+	def wrapper(*args, **kwargs):
+		config.path()
