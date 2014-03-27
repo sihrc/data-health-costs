@@ -36,10 +36,9 @@ def path(*path):
 	targetpath = os.path.join(*path)
 	if "." in path[-1]:
 		path = path[:-1]
-	targetdirs = os.path.join(*path)
-	
-	if not os.path.exists(targetdirs):
-		os.makedirs(targetdirs)	
+		targetdirs = os.path.join(*path)
+		if not os.path.exists(targetdirs):
+			os.makedirs(targetdirs)	
 	return targetpath
 
 def get(fpath, func, **kwargs):

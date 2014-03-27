@@ -50,7 +50,7 @@ def writeChosenFeatures(datafile):
 def getDetails(dataset, variable):
 	"""
 	Takes in the dataset filename and the variable name 
-	Performs the HTTP GET Request and returns a list of decoded values
+	Performs the HTTP GET Request and returns a information about the feature
 	"""
 
 	url = "http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=%s&varName=%s" % (dataset, variable)
@@ -60,6 +60,19 @@ def getDetails(dataset, variable):
 	for line in soup.findAll('font', {'class':"smallBlack"}):
 		details.append(line.text.encode('utf8').strip())
 	return dict([("Title", "\n".join(details[:3])), ("Name", details[4]), ("Description", details[6]), ("Format", details[8]), ("Type", details[10]), ("Range", details[12] + "~" + details[14]), ("Values", threeColumnString([details[n:n+3] for n in xrange(15,len(details),3)]))])
+
+def getValues(dataset, variable):
+	"""
+	Takes in the dataset filename and the variable name 
+	Performs the HTTP GET Request and returns a list of decoded values
+	"""
+	url = "http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=%s&varName=%s" % (dataset, variable)
+	page = urlopen(url)
+	soup = BeautifulSoup(page.read())
+	details = []
+	for line in soup.findAll('font', {'class':"smallBlack"}):
+		details.append(line.text.encode('utf8').strip())
+	return "".join(["".join(details[n:n+3]) for n in xrange(15,len(details),3)])
 
 def print_variable(decoded):
 	"""

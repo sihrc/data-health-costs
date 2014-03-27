@@ -21,9 +21,9 @@ class Data():
 	@debug
 	def __init__ (self, datafile = ""):
 		self.datafile = datafile
-		self.codebook, self.lookup, self.tags = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
-		self.costs = config.get(config.path("..","data",datafile,"target_costs.p"), self.getTargetCosts)
-		self.panda = config.get(config.path("..","data",datafile,"panda.p"), self.downloadData)
+		self.codebook, self.lookup, self.costs, self.tags = config.get(config.path("..","data",datafile,"codebook.p"), self.downloadCodebook)
+		self.costs = config.get(config.path("..","data",datafile,"target_costs.p"), self.filterTargetCosts)
+		self.csv = config.get(config.path("..","data",datafile,"csv.p"), self.downloadData)
 
 	@debug
 	def downloadCodebook(self):
@@ -40,6 +40,7 @@ class Data():
 		tags = []
 		codebook = []
 		lookup = {}
+		costs = []
 
 		for found in soup.find_all("tr",{"id":"faqRoll_neoTD3"}):
 			text = unicodedata.normalize('NFKD',found.text).encode("ascii",'ignore')
@@ -47,8 +48,9 @@ class Data():
 			codebook.append((int(details[1]), int(details[2])))
 			tags.append(details[0])
 			lookup[details[0]] = details[3]
-
- 		return codebook, lookup, tags
+			if sum([type(search("\W?%s\W?" % x, details[3])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE", "AMT","PD", "AMOUNT","PAID"]]) > 0:
+				costs.append(details[0])
+ 		return codebook, lookup, costs, tags
 
 	@debug
 	def downloadData(self):
@@ -78,15 +80,15 @@ class Data():
 		return path + ".csv"
 
 	@debug
-	def getTargetCosts(self):
+	def filterTargetCosts(self):
 		"""
 		Get target cost features from data set
 		author: chris
 		"""
 		costFeatures = []
-		for feature in self.tags:
-			featureDetails = lookup.getDetails(self.datafile, feature)
-			if "$" in featureDetails["Values"] and sum([type(search("\W?%s\W?" % x, featureDetails["Description"])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE"]]) > 0:
+		for feature in self.costs:
+			values = lookup.getValues(self.datafile, feature)
+			if "$" in values:
 				costFeatures.append(feature)
 		return costFeatures
 
@@ -98,7 +100,7 @@ class Data():
 		return "Data Handler Object"
 
 	def __str__(self):
-		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at %s" % self.panda
+		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at %s" % self.csv
 
 if __name__ == "__main__":
 	data = getData("H144D")

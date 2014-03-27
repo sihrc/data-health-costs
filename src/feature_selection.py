@@ -24,47 +24,66 @@ def train(trainFeatures, targetFeature):
     return model
 
 @debug
-def writeFeatures(features, targetName):
-    with open(config.path(path,"feature_importance%s.txt" % (targetName)),'wb')as f:
+def writeFeatures(features, costTag):
+    with open(config.path(path,"feature_importance_%s.txt" % (costTag)),'wb')as f:
         for feature, importance in features:
             write = "%s#%f\n" % (feature, importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
 
 @debug
-def runModel(dataFeatures, targetFeatures, target, panda, d):
-    #Split the data
-    x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures[:,target], test_size=0.15, random_state=42)
+def runModel(x_train, y_train, costTag, columns):
     #Create Models
     # model = train(x_train, y_train)
-    model = config.get(config.path(path,"model.p"), train, trainFeatures = x_train, targetFeature = y_train)
+    model = config.get(config.path(path,"model_%s.p" % costTag), train, trainFeatures = x_train, targetFeature = y_train)
     #Sorting and Writing Important Features
-    sortedFeatures = sorted(zip(panda.columns.values, model.coef_), key = itemgetter(1))[::-1]
-    writeFeatures(sortedFeatures, d.costs[target])
-    return model, x_test, y_test
+    sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
+    writeFeatures(sortedFeatures, costTag)
+    return model
 
 @debug
+def clean(*args):
+    import os
+    if not os.path.exists(path): return
+    for cfile in os.listdir(path):
+        print cfile
+        if sum([arg in cfile for arg in args]) > 0:
+            filepath = config.path(path, cfile)
+            print filepath
+            os.chmod(filepath, 0777)
+            os.remove(filepath)
+            print "Cleaning %s" % filepath
+            
+@debug
 def main():
+    # Clean Past Data
+    clean("codebook", "model", "csv", "costs")
+
     # Getting Data
     d = dc.Data(datafile)
     # Reading Data into a Panda Table
-    raw_panda = read_csv(d.panda, delimiter = ",")
+    raw_panda = read_csv(d.csv, delimiter = ",")
     panda = raw_panda._get_numeric_data()
-    print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(panda.columns.values)
+    columns = panda.columns.values
+
+    print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(columns)
     #Get feature and target data
-    dataFeatures = normalize(panda[[feature for feature in panda.columns.values if feature not in d.costs]].as_matrix().astype("float"), axis = 0)
+    dataFeatures = normalize(panda[[feature for feature in columns if feature not in d.costs]].as_matrix().astype("float"), axis = 0)
     targetFeatures = normalize(panda[d.costs].as_matrix().astype("float"), axis = 0)
+    x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures, test_size=0.15, random_state=42)
 
     # runModel on all cost features
-    for target in xrange(targetFeatures.shape[1]):
-      model, x_test, y_test = runModel(dataFeatures, targetFeatures, target, panda, d)
-      print predict(model, x_test, y_test)
+    for target in xrange(y_train.shape[1]):
+      model = runModel(x_train, y_train[:,target], d.costs[target], columns)
+      print predict(model, x_test, y_test[:,target])
 
 
     #runModel for one cost feature
-    # runModel(dataFeatures, targetFeatures, randint(0,targetFeatures.shape[1] - 1), panda, d)
+    # target = randint(0,y_train.shape[1] - 1)
+    # model = runModel(x_train, y_train[:,target], d.costs[target], columns)
+    # print predict(model, x_test, y_test[:,target])
 
 
 if __name__ == "__main__":
-    datafile = "H147"
+    datafile = "H144D"
     path = config.path("..","data",datafile)
     main()
