@@ -56,7 +56,13 @@ def clean(*args):
 @debug
 def main():
     # Clean Past Data
-    clean("codebook", "model", "csv", "costs")
+    clean(\
+        #"codebook",\
+        "model",\
+        #"csv",\
+        "costs",\
+        #"feature",\
+        )
 
     # Getting Data
     d = dc.Data(datafile)
