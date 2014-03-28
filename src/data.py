@@ -106,4 +106,3 @@ class Data():
 
 if __name__ == "__main__":
 	data = getData("H144D")
-
