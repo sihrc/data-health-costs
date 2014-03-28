@@ -1,8 +1,8 @@
 #Python Modules
 from sklearn.preprocessing import normalize
-from sklearn.ensemble import RandomForestRegressor as Model
+from sklearn.ensemble import GradientBoostingRegressor as Model
 from sklearn.cross_validation import train_test_split
-from sklearn.metrics import explained_variance_score
+from sklearn.metrics import mean_squared_error as score
 from pandas import read_csv
 from operator import itemgetter
 from random import randint
@@ -15,7 +15,7 @@ import config
 @debug
 def predict(model, trainFeatures, targetFeature):
     predicts = model.predict(trainFeatures)
-    return explained_variance_score(predicts, targetFeature)
+    return score(predicts, targetFeature)
 
 @debug
 def train(trainFeatures, targetFeature):
@@ -39,7 +39,7 @@ def runModel(x_train, y_train, costTag, columns):
     try:
         sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
     except:
-        sortedFeatures = sorted(zip(columns, model.feature_importances_))
+        sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
     writeFeatures(sortedFeatures, costTag)
     return model
 
@@ -58,11 +58,11 @@ def clean(*args):
 def main():
     # Clean Past Data
     clean(\
-        "codebook",\
-        "model",\
-        "csv",\
-        "costs",\
-        "feature",\
+        # "codebook",\
+        # "model",\
+        # "csv",\
+        # "costs",\
+        # "feature",\
         )
 
     # Getting Data
@@ -84,9 +84,11 @@ def main():
         mask_train = y_train[:,target] > 0
         mask_test = y_test[:,target] > 0
         model = runModel(x_train[mask_train,:], y_train[mask_train,target], d.costs[target], columns)
-        results.append(predict(model, x_test[mask_test,:], y_test[mask_test,target]))
+        prediction = predict(model, x_test[mask_test,:], y_test[mask_test,target])
+        print prediction
+        results.append(prediction)
 
-    print "\n".join(results)
+    print results
 
 
     #runModel for one cost feature
@@ -96,6 +98,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    datafile = "H147"
     path = config.path("..","data",datafile)
     main()
