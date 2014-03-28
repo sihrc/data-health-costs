@@ -106,5 +106,7 @@ if __name__ == "__main__":
 	# writeFeatureList(datafile)
 	# writeChosenFeatures(datafile)
 	# lookUpVariable(datafile,"PMEDPY42")
-	print  getDetails(datafile, sys.argv[1])["Values"]
-	print  getDetails(datafile, sys.argv[1])["Description"]
+	while (True):
+		feature = raw_input()
+		print  getDetails(datafile, feature)["Values"]
+		print  getDetails(datafile, feature)["Description"]
