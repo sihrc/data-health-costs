@@ -48,7 +48,7 @@ class Data():
 			codebook.append((int(details[1]), int(details[2])))
 			tags.append(details[0])
 			lookup[details[0]] = details[3]
-			if sum([type(search("\W+%s\W+" % x, details[3])) != type(None) for x in ["PAYMENT", "COST", "CHG", "FEE", "PD","PAID"]]) > 0:
+			if sum([type(search("\W+%s[\WS]+" % x, details[3])) != type(None) for x in ["PAYMENT", "COST", "CHG", "CHARGE", "FEE", "EXP", "EXPENSE", "PD","PAID"]]) > 0:
 				costs.append(details[0])
  		return codebook, lookup, costs, tags
 

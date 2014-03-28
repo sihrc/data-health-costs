@@ -62,6 +62,7 @@ def runModel(x_train, y_train, costTag, columns):
         sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
     except:
         sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
+    # filterTop10(sortedFeatures)
     writeFeatures(sortedFeatures, costTag)
     return model
 
