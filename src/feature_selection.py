@@ -15,7 +15,7 @@ import config
 @debug
 def predict(model, trainFeatures, targetFeature):
     predicts = model.predict(trainFeatures)
-    return explained_variance_score(targetFeature, targetFeature)
+    return explained_variance_score(predicts, targetFeature)
 
 @debug
 def train(trainFeatures, targetFeature):
@@ -60,7 +60,7 @@ def main():
     clean(\
         "codebook",\
         "model",\
-        #"csv",\
+        "csv",\
         "costs",\
         "feature",\
         )
@@ -76,11 +76,17 @@ def main():
     #Get feature and target data
     dataFeatures = normalize(panda[[feature for feature in columns if feature not in d.costs]].as_matrix().astype("float"), axis = 0)
     targetFeatures = normalize(panda[d.costs].as_matrix().astype("float"), axis = 0)
+
     x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures, test_size=0.15, random_state=42)
     # runModel on all cost features
+    results = []
     for target in xrange(y_train.shape[1]):
-      model = runModel(x_train, y_train[:,target], d.costs[target], columns)
-      print predict(model, x_test, y_test[:,target])
+        mask_train = y_train[:,target] > 0
+        mask_test = y_test[:,target] > 0
+        model = runModel(x_train[mask_train,:], y_train[mask_train,target], d.costs[target], columns)
+        results.append(predict(model, x_test[mask_test,:], y_test[mask_test,target]))
+
+    print "\n".join(results)
 
 
     #runModel for one cost feature
@@ -90,6 +96,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H147"
+    datafile = "H144D"
     path = config.path("..","data",datafile)
     main()
