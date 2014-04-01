@@ -67,6 +67,25 @@ def runModel(x_train, y_train, costTag, columns):
     return model
 
 @debug
+def filterPanda(panda):
+    def nonNumerical(data):
+        newTags = data.copy() * -1
+        invalid = data < 0
+        
+        newTags[np.invert(invalid)] = 0
+        result = np.zeros((newTags.shape[0],newTags.shape[1],np.max(newTags) + 1))
+        for i in xrange(newTags.shape[0]):
+            for j in xrange(newTags.shape[1]):
+                result[i][j][newTags[i][j]] = 1
+
+        data[invalid] = 0
+        mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
+        data[invalid] = mean[np.where(invalid)[1]]
+        return data, newTags
+    return None
+
+
+@debug
 def clean(*args):
     import os
     if not os.path.exists(path): return
@@ -81,10 +100,11 @@ def clean(*args):
 def main():
     # Clean Past Data
     clean(\
-        "codebook",\
-        "model",\
+        # "codebook",\
+        # "model",\
         # "csv",\
-        "costs",\
+        # "costs",\
+        # "panda",\
         "feature",\
         )
 
@@ -121,6 +141,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    datafile = "H147"
     path = config.path("..","data",datafile)
     main()

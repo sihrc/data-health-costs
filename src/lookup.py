@@ -11,7 +11,7 @@ import sys
 import config
 from wrappers import debug
 
-def threeColumnString(line):
+def formatValues(line):
 	"""
 	Formats the table of values into 3 columns 
 	"""
@@ -21,31 +21,6 @@ def threeColumnString(line):
 	
 	body = ["\t".join([(maxLengths[x] - len(cols[x])) * " " + cols[x] for x in xrange(3)]) for cols in line]
 	return "\n".join(body[:-1]) + "\n\n" + body[-1]
-
-def writeFeatureList(datafile):
-	"""
-	Function that creates a file that lists out all variable names 
-	author: Jazmin @ JazminGonzalez-Rivero
-	"""
-	features = dc.getData(datafile)[0].keys()
-	with open(config.path("..", "data", datafile, "features.py"), "wb") as f:
-		f.write("features = [")
-		for feature in features:
-			f.write('"' + feature + '", ')
-		f.write("]")
-
-def writeChosenFeatures(datafile):
-	"""
-	Function that looks for CDF graphs remaining (ones that have not been deleted)
-
-	author: chris
-	"""
-	with open(config.path("..","data",datafile,"chosen_features.py"), 'wb') as f:
-		f.write("features = [")
-		for dfile in config.os.listdir(config.path("..","visuals","feature_bin_costs",datafile)):
-			f.write('"' + dfile[:-4] + '", ')
-		f.write("]")
-
 
 def getDetails(dataset, variable):
 	"""
@@ -59,7 +34,7 @@ def getDetails(dataset, variable):
 	details = []
 	for line in soup.findAll('font', {'class':"smallBlack"}):
 		details.append(line.text.encode('utf8').strip())
-	return dict([("Title", "\n".join(details[:3])), ("Name", details[4]), ("Description", details[6]), ("Format", details[8]), ("Type", details[10]), ("Range", details[12] + "~" + details[14]), ("Values", threeColumnString([details[n:n+3] for n in xrange(15,len(details),3)]))])
+	return dict([("Title", "\n".join(details[:3])), ("Name", details[4]), ("Description", details[6]), ("Format", details[8]), ("Type", details[10]), ("Range", details[12] + "~" + details[14]), ("Values", formatValues([details[n:n+3] for n in xrange(15,len(details),3)]))])
 
 def getValues(dataset, variable):
 	"""
@@ -100,9 +75,12 @@ def writeFeatureImportance(model, trainFeature, datafile):
 
 @debug
 def lookUpVariable(datafile, variable):
+	"""
+	Generic Variable look up that prints out everything
+	"""
 	return print_variable(getDetails(datafile, variable))
 if __name__ == "__main__":
-	datafile = "H147"
+	datafile = sys.argv[1]
 	# writeFeatureList(datafile)
 	# writeChosenFeatures(datafile)
 	# lookUpVariable(datafile,"PMEDPY42")
