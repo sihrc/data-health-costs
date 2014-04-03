@@ -145,6 +145,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    datafile = "H147"
     path = config.path("..","data",datafile)
     main()
