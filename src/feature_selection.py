@@ -63,7 +63,6 @@ def runModel(x_train, y_train, costTag, columns):
         sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
     except:
         sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
-    # filterTop10(sortedFeatures)
     writeFeatures(sortedFeatures, costTag)
     return model
 
@@ -83,10 +82,11 @@ def filterPanda(panda):
         mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
         data[invalid] = mean[np.where(invalid)[1]]
         return data, newTags
-    data, newData = nonNumerical(panda.as_matrix().astype("float")) 
     names = np.array(panda.columns.values)[list(set(np.where(panda.values<0)[1]))]
+    data, newData = nonNumerical(panda[names].as_matrix().astype("float")) 
     for i in xrange(len(names)):
         panda[names[i] + "NEGS"] = newData[:,i]
+        panda[names[i]] = data[:,i]
     return panda
 
 
@@ -111,13 +111,14 @@ def main():
         "costs",\
         "panda",\
         "feature",\
+        "filtered_panda",\
         )
 
     # Getting Data
     d = dc.Data(datafile)
     # Reading Data into a Panda Table
     raw_panda = read_csv(d.csv, delimiter = ",")
-    panda  = filterPanda(raw_panda._get_numeric_data())
+    panda  = config.get(config.path(path,"filtered_panda.p"), filterPanda, panda = (raw_panda._get_numeric_data()))
     columns = [feature for feature in panda.columns.values if feature not in d.costs]
 
     print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(columns)
@@ -145,6 +146,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H147"
+    datafile = "H144D"
     path = config.path("..","data",datafile)
     main()
