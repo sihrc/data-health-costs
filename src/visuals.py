@@ -11,6 +11,14 @@ def correlationGraph(target, inputFeature):
     plt.plot(raw_panda[inputFeature], raw_panda[target], "ro")
     plt.savefig(path("..", "visual", dataFile, target + "_" + inputFeature + ".png"))
 
+@debug
+def normalCorrGraph(target, inputFeature):
+    plt.clf()
+    normalTarget = raw_panda[target]/raw_panda[target].max()
+    normalFeature = raw_panda[inputFeature]/raw_panda[inputFeature].max()
+    plt.plot(normalFeature, normalTarget, "ro")
+    plt.savefig(path("..", "visual", dataFile, "normal" + target + "_" + inputFeature + ".png"))
+@debug
 def clean():
     from shutil import rmtree
     rmtree(path("..","visual",dataFile))
@@ -27,3 +35,4 @@ if __name__ == "__main__":
                     if i == 10:
                         break
                     correlationGraph(fileName[19:-4], line.split()[0])
+                    normalCorrGraph(fileName[19:-4], line.split()[0])

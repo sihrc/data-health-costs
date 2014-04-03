@@ -1,6 +1,7 @@
 #Python Modules
 from sklearn.preprocessing import normalize
-from sklearn.ensemble import GradientBoostingRegressor as Model
+# from sklearn.ensemble import GradientBoostingRegressor as Model
+from sklearn.linear_model import Ridge as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
 from pandas import read_csv
