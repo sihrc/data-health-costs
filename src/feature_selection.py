@@ -8,6 +8,7 @@ from operator import itemgetter
 from random import randint
 from lookup import print_variable
 from lookup import getDetails
+import numpy as np
 
 #Local Modules
 from wrappers import debug
@@ -82,7 +83,11 @@ def filterPanda(panda):
         mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
         data[invalid] = mean[np.where(invalid)[1]]
         return data, newTags
-    return None
+    data, newData = nonNumerical(panda.as_matrix().astype("float")) 
+    names = np.array(panda.columns.values)[list(set(np.where(panda.values<0)[1]))]
+    for i in xrange(len(names)):
+        panda[names[i] + "NEGS"] = newData[:,i]
+    return panda
 
 
 @debug
@@ -100,11 +105,11 @@ def clean(*args):
 def main():
     # Clean Past Data
     clean(\
-        # "codebook",\
-        # "model",\
-        # "csv",\
-        # "costs",\
-        # "panda",\
+        "codebook",\
+        "model",\
+        "csv",\
+        "costs",\
+        "panda",\
         "feature",\
         )
 
@@ -112,14 +117,13 @@ def main():
     d = dc.Data(datafile)
     # Reading Data into a Panda Table
     raw_panda = read_csv(d.csv, delimiter = ",")
-    panda = raw_panda._get_numeric_data()
+    panda  = filterPanda(raw_panda._get_numeric_data())
     columns = [feature for feature in panda.columns.values if feature not in d.costs]
 
     print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(columns)
     #Get feature and target data
     dataFeatures = normalize(panda[columns].as_matrix().astype("float"), axis = 0)
     targetFeatures = normalize(panda[d.costs].as_matrix().astype("float"), axis = 0)
-
     x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures, test_size=0.15, random_state=42)
     # runModel on all cost features
     results = []
@@ -141,6 +145,6 @@ def main():
 
 
 if __name__ == "__main__":
-    datafile = "H147"
+    datafile = "H144D"
     path = config.path("..","data",datafile)
     main()
