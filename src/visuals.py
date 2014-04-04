@@ -13,7 +13,7 @@ def correlationGraph(target, inputFeature):
     plt.savefig(path("..", "visual", dataFile, target + "_" + inputFeature + ".png"))
 
 def CDF(panda, feature):
-    data = panda[feature].as_matrix.astype('float')
+    data = panda[feature].as_matrix().astype('float')
     data /= np.linalg.norm(data)
 
     plt.clf()
@@ -21,7 +21,7 @@ def CDF(panda, feature):
     plt.savefig(path("..","visual",dataFile, "CDF_%s.png" % feature))
 
 def PMF(panda, feature):
-    data = panda[feature].as_matrix.astype("float")
+    data = panda[feature].as_matrix().astype("float")
 
     plt.clf()
     plt.plot(stats.rv_discrete.pmf(data))
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     #                     break
     #                 correlationGraph(fileName[19:-4], line.split()[0])
     features_to_plot = []
-    cost_features = []
+    cost_features = []  
