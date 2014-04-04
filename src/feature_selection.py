@@ -106,13 +106,13 @@ def clean(*args):
 def main():
     # Clean Past Data
     clean(\
-        "codebook",\
+        # "codebook",\
         "model",\
-        "csv",\
-        "costs",\
-        "panda",\
+        # "csv",\
+        # "costs",\
+        # "panda",\
         "feature",\
-        "filtered_panda",\
+        # "filtered_panda",\
         )
 
     # Getting Data
@@ -129,24 +129,25 @@ def main():
     x_train, x_test, y_train, y_test = train_test_split(dataFeatures, targetFeatures, test_size=0.15, random_state=42)
     # runModel on all cost features
     results = []
-    for target in xrange(y_train.shape[1]):
-        mask_train = y_train[:,target] > 0
-        mask_test = y_test[:,target] > 0
-        model = runModel(x_train[mask_train,:], y_train[mask_train,target], d.costs[target], columns)
-        prediction = predict(model, x_test[mask_test,:], y_test[mask_test,target])
-        print prediction
-        results.append(prediction)
+    # for target in xrange(y_train.shape[1]):
+    #     mask_train = y_train[:,target] > 0
+    #     mask_test = y_test[:,target] > 0
+    #     model = runModel(x_train[mask_train,:], y_train[mask_train,target], d.costs[target], columns)
+    #     prediction = predict(model, x_test[mask_test,:], y_test[mask_test,target])
+    #     print prediction
+    #     results.append(prediction)
 
-    print results
+    #print results
 
 
-    #runModel for one cost feature
-    # target = randint(0,y_train.shape[1] - 1)
-    # model = runModel(x_train, y_train[:,target], d.costs[target], columns)
+    # runModel for one cost feature
+    target = panda["TOTSELF11"].as_matrix().astype("float")
+    x_train, x_test, y_train, y_test = train_test_split(dataFeats, target, test_size=0.15, random_state=42)
+    model = runModel(x_train, y_train, "TOTSELF11", columns)
     # print predict(model, x_test, y_test[:,target])
 
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    datafile = "H147"
     path = config.path("..","data",datafile)
     main()
