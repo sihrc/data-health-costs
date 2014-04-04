@@ -105,4 +105,5 @@ class Data():
 		return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at %s" % self.csv
 
 if __name__ == "__main__":
-	data = getData("H144D")
+	import sys
+	data = Data(sys.argv[1])

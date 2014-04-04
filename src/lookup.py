@@ -49,6 +49,15 @@ def getValues(dataset, variable):
 		details.append(line.text.encode('utf8').strip())
 	return "".join(["".join(details[n:n+3]) for n in xrange(15,len(details),3)])
 
+def getValuesCategories(dataset, variable):
+	url = "http://meps.ahrq.gov/data_stats/download_data_files_codebook.jsp?PUFId=%s&varName=%s" % (dataset, variable)
+	page = urlopen(url)
+	soup = BeautifulSoup(page.read())
+	details = []
+	for line in soup.findAll('font', {'class':"smallBlack"}):
+		details.append(line.text.encode('utf8').strip())
+	return (15 - len(details))/3
+
 def print_variable(decoded):
 	"""
 	Format prints decoded values for getDetails
