@@ -32,7 +32,6 @@ def filterPanda(panda):
     return panda
 
 def extractType(data):
-
     unique = 1 + np.sum((np.diff(np.sort(data, axis = 0),axis = 0) > 0), axis = 0)
     return np.where(minmax > unique)[0]
 
