@@ -1,7 +1,7 @@
 #Python Modules
 from sklearn.preprocessing import normalize
-# from sklearn.ensemble import GradientBoostingRegressor as Model
-from sklearn.linear_model import Ridge as Model
+from sklearn.ensemble import GradientBoostingRegressor as Model
+# from sklearn.linear_model import Ridge as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
 from pandas import read_csv
@@ -119,7 +119,8 @@ def main():
     d = dc.Data(datafile)
     # Reading Data into a Panda Table
     raw_panda = read_csv(d.csv, delimiter = ",")
-    panda  = config.get(config.path(path,"filtered_panda.p"), filterPanda, panda = (raw_panda._get_numeric_data()))
+    panda = raw_panda._get_numeric_data()
+    # panda  = config.get(config.path(path,"filtered_panda.p"), filterPanda, panda = (raw_panda._get_numeric_data()))
     columns = [feature for feature in panda.columns.values if feature not in d.costs]
 
     print "Non-numerical Columns\n", set(raw_panda.columns.values) - set(columns)
@@ -139,13 +140,11 @@ def main():
 
     #print results
 
-
     # runModel for one cost feature
-    target = panda["TOTSELF11"].as_matrix().astype("float")
-    x_train, x_test, y_train, y_test = train_test_split(dataFeats, target, test_size=0.15, random_state=42)
-    model = runModel(x_train, y_train, "TOTSELF11", columns)
+    target = panda["TOTSLF11"].as_matrix().astype("float")
+    x_train, x_test, y_train, y_test = train_test_split(dataFeatures, target, test_size=0.15, random_state=42)
+    model = runModel(x_train, y_train, "TOTSLF11", columns)
     # print predict(model, x_test, y_test[:,target])
-
 
 if __name__ == "__main__":
     datafile = "H147"

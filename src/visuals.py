@@ -47,6 +47,15 @@ if __name__ == "__main__":
     pathD = path("..", "data", dataFile)
     clean()
     raw_panda = p.load(open(path(pathD, "filtered_panda.p"), 'rb'))
+    features_to_plot = ["RXSLF11" ,"IPTSLF11","IPFSLF11","HHNSLF11","DVTSLF11","HHNEXP11","HHNTCH11","OBVSLF11","OBDSLF11","DVGSLF11"]
+    cost_feature = "TOTSLF11"
+
+    for feature in features_to_plot:
+        correlationGraph(feature, cost_feature)
+        CDF(raw_panda, feature)
+        PMF(raw_panda, feature)
+
+
     # for fileName in listdir(pathD):
     #     if "feature_importance" in  fileName:
     #         with open(path(pathD, fileName), 'rb') as f:
@@ -54,5 +63,3 @@ if __name__ == "__main__":
     #                 if i == 10:
     #                     break
     #                 correlationGraph(fileName[19:-4], line.split()[0])
-    features_to_plot = []
-    cost_features = []  
