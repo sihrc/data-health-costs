@@ -32,26 +32,24 @@ def filterPanda(panda):
     return panda
 
 @debug
-def determineType(panda):
-    pass
-
-@debug
 def main():
-    d = dc.Data(datafile)
-    panda = p.read_csv(path)._get_numeric_data()
-
-    columns = panda.columns.values
-    data = panda.values.astype("float")
-    del panda
-
-    print columns
-    print data
-    
-
+    npPath = config.path("..","data", datafile, "panda_data.npy")
+    colPath = config.path('..',"data", datafile, "panda_col.npy")
+    if config.os.path.exists(npPath):
+        data = np.load(npPath)
+        columns = np.load(colPath)
+    else:
+        panda = p.read_csv(path)._get_numeric_data()
+        columns = np.array(panda.columns.values)
+        data = panda.values.astype("float")
+        np.save(npPath, data)
+        np.save(colPath, columns)
+        del panda
     return 0
 
 
 if __name__ == "__main__":
     datafile = "H147"
+    d = dc.Data(datafile)
     path = config.path("..","data",datafile,"%s.csv" % datafile.lower())
     main()
