@@ -31,20 +31,21 @@ def filterPanda(panda):
         panda[names[i]] = data[:,i]
     return panda
 
-def extractType(data):
-    unique = 1 + np.sum((np.diff(np.sort(data, axis = 0),axis = 0) > 0), axis = 0)
-    return np.where(minmax > unique)[0]
-
+@debug
+def determineType(panda):
+    pass
 
 @debug
 def main():
-    path = config.load(config.path("..","data",datafile,"csv.p"))
-    if not config.os.path.exists(path):
-        print "Please run data.py first!"
-
+    d = dc.Data(datafile)
     panda = p.read_csv(path)._get_numeric_data()
-    columns = np.array(panda.columns.values)[extractType(panda.values.astype("float"))]
+
+    columns = panda.columns.values
+    data = panda.values.astype("float")
+    del panda
+
     print columns
+    print data
     
 
     return 0
@@ -52,4 +53,5 @@ def main():
 
 if __name__ == "__main__":
     datafile = "H147"
+    path = config.path("..","data",datafile,"%s.csv" % datafile.lower())
     main()
