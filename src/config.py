@@ -6,6 +6,7 @@ author: chris @ sihrc
 """
 import os
 import pickle as p
+from wrappers import debug
 
 
 """
@@ -46,4 +47,15 @@ def load(fpath):
 		return p.load(open(fpath, 'rb'))
 	else:
 		return None
-	
+
+@debug
+def clean(args, datafile):
+    import os
+    delPath = path("..","data",datafile)
+    if not os.path.exists(delPath): return
+    for cfile in os.listdir(delPath):
+        if sum([arg in cfile for arg in args]) > 0:
+            filepath = path(delPath, cfile)
+            os.chmod(filepath, 0777)
+            os.remove(filepath)
+            print "Cleaning %s" % filepath

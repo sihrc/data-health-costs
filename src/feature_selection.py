@@ -4,7 +4,6 @@ from sklearn.ensemble import GradientBoostingRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import normalize
 from sklearn.metrics import mean_squared_error as score
-from pandas import read_csv
 from operator import itemgetter
 from random import randint
 from lookup import print_variable, getDetails
@@ -87,28 +86,6 @@ class DataHolder:
             
 @debug
 def main():
-    # Clean Past Data
-    clean(\
-        # "codebook",\
-        "model",\
-        # "csv",\
-        # "costs",\
-        # "panda",\
-        "feature",\
-        # "filtered_panda",\
-        )
-
-    # Getting Data
-    d = dc.Data(datafile)
-    dh = DataHolder()
-    dh.costs = d.costs
-    dh.accuracy = []
-
-    dh.panda = config.get(config.path(path,"get_panda.csv"), getPanda, panda = (raw_panda._get_numeric_data()))
-    del(raw_panda)
-
-    dh.f_columns = [feature for feature in panda.columns.values if feature not in d.costs]
-
     #Get feature and target data
     dataFeatures = normalize(panda[f_columns].values.astype("float"), axis = 0)
     targetFeatures = normalize(panda[d.costs].values.astype("float"), axis = 0)
@@ -119,5 +96,16 @@ def main():
 
 if __name__ == "__main__":
     datafile = "H147"
+    # Clean Past Data
+    clean([\
+        # "codebook",\
+        "model",\
+        # "csv",\
+        # "costs",\
+        # "panda",\
+        "feature",\
+        # "filtered_panda",\
+        ], datafile = datafile)
+    d = dc.Data(datafile)
     path = config.path("..","data",datafile)
     main()

@@ -51,7 +51,6 @@ class Data():
         printFormat = "".join(["%s" * (high - low) + "," for low,high in zip(indices, indices[1:])])
         # print printFormat
         with open(path+".csv", 'wb') as g:
-            g.write(",".join(self.tags) + "\n")
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
                 for line in f:
@@ -68,7 +67,7 @@ class Data():
         for feature, details in self.features.items():
             if "$" in details[-1][-1][1]:
                 if sum([type(search("\W+%s[\WS]+" % x, details[1])) != type(None) for x in ["PAYMENT", "COST", "CHG", "CHARGE", "FEE", "EXP", "EXPENSE", "PD","PAID"]]) > 0:       
-                    self.costs.append(feature)
+                    self.costs.append(self.tags.index(feature))
         
 
     @debug
@@ -137,9 +136,9 @@ class Data():
             if ";" == line.strip()[0]:
                 check = value_list[-1][-1]
                 if "-" in check and check.split("-")[-1].strip()[0] not in string.letters:
-                    self.continuous.append(tag)
+                    self.continuous.append(self.tags.index(tag))
                 else:
-                    self.categorical.append(tag)
+                    self.categorical.append(self.tags.index(tag))
                 self.features[tag].append(value_list)
                 value_list = []
                 continue
