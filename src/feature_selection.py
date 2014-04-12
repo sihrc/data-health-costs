@@ -63,41 +63,20 @@ def costModel(costFeature = ""):
     dh.accuracy.append((costFeature, accuracy))
     return model
 
-def runAllCosts():
-    for target in xrange(dh.y_train.shape[1]):
-        mask_train = dh.y_train[:,target] > 0
-        mask_test = dh.y_test[:,target] > 0
-        model = config.get(config.path(path,"model_%s.p" % dh.costs[target]), costModel, costFeature = "TOTSLF11", dh = dh)
-
-@debug
-def clean(*args):
-    import os
-    if not os.path.exists(path): return
-    for cfile in os.listdir(path):
-        if sum([arg in cfile for arg in args]) > 0:
-            filepath = config.path(path, cfile)
-            os.chmod(filepath, 0777)
-            os.remove(filepath)
-            print "Cleaning %s" % filepath
-
-
-class DataHolder:
-    pass
             
 @debug
 def main():
     #Get feature and target data
-    dataFeatures = normalize(panda[f_columns].values.astype("float"), axis = 0)
-    targetFeatures = normalize(panda[d.costs].values.astype("float"), axis = 0)
-    dh.x_train, dh.x_test, dh.y_train, dh.y_test = train_test_split(dataFeatures,targetFeatures, test_size=0.15, random_state=42)
+    data = np.genfromtxt(config.path(path, datafile.lower() + ".csv"), delimiter=",")
+    x_train, x_test, y_train, y_test = train_test_split(data[:,d.continuous],data[:,d.costs], test_size=0.15, random_state=42)
 
     
-    model = config.get(config.path(path,"model_%s.p" % costFeature), costModel, costFeature = "TOTSLF11")
+    model = config.get(config.path(path,"model_%s.p" % d.costs[0]), costModel, costFeature = 0)
 
 if __name__ == "__main__":
     datafile = "H147"
     # Clean Past Data
-    clean([\
+    config.clean([\
         # "codebook",\
         "model",\
         # "csv",\
