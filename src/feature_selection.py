@@ -1,6 +1,7 @@
 #Python Modules
-from sklearn.ensemble import GradientBoostingRegressor as Model
+# from sklearn.ensemble import GradientBoostingRegressor as Model
 # from sklearn.linear_model import Ridge as Model
+from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import normalize
 from sklearn.metrics import mean_squared_error as score
@@ -17,9 +18,9 @@ import config
 @debug
 def writeFeatures(costFeature):
     try:
-        sortedFeatures = sorted(zip(columns, model.coef_), key = itemgetter(1))[::-1]
+        sortedFeatures = sorted(zip(d.tags, model.coef_), key = itemgetter(1))[::-1]
     except:
-        sortedFeatures = sorted(zip(columns, model.feature_importances_), key = itemgetter(1))[::-1]
+        sortedFeatures = sorted(zip(d.tags, model.feature_importances_), key = itemgetter(1))[::-1]
 
     with open(config.path(path,"feature_importance_%s.txt" % (costFeature)),'wb')as f:
         for feature, importance in sortedFeatures:
@@ -27,40 +28,37 @@ def writeFeatures(costFeature):
             f.write(write.replace("#", (24 - len(write)) * " "))
 
 @debug
-def filterPanda(panda):
-    def nonNumerical(data):
-        newTags = data.copy() * -1
-        invalid = data < 0
-        
-        newTags[np.invert(invalid)] = 0
-        result = np.zeros((newTags.shape[0],newTags.shape[1],np.max(newTags) + 1))
-        for i in xrange(newTags.shape[0]):
-            for j in xrange(newTags.shape[1]):
-                result[i][j][newTags[i][j]] = 1
+def splitContinuous(data):
+    newData = (data.copy() * -1).astype("int")
+    invalid = data < 0
+    
+    newData[np.invert(invalid)] = 0
+    result = np.zeros((newData.shape[0],newData.shape[1],np.max(newData) + 1))
+    for i in xrange(newData.shape[0]):
+        for j in xrange(newData.shape[1]):
+            result[i][j][newData[i][j]] = 1
 
-        data[invalid] = 0
-        mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
-        data[invalid] = mean[np.where(invalid)[1]]
-        return data, newTags
-    names = np.array(panda.columns.values)[list(set(np.where(panda.values<0)[1]))]
-    data, newData = nonNumerical(panda[names].as_matrix().astype("float")) 
-    for i in xrange(len(names)):
-        panda[names[i] + "NEGS"] = newData[:,i]
-        panda[names[i]] = data[:,i]
-    return panda
+    data[invalid] = 0
+    mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
+    cols = np.where(invalid)[1]
+    data[invalid] = mean[cols]
+
+    tags = list()
+    for index in cols:
+        if index not in tags:
+            tags.append(index)
+    return data, newData, tags
 
 @debug
-def costModel(costFeature = ""):
+def costModel(x_train, y_train, costIndex = ""):
     #Create Models
-    target = dh.costs.find(costFeature)
     model = Model()
-    model.fit(dh.x_train, dh.y_train[:,target])
+    model.fit(x_train, y_train[:,costIndex])
 
     #Sorting and Writing Important Features
-    writeFeatures(costFeature)
+    writeFeatures(d.costs[costIndex])
     predictions = model.predict(x_test)
-    accuracy = score(predictions, y_test[:,target])
-    dh.accuracy.append((costFeature, accuracy))
+    accuracy = score(predictions, y_test[:,costIndex])
     return model
 
             
@@ -68,13 +66,17 @@ def costModel(costFeature = ""):
 def main():
     #Get feature and target data
     data = np.genfromtxt(config.path(path, datafile.lower() + ".csv"), delimiter=",")
-    x_train, x_test, y_train, y_test = train_test_split(data[:,d.continuous],data[:,d.costs], test_size=0.15, random_state=42)
+    cont, cat = data[:,d.continuous], data[:,d.categorical]
+    costs = data[:,d.costs]
 
-    
-    model = config.get(config.path(path,"model_%s.p" % d.costs[0]), costModel, costFeature = 0)
+    cont, newCat, newTags = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
+    cat = np.hstack((cont, newCat))
+    # x_train, x_test, y_train, y_test = train_test_split(, test_size=0.15, random_state=42)
+
+    model = config.get(config.path(path,"model_%s.p" % d.costs[0]), costModel, x_train = x_train, y_train = y_train, costIndex = 0)
 
 if __name__ == "__main__":
-    datafile = "H147"
+    datafile = "H144D"
     # Clean Past Data
     config.clean([\
         # "codebook",\
