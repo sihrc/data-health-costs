@@ -63,15 +63,26 @@ def costModel(x_train, y_train, costIndex = ""):
     predictions = model.predict(x_test)
     accuracy = score(predictions, y_test[:,costIndex])
     return model
+@debug 
+def formatNonNumerical(catData):
+    cats = {}
+    counter = 0
+    for i in xrange(catData.shape[0]):
+        for j in xrange(catData.shape[1]):
+            if catData[i,j] not in cats:
+                cats[str(catData[i,j])] = counter
+                counter+= 1
+            catData[i,j] = cats[str(catData[i,j])]
+    return catData
 
-            
 @debug
 def main():
     #Get feature and target data
     data = np.genfromtxt(config.path(path, datafile.lower() + ".csv"), delimiter=",")
     cont, cat = data[:,d.continuous], data[:,d.categorical]
     costs = data[:,d.costs]
-    cont = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
+    cat = config.get(config.path(path, "formatCat.p"), formatNonNumerical, catData = cat)
+    cont = config.get(config.path(path, "formatCont.p"), splitContinuous, data = cont)
     # cont, newCat, newTags = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
     # cat = np.hstack((cat, newCat))
     # hotCats = config.get(config.path(path, "hotConts.p"),hotDemDats, data = cat)
@@ -89,6 +100,7 @@ if __name__ == "__main__":
         # "costs",\
         # "panda",\
         "feature",\
+        "format",\
         # "filtered_panda",\
         ], datafile = datafile)
     d = dc.Data(datafile)
