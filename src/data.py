@@ -69,6 +69,8 @@ class Data():
                 if sum([type(search("\W+%s[\WS]+" % x, details[1])) != type(None) for x in ["PAYMENT", "COST", "CHG", "CHARGE", "FEE", "EXP", "EXPENSE", "PD","PAID"]]) > 0:       
                     self.costs.append(self.tags.index(feature))
                     self.tags.remove(feature)
+        if len(self.costs) == 0:
+            print "WARNING: THIS DATASET HAS NO COST DATA"
         
 
     @debug
