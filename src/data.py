@@ -38,19 +38,18 @@ class Data():
         def download(self):
             import zipfile
             import urllib
-            dfile = config.path("..","data",self.datafile.upper() + ".zip")
+            dfile = config.path("..","data",self.datafile.upper(), self.datafile.upper() + ".zip")
             urllib.urlretrieve(config.download % self.datafile.lower(), dfile)
             with zipfile.ZipFile(dfile) as zf:
-                zf.extractall(config.path("..","data",self.datafile.upper()))
+                zf.extractall(config.path("..","data",self.datafile.upper(),"data"))
 
-        path = config.path("..","data",self.datafile, self.datafile.lower())
+        path = config.path("..","data",self.datafile, "data", self.datafile.lower())
 
         if not config.os.path.exists(path + ".dat"):    download(self)
         if config.os.path.exists(path + ".csv"): return
 
         indices = [self.features[tag][0] for tag in self.tags]
         printFormat = "".join(["%s" * (high - low) + "," for low,high in zip(indices, indices[1:])])
-        # print printFormat
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
@@ -91,7 +90,7 @@ class Data():
             with open(path, 'wb') as f:
                 f.write(page)
             return page
-        path = config.path("..","data",self.datafile,"codebook.txt")
+        path = config.path("..","data",self.datafile,"data","codebook.txt")
 
         if not config.os.path.exists(path):
             page = download(path)

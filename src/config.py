@@ -34,6 +34,7 @@ def path(*path):
     return targetpath
 
 def get(fpath, func, **kwargs):
+    print "Checking %s ..." % fpath
     if os.path.exists(fpath):
         return p.load(open(fpath, 'rb'))
     res = func(**kwargs)
@@ -44,6 +45,7 @@ def get(fpath, func, **kwargs):
 
 def load(fpath):
     if os.path.exists(fpath):
+        print "Cache Loading from %s" % fpath
         return p.load(open(fpath, 'rb'))
     else:
         return None
@@ -57,5 +59,6 @@ def clean(args, datafile):
     for arg in args:
         pathD = os.path.join(delPath, arg)
         if os.path.exists(pathD):
+            print "Cleaning ... %s" % arg
             shutil.rmtree(pathD)
 
