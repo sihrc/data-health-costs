@@ -13,13 +13,14 @@ from wrappers import debug
 import data as dc
 import feature_selection as fs
 
-
+@debug
 def loadData(datafile, cost, d):
     path = config.path("..","data",datafile,"features","features%s.p" % cost)
     if not config.os.path.exists(path):
         fs.select([d.tags.index(cost)], datafile, d)
     return config.load(path)
 
+@debug
 def main(cost, datafile, importance):
     #Get Data Handler
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)
