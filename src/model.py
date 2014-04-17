@@ -37,14 +37,17 @@ def main(cost, datafile, importance):
 
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    import sys
+    datafile = sys.argv[1]
 
     # Clean Past Data
     config.clean([\
         # "data",\
-        "features",\
+        # "features",\
         # "formatted",\
         # "models",\
         ], datafile = datafile)
-
-    main("IPDMD11X",datafile, 15)
+        
+    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)  
+    print "\n".join([d.tags[tag] + "\t" + d.features[d.tags[tag]][1] for tag in d.costs])
+    main(raw_input("Pick a cost\n"),datafile, 15)
