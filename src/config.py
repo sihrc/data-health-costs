@@ -52,6 +52,10 @@ def load(fpath):
 
 @debug
 def clean(args, datafile):
+    """
+    Config - clean function
+    Clean previously cached items
+    """
     import os
     import shutil
     delPath = path("..","data",datafile)

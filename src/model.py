@@ -15,6 +15,9 @@ import feature_selection as fs
 
 @debug
 def loadData(datafile, cost, d):
+    """
+    Loads the feature pickle file from feature_selection.py
+    """
     path = config.path("..","data",datafile,"features","features%s.p" % cost)
     if not config.os.path.exists(path):
         fs.select([d.tags.index(cost)], datafile, d)
@@ -22,6 +25,9 @@ def loadData(datafile, cost, d):
 
 @debug
 def main(cost, datafile, importance):
+    """
+    Runs main model and predicts for an accuracy score
+    """
     #Get Data Handler
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)
     #Get Data
