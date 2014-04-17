@@ -17,7 +17,8 @@ class Data():
     saving and loading temporary sessions
     """
     @debug
-    def __init__ (self, datafile = ""):
+    def __init__ (self, datafile = "", include_costs = False):
+        self.include_costs = include_costs
         self.datafile = datafile
         self.features = {}
         self.tags = []
@@ -67,8 +68,12 @@ class Data():
         for feature, details in self.features.items():
             if "$" in details[-1][-1][1]:
                 if sum([type(search("\W+%s[\WS]+" % x, details[1])) != type(None) for x in ["PAYMENT", "COST", "CHG", "CHARGE", "FEE", "EXP", "EXPENSE", "PD","PAID"]]) > 0:       
-                    self.costs.append(self.tags.index(feature))
-                    self.tags.remove(feature)
+                    index = self.tags.index(feature)
+                    if index in self.categorical:
+                        self.categorical.remove(index)
+                    if index in self.continuous:
+                        self.continuous.remove(index)
+                    self.costs.append(index)
         if len(self.costs) == 0:
             print "WARNING: THIS DATASET HAS NO COST DATA"
         
@@ -127,6 +132,7 @@ class Data():
         tag = ""
         value_list = []
         count = 0
+        cost_tags = [self.tags[cost] for cost in self.costs]
         for line in values.split("\n")[1:]:
             if line.strip() == "":
                 continue
@@ -158,5 +164,5 @@ class Data():
 
 if __name__ == "__main__":
     import sys
-    data = Data("H147")
+    data = Data("H147", include_costs = True)
 
