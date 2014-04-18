@@ -50,6 +50,9 @@ def load(fpath):
     else:
         return None
 
+def save(fpath, data):
+    p.dump(data, open(fpath, 'wb'))
+
 @debug
 def clean(args, datafile):
     """

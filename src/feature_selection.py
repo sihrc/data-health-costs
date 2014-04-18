@@ -39,7 +39,8 @@ def writeFeatures(costFeature, model, data, costData, d):
             write = "%s#%f\n" % (d.tags[feature], importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
     tags = d.continuous + d.categorical
-    return data[:,[tags.index(tag) for tag, value in sortedFeatures]], costData
+    tagList = [tags.index(tag) for tag, value in sortedFeatures]
+    return [d.tags[tag] for tag in  tagList], data[:,tagList], costData
 
 
 @debug

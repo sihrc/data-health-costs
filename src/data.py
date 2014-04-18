@@ -16,7 +16,6 @@ class Data():
     getting data for features as well as loading data, 
     saving and loading temporary sessions
     """
-    @debug
     def __init__ (self, datafile = "", include_costs = False):
         self.include_costs = include_costs
         self.datafile = datafile
