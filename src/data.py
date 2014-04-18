@@ -1,13 +1,16 @@
 """
 Data Acquisition 
-author:chris
+author:chris @ sihrc
 """
 
-import config
-from wrappers import debug
-
+#Python Modules
 import string
 from re import search
+
+#Local Modules
+import config
+from wrappers import debug
+import get_features as gf
 
 class Data():
     """
@@ -28,6 +31,7 @@ class Data():
         self.parseCodebook()
         self.writeDataCSV()
         self.getCostFeatures()
+        self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
 
     @debug
     def writeDataCSV(self):
@@ -83,7 +87,6 @@ class Data():
         author: chris
         """
         import urllib2, unicodedata
-        from bs4 import BeautifulSoup
         def download(path):
             page = urllib2.urlopen(config.codebook.format(self.datafile.lower())).read()
             with open(path, 'wb') as f:
@@ -150,6 +153,9 @@ class Data():
                 value_list = []
                 continue
         return
+
+    def getTagIndices(self,tagNames):
+        return [self.tags.index[tag] for tag in tagNames]
     
     """
     Class native methods

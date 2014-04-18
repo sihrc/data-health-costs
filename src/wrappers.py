@@ -10,7 +10,7 @@ author: chris
 def debug(func):
 	def wrapper(*arg, **kwargs):
 		print "======================================="
-		print "Currently Running:%s from %s"% (func.func_name, func.__doc__[:12] + "..")
+		print "Currently Running:%s from %s"% (func.func_name, func.__doc__)
 		t1 = time.time()
 		res = func(*arg,**kwargs)
 		t2 = time.time()

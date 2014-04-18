@@ -22,7 +22,7 @@ def formatNonNumerical(catData):
                 cats[str(catData[i,j])] = counter
                 counter+= 1
             catData[i,j] = cats[str(catData[i,j])]
-    config.save(cats, mapPath)
+    config.save(mapPath, cats)
     return catData
 
 @debug
