@@ -3,15 +3,12 @@ Model Script
 Creates models based on selected features from feature_selection or user input
 author: chris @ sihrc
 """
-
 #Python Modules
 # from sklearn.ensemble import GradientBoostingRegressor as Model
 # from sklearn.linear_model import Ridge as Model
 from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
-
-
 
 #Local Modules
 import config
