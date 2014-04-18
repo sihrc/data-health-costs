@@ -59,7 +59,6 @@ if __name__ == "__main__":
         # "data",\
         # "features",\
         # "formatted",\
-        # "models",\
         ], datafile = datafile)
     d = dc.Data(datafile = datafile)
     d.printTargetTags()
