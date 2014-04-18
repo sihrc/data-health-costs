@@ -49,10 +49,10 @@ if __name__ == "__main__":
 
     # Clean Past Data
     config.clean([\
-        # "data",\
-        # "features",\
-        # "formatted",\
-        # "models",\
+        "data",\
+        "features",\
+        "formatted",\
+        "models",\
         ], datafile = datafile)
         
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)  

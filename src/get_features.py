@@ -26,7 +26,7 @@ def download(datafile):
 @debug
 def read_tables(datafile):
     """
-    From get_features.py\n
+    From get_features.py
     Parses the HTML as plain text
     Returns dictionary of {titles:variables}
     """
@@ -41,13 +41,14 @@ def read_tables(datafile):
     end = page.find("<a name=\"Appendix1\">")
     soup = Soup(page[:end])
     titles = [str(title.text) for title in soup.find_all("p",{"class":"contentStyle"})][2:]
-    # print page[:end][:1000]
+    if len(titles) == 0:
+        titles = [str(title.text) for title in soup.find_all("caption",{"class","dtCaption"})]  
     tables = []
     for line in soup.find_all("table",{"class":"contentStyle"}):
         tables.append([str(tag.text) for tag in line.find_all("th")][3:])
-    
     variables = dict(zip(titles,tables))
     return variables
 
 if __name__ == "__main__":
-    read_tables("H147")
+    import sys
+    read_tables(sys.argv[1])

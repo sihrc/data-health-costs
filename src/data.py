@@ -32,6 +32,7 @@ class Data():
         self.writeDataCSV()
         self.getCostFeatures()
         self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
+        self.writeTables()
 
     @debug
     def writeDataCSV(self):
@@ -153,6 +154,21 @@ class Data():
                 value_list = []
                 continue
         return
+
+    @debug
+    def writeTables(self):
+        """
+        In data.py
+        Writing tables to file for user to reference
+        """
+        path = config.path("..","data",self.datafile,"data", "variables.txt")
+        if config.os.path.exists(path):
+            return
+        with open(path, 'wb') as f:
+            f.write("Variables found for data set %s\n" % self.datafile)
+            for title, tables in self.varTables.items():
+                f.write("\n\n=== %s ===\n" % title)
+                f.write("\n".join(["\t%s\t%s" % (tag, self.features[tag][1]) for tag in tables if tag in self.features]))
 
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]
