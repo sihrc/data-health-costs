@@ -31,7 +31,7 @@ def main(cost, datafile, importance):
     #Get Data Handler
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)
     #Get Data
-    features, target = loadData(datafile, cost, d)
+    tags, features, target = loadData(datafile, cost, d)
     #Splitting to testing and training datasets
     x_train, x_test, y_train, y_test = train_test_split(features[:,:importance], target,test_size=0.15, random_state=42)
 
