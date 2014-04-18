@@ -44,8 +44,6 @@ def read_tables(datafile):
     tables = [[str(tag.text) for tag in line.find_all("th")][3:] for line in soup.find_all("table",{"class":"contentStyle"})]
     titles = [str(title.text) for title in soup.find_all("p",{"class":"contentStyle"})][2:]
     if len(titles) == 0: titles = [str(title.text) for title in soup.find_all("caption",{"class","dtCaption"})]  
-    print tables
-    print titles
     #Create dictionary
     variables = dict(zip(titles,tables))
     return variables
