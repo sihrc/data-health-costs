@@ -10,6 +10,7 @@ import config
 import format_features
 import feature_selection
 import data_helper
+from Tkinter import *
 
 """
 Scenarios:
@@ -22,4 +23,5 @@ V.
 """
 
 if __name__ == "__main__":
-    args = sys.argv
+    root = Tk()
+    root.title("")

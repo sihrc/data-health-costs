@@ -1,16 +1,22 @@
+#Python Modules
 import matplotlib.pyplot as plt
 import pickle as p
-import config
-from wrappers import debug
 from os import listdir
 from scipy import stats
+import numpy as np
 
+#Local Modules
+from wrappers import debug
+import config
+import data_helper as dc
+import model
 
 
 def correlationGraph(target, inputFeature, featureName):
     plt.clf()
     plt.plot(inputFeature, target, "ro")
-    plt.savefig(config.path("..", "visual", dataFile, cost + "_" + featureName + ".png"))
+    plt.axis([0,np.max(inputFeature),0,100000])
+    plt.savefig(config.path("..", "visual", datafile, cost + "_" + featureName + ".png"))
 
 def normalCorrGraph(target, inputFeature, featureName):
     plt.clf()
@@ -20,7 +26,7 @@ def normalCorrGraph(target, inputFeature, featureName):
     else:
         normalFeature = inputFeature/inputFeature.max()
     plt.plot(normalFeature, normalTarget, "ro")
-    plt.savefig(config.path("..", "visual", dataFile, "normal" + cost + "_" + featureName + ".png"))
+    plt.savefig(config.path("..", "visual", datafile, "normal" + cost + "_" + featureName + ".png"))
 
 def CDF(panda, feature):
     data = panda[feature].as_matrix().astype('float')
@@ -28,42 +34,39 @@ def CDF(panda, feature):
 
     plt.clf()
     plt.plot(data)
-    plt.savefig(path("..","visual",dataFile, "CDF_%s.png" % feature))
+    plt.savefig(path("..","visual",datafile, "CDF_%s.png" % feature))
 
 def PMF(panda, feature):
     data = panda[feature].as_matrix().astype("float")
 
     plt.clf()
     plt.plot(stats.rv_discrete.pmf(data))
-    plt.savefig(path("..","visual", dataFile, "PMF_%s.png") % feature)
+    plt.savefig(path("..","visual", datafile, "PMF_%s.png") % feature)
 
 
 def clean():
     from shutil import rmtree
-    rmtree(path("..","visual",dataFile))
+    path = config.path("..","visual",datafile)
+    if config.os.path.exists(path):
+        rmtree(path)
 
 if __name__ == "__main__":
-    dataFile = "H144D"
-    cost  = "IPFTC11X"
-    myPath = config.path("..", "data", dataFile,  "features", "features" + cost + ".p")
-    featureData = config.load(myPath)
+    import sys
+    datafile =  sys.argv[1]
+    clean()
+    # Clean Past Data
+    config.clean([\
+        # "data",\
+        # "features",\
+        # "formatted",\
+        # "models",\
+        ], datafile = datafile)
+    d = dc.Data(datafile = datafile)
+    d.printTargetTags()
+    cost  = raw_input("Pick a cost\n")
+    importance = 10
+    model.loadData(datafile, cost, d, True)
+    featureData = config.load(config.path("..", "data", datafile,  "features", "features" + cost + ".p"))
     for i, name in enumerate(featureData[0][:11]):
         correlationGraph(featureData[2], featureData[1][:,i], name)
         normalCorrGraph(featureData[2], featureData[1][:,i], name)
-        # CDF(raw_panda, feature)
-        # PMF(raw_panda, feature)       
-
-
-    # for feature in features_to_plot:
-    #     correlationGraph(feature, cost_feature)
-    #     CDF(raw_panda, feature)
-    #     PMF(raw_panda, feature)
-
-
-    # for fileName in listdir(pathD):
-    #     if "feature_importance" in  fileName:
-    #         with open(path(pathD, fileName), 'rb') as f:
-    #             for i,line in enumerate(f):
-    #                 if i == 10:
-    #                     break
-    #                 correlationGraph(fileName[19:-4], line.split()[0])

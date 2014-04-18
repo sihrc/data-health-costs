@@ -49,7 +49,7 @@ def costModel(x_train, y_train):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model = Model()
+    model = Model(100)
     model.fit(x_train, y_train)
 
     return model
@@ -57,7 +57,7 @@ def costModel(x_train, y_train):
 
 
 @debug
-def select(costIndices, datafile, d):
+def select(costIndices, datafile, d, include_costs = False):
     """
     Performs feature selection given datafile
     """
@@ -68,28 +68,25 @@ def select(costIndices, datafile, d):
     data = np.genfromtxt(config.path(path, "data", datafile.lower() + ".csv"), delimiter=",")
     cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatNonNumerical, catData = data[:,d.categorical])
     cont = config.get(config.path(path, "formatted", "formatCont.p"), ff.splitContinuous, data = data[:,d.continuous])
+    costs = data[:,d.costs]
     # One hotting categorical data for non decision tree models
     # cont, newCat, newTags = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
     # cat = np.hstack((cat, newCat))
     # hotCats = config.get(config.path(path, "hotConts.p"),one_hot, data = cat)
     training_data = np.hstack((cont,cat))
-    x_train, x_test, y_train, y_test = train_test_split(training_data, data[:,d.costs],test_size=0.15, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(training_data, costs,test_size=0.15, random_state=42)
 
     # moneyError = []
     #Loops through every cost found in datafile
-    for costIndex in costIndices:
-        target = d.costs.index(costIndex)
+    for costIndex in [d.costs.index(tag) for tag in costIndices]:
+        if include_costs:
+            x_train_ = np.hstack((x_train, y_train[:,:costIndex], y_train[:,costIndex + 1:]))
+            x_test_ = np.hstack((x_test, y_test[:,:costIndex], y_test[:,costIndex + 1:]))
         #Splitting to testing and training datasets
-        model = config.get(config.path(path,"models", "model_%s.p" % d.tags[costIndex]), costModel, x_train = x_train, y_train = y_train[:,target])
+        model = config.get(config.path(path,"models", "model_%s.p" % d.tags[costIndex]), costModel, x_train = x_train_, y_train = y_train[:,costIndex])
 
         #Sorting and Writing Important Features
-        feat_indices = config.get(config.path(path,"features", "features%s.p" % d.tags[costIndex]), writeFeatures, costFeature = costIndex, model = model, data = training_data, costData = data[:,costIndex], d = d)
-
-        #Testing model accuracies
-        # predictions = model.predict(x_test)
-        # accuracy = score(predictions, y_test[:,target])
-        # moneyError.append((d.tags[costIndex],accuracy ** .5))
-    # print moneyError
+        feat_indices = config.get(config.path(path,"features", "features%s.p" % d.tags[d.costs[costIndex]]), writeFeatures, costFeature = costIndex, model = model, data = np.vstack((x_train_,x_test_)), costData = costs[:,costIndex], d = d)
 
 if __name__ == "__main__":
     datafile = "H144D"

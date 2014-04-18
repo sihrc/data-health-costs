@@ -5,8 +5,8 @@ author: chris @ sihrc
 """
 #Python Modules
 # from sklearn.ensemble import GradientBoostingRegressor as Model
-# from sklearn.linear_model import Ridge as Model
-from sklearn.ensemble import RandomForestRegressor as Model
+from sklearn.linear_model import Ridge as Model
+# from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
 
@@ -17,24 +17,22 @@ import data_helper as dc
 import feature_selection as fs
 
 @debug
-def loadData(datafile, cost, d):
+def loadData(datafile, cost, d, include_costs):
     """
     Loads the feature pickle file from feature_selection.py
     """
     path = config.path("..","data",datafile,"features","features%s.p" % cost)
     if not config.os.path.exists(path):
-        fs.select([d.tags.index(cost)], datafile, d)
+        fs.select([d.tags.index(cost)], datafile, d, include_costs = include_costs)
     return config.load(path)
 
 @debug
-def main(cost, datafile, importance):
+def main(cost, datafile, importance ,d, include_costs = False):
     """
     Runs main model and predicts for an accuracy score
     """
     #Get Data Handler
-    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)
-    #Get Data
-    tags, features, target = loadData(datafile, cost, d)
+    tags, features, target = loadData(datafile, cost, d, include_costs)
     #Splitting to testing and training datasets
     x_train, x_test, y_train, y_test = train_test_split(features[:,:importance], target,test_size=0.15, random_state=42)
 
@@ -58,5 +56,5 @@ if __name__ == "__main__":
         ], datafile = datafile)
         
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)  
-    print "\n".join([d.tags[tag] + "\t" + d.features[d.tags[tag]][1] for tag in d.costs])
-    main(raw_input("Pick a cost\n"),datafile, 15)
+    
+    main(raw_input("Pick a cost\n"),datafile, 15, d, False)

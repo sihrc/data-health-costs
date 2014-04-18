@@ -20,8 +20,7 @@ class Data():
     getting data for features as well as loading data, 
     saving and loading temporary sessions
     """
-    def __init__ (self, datafile = "", include_costs = False):
-        self.include_costs = include_costs
+    def __init__ (self, datafile = ""):
         self.datafile = datafile
         self.features = {}
         self.tags = []
@@ -174,6 +173,8 @@ class Data():
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]
     
+    def printTargetTags(self):
+        print "\n".join([self.tags[tag] + "\t" + self.features[self.tags[tag]][1] for tag in self.costs])
     """
     Class native methods
     """
@@ -185,5 +186,5 @@ class Data():
 
 if __name__ == "__main__":
     import sys
-    data = Data("H147", include_costs = True)
+    data = Data(sys.argv[1])
 
