@@ -3,6 +3,7 @@ import numpy as np
 
 #Local Modules
 from wrappers import debug
+import config
 
 @debug 
 def formatNonNumerical(catData):
@@ -10,7 +11,10 @@ def formatNonNumerical(catData):
     Formats nonumerical data found in categorical data
     Returns new categorical data with refitted values
     """
-    cats = {}
+    mapPath = config.path("..","data", "category_mapper.p")
+    cats = config.load(mapPath)
+    if cats == None:
+        cats = {}
     counter = 0
     for i in xrange(catData.shape[0]):
         for j in xrange(catData.shape[1]):
@@ -18,6 +22,7 @@ def formatNonNumerical(catData):
                 cats[str(catData[i,j])] = counter
                 counter+= 1
             catData[i,j] = cats[str(catData[i,j])]
+    config.save(cats, mapPath)
     return catData
 
 @debug
