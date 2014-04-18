@@ -1,3 +1,9 @@
+"""
+Model Script
+Creates models based on selected features from feature_selection or user input
+author: chris @ sihrc
+"""
+
 #Python Modules
 # from sklearn.ensemble import GradientBoostingRegressor as Model
 # from sklearn.linear_model import Ridge as Model
@@ -46,7 +52,6 @@ def main(cost, datafile, importance):
 if __name__ == "__main__":
     import sys
     datafile = sys.argv[1]
-
     # Clean Past Data
     config.clean([\
         "data",\
