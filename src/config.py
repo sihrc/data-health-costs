@@ -16,12 +16,12 @@ Data sets
 codebook = "http://meps.ahrq.gov/mepsweb/data_stats/download_data/pufs/{0}/{0}su.txt"
 download = "http://meps.ahrq.gov/data_files/pufs/%sdat.zip"
 tables = "http://meps.ahrq.gov/mepsweb/data_stats/download_data/pufs/{0}/{0}doc.shtml"
+
 def path(*path):
     """
-    Replacement for os.path.join
+    in config.py
     It performs makedirs on paths that don't exists
-    Returns the os.path.join() result   
-    author:chris
+    Returns the path   
     """
     if len(path) == 0:
         return ""
@@ -34,6 +34,10 @@ def path(*path):
     return targetpath
 
 def get(fpath, func, **kwargs):
+    """
+    in config.py
+    Caching function
+    """
     print "Checking %s ..." % fpath
     if os.path.exists(fpath):
         return p.load(open(fpath, 'rb'))
@@ -44,6 +48,10 @@ def get(fpath, func, **kwargs):
     return res
 
 def load(fpath):
+    """
+    in config.py
+    Pickle load that checks for path
+    """
     if os.path.exists(fpath):
         print "Cache Loading from %s" % fpath
         return p.load(open(fpath, 'rb'))
@@ -51,11 +59,16 @@ def load(fpath):
         return None
 
 def save(fpath, data):
+    """
+    in config.py
+    Pickle save
+    """
     p.dump(data, open(fpath, 'wb'))
 
 @debug
 def clean(args, datafile):
     """
+    in config.py
     Config - clean function
     Clean previously cached items
     """
