@@ -8,6 +8,9 @@ import time
 author: chris
 """
 def debug(func):
+    """
+    Debug Wrapper that prints time elapsed
+    """
     def wrapper(*arg, **kwargs):
         print "======================================="
         print "Currently Running:%s from %s"% (func.func_name, func.__doc__)
