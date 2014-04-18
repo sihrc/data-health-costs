@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error as score
 #Local Modules
 import config
 from wrappers import debug
-import data as dc
+import data_helper as dc
 import feature_selection as fs
 
 @debug

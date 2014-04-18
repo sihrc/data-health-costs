@@ -9,7 +9,7 @@ import model
 import config
 import format_features
 import feature_selection
-import data
+import data_helper
 
 """
 Scenarios:
