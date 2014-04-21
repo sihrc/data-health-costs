@@ -55,6 +55,6 @@ if __name__ == "__main__":
         "models",\
         ], datafile = datafile)
         
-    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)  
+    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)  
     
     main(raw_input("Pick a cost\n"),datafile, 15, d, False)

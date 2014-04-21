@@ -5,8 +5,8 @@ author:chris
 
 #Python Modules
 # from sklearn.ensemble import GradientBoostingRegressor as Model
-from sklearn.linear_model import Ridge as Model
-# from sklearn.ensemble import RandomForestRegressor as Model
+# from sklearn.linear_model import Ridge as Model
+from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
 import numpy as np
@@ -82,6 +82,9 @@ def select(costIndices, datafile, d, include_costs = False):
         if include_costs:
             x_train_ = np.hstack((x_train, y_train[:,:costIndex], y_train[:,costIndex + 1:]))
             x_test_ = np.hstack((x_test, y_test[:,:costIndex], y_test[:,costIndex + 1:]))
+        else:
+            x_train_ = x_train
+            x_test_ = x_test
         #Splitting to testing and training datasets
         model = config.get(config.path(path,"models", "model_%s.p" % d.tags[costIndex]), costModel, x_train = x_train_, y_train = y_train[:,costIndex])
 
@@ -98,5 +101,5 @@ if __name__ == "__main__":
         "models",\
         ], datafile = datafile)
 
-    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile, include_costs = False)
+    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)
     select(d.costs, datafile, d)
