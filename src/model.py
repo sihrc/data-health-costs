@@ -23,7 +23,7 @@ def loadData(datafile, cost, d, include_costs):
     """
     path = config.path("..","data",datafile,"features","features%s.p" % cost)
     if not config.os.path.exists(path):
-        fs.select([d.tags.index(cost)], datafile, d, include_costs = include_costs)
+        fs.select([d.tags.index(cost)], datafile, d, include_costs = include_costs, predict = True)
     return config.load(path)
 
 @debug

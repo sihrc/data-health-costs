@@ -57,7 +57,7 @@ def costModel(x_train, y_train):
 
 
 @debug
-def select(costIndices, datafile, d, include_costs = False):
+def select(costIndices, datafile, d, include_costs = False, predict = True):
     """
     Performs feature selection given datafile
     """
@@ -91,9 +91,10 @@ def select(costIndices, datafile, d, include_costs = False):
         #Sorting and Writing Important Features
         feat_indices = config.get(config.path(path,"features", "features%s.p" % d.tags[d.costs[costIndex]]), writeFeatures, costFeature = costIndex, model = model, data = np.vstack((x_train_,x_test_)), costData = costs[:,costIndex], d = d)
 
-    predictions = model.predict(x_test)
-    accuracy = score(predictions, y_test)
-    print "Model accuracy before feature selection for cost:%s\taccuracy:%f" % (d.tags[costIndex], accuracy ** .5)
+        if predict:
+            predictions = model.predict(x_test)
+            accuracy = score(predictions, y_test)
+            print "Model accuracy before feature selection for cost:%s\taccuracy:%f" % (d.tags[costIndex], accuracy ** .5)
 
 if __name__ == "__main__":
     datafile = "H144D"
