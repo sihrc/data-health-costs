@@ -36,12 +36,13 @@ def main(cost, datafile, importance ,d, include_costs = False):
     #Splitting to testing and training datasets
     x_train, x_test, y_train, y_test = train_test_split(features[:,:importance], target,test_size=0.15, random_state=42)
 
-    model = Model()
+    model = Model(100)
     model.fit(x_train, y_train)
 
     predictions = model.predict(x_test)
     accuracy = score(predictions, y_test)
-    print accuracy ** .5
+    print "Model accuracy after feature selection of:\n{0}\nfor cost: {1}\t accuracy:{2}"\
+    .format("\n",join(tags),cost, accuracy ** .5)
 
 
 if __name__ == "__main__":
@@ -56,5 +57,4 @@ if __name__ == "__main__":
         ], datafile = datafile)
         
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)  
-    
-    main(raw_input("Pick a cost\n"),datafile, 15, d, False)
+    main(d.costInput(),datafile, 15, d, False)
