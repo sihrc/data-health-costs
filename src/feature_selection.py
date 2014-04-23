@@ -57,15 +57,15 @@ def costModel(x_train, y_train):
 
 
 @debug
-def select(costIndices, datafile, d, include_costs = False, predict = True):
+def select(costIndices, d, include_costs = False, predict = True):
     """
     Performs feature selection given datafile
     """
     #Get Data Handler
-    path = config.path("..","data",datafile)
+    path = config.path("..","data",d.datafile)
 
     #Get feature and target data
-    data = np.genfromtxt(config.path(path, "data", datafile.lower() + ".csv"), delimiter=",")
+    data = np.genfromtxt(config.path(path, "data", d.datafile.lower() + ".csv"), delimiter=",")
     cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatNonNumerical, catData = data[:,d.categorical])
     cont = config.get(config.path(path, "formatted", "formatCont.p"), ff.splitContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
@@ -94,17 +94,19 @@ def select(costIndices, datafile, d, include_costs = False, predict = True):
         if predict:
             predictions = model.predict(x_test)
             accuracy = score(predictions, y_test)
+            config.save(config.path("..","data",d.datafile))
             print "Model accuracy before feature selection for cost:%s\taccuracy:%f" % (d.tags[costIndex], accuracy ** .5)
 
 if __name__ == "__main__":
-    datafile = "H144D"
+    import sys
+    datafile = sys.argv[1] 
     # Clean Past Data
     config.clean([\
         # "data",\
-        "formatted",\
-        "features",\
-        "models",\
+        # "formatted",\
+        # "features",\
+        # "models",\
         ], datafile = datafile)
 
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)
-    select(d.costs, datafile, d)
+    select(d.costs, d)

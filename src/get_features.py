@@ -37,17 +37,25 @@ def read_tables(datafile):
         with open(path, 'rb') as f:
             page = f.read()
     #Grab relevant section
-    start = page.find("<a name=\"DVariable\">D. Variable-Source Crosswalk</a>")
-    end = page.rfind("<a name=\"Appendix1\">")
-    soup = Soup(page[start:-abs(end)])
+    start = page.find("Variable-Source Crosswalk</a>")
+    # end = page[start:].rfind("Appendix")
+    end = 1
+    soup = Soup(page[start:-abs(end - start)])
+    # print page[start:]
+    # print start
+    # print end 
+    print page[start:-abs(end)]
     #Find tables and titles
-    tables = [[str(tag.text) for tag in line.find_all("th")][3:] for line in soup.find_all("table",{"class":"contentStyle"})]
-    titles = [str(title.text) for title in soup.find_all("p",{"class":"contentStyle"})][2:]
-    if len(titles) == 0: titles = [str(title.text) for title in soup.find_all("caption",{"class","dtCaption"})]  
+    tables = [[tag.text.encode("utf") for tag in line.find_all("th")][3:] for line in soup.find_all("table")]#,{"class":"contentStyle"})]
+    titles = [title.text.encode("utf") for title in soup.find_all("p",{"class":"contentStyle"})][2:]
+    # print tables
+    # print titles
+    if len(titles) == 0: titles = [str(title.text) for title in soup.find_all("caption")]#,{"class","dtCaption"})]  
     #Create dictionary
+    if len(tables) != len(titles): return "ERROR"
     variables = dict(zip(titles,tables))
     return variables
 
 if __name__ == "__main__":
     import sys
-    read_tables(sys.argv[1])
+    print read_tables(sys.argv[1])
