@@ -74,7 +74,7 @@ def select(costIndices, d, include_costs = False, predict = True):
     # cat = np.hstack((cat, newCat))
     # hotCats = config.get(config.path(path, "hotConts.p"),one_hot, data = cat)
     training_data = np.hstack((cont,cat))
-    x_train, x_test, y_train, y_test = train_test_split(training_data, costs,test_size=0.15, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
 
     # moneyError = []
     #Loops through every cost found in datafile
@@ -94,8 +94,8 @@ def select(costIndices, d, include_costs = False, predict = True):
         if predict:
             predictions = model.predict(x_test)
             accuracy = score(predictions, y_test)
-            config.save(config.path("..","data",d.datafile))
-            print "Model accuracy before feature selection for cost:%s\taccuracy:%f" % (d.tags[costIndex], accuracy ** .5)
+            config.save(config.path("..","data",d.datafile, "models", "%s_accuracy.p" % d.tags[costIndex]), accuracy)
+            print "Model accuracy before feature selection for cost:%s\terror:%f" % (d.tags[costIndex], accuracy ** .5)
 
 if __name__ == "__main__":
     import sys

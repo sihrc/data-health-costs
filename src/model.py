@@ -41,9 +41,9 @@ def main(cost, importance ,d, include_costs = False):
 
     predictions = model.predict(x_test)
     accuracy = score(predictions, y_test)
-    print "Model accuracy after feature selection of:\n{0}\nfor cost: {1}\t accuracy:{2}"\
+    config.save(config.path("..","data",d.datafile, "models", "%s_after%d_accuracy.p" % (d.tags[costIndex], importance)), accuracy)
+    print "Model accuracy after feature selection of:\n{0}\nfor cost: {1}\t error:{2}"\
     .format("\n".join(tags[:importance]),cost, accuracy ** .5)
-
 
 if __name__ == "__main__":
     import sys

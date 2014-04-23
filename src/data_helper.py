@@ -31,8 +31,8 @@ class Data():
         self.parseCodebook()
         self.writeDataCSV()
         self.getCostFeatures()
-        self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
-        self.writeTables()
+        # self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
+        # self.writeTables()
 
     @debug
     def writeDataCSV(self):
