@@ -65,6 +65,10 @@ def save(fpath, data):
     """
     p.dump(data, open(fpath, 'wb'))
 
+def write(fpath, data):
+    with open(fpath, 'wb') as f:
+        f.write("{0}".format(data))
+
 @debug
 def clean(args, datafile):
     """

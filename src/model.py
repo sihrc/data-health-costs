@@ -31,6 +31,8 @@ def main(cost, importance ,d, include_costs = False):
     """
     Runs main model and predicts for an accuracy score
     """
+    #Run Feature Seletion
+    fs.select([d.tags.index(cost)], d, include_costs = include_costs, predict = True)
     #Get Data Handler
     tags, features, target = loadData(cost, d, include_costs)
     #Splitting to testing and training datasets
@@ -40,10 +42,10 @@ def main(cost, importance ,d, include_costs = False):
     model.fit(x_train, y_train)
 
     predictions = model.predict(x_test)
-    accuracy = score(predictions, y_test)
-    config.save(config.path("..","data",d.datafile, "models", "%s_after%d_accuracy.p" % (d.tags[costIndex], importance)), accuracy)
+    accuracy = score(predictions, y_test) ** .5
+    config.write(config.path("..","data",d.datafile, "models", "%s_after%d_%f.p" % (cost, importance, float(accuracy))), accuracy)
     print "Model accuracy after feature selection of:\n{0}\nfor cost: {1}\t error:{2}"\
-    .format("\n".join(tags[:importance]),cost, accuracy ** .5)
+    .format("\n".join(tags[:importance]),cost, accuracy)
 
 if __name__ == "__main__":
     import sys
