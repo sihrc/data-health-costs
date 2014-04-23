@@ -94,7 +94,7 @@ def select(costIndices, d, include_costs = False, predict = True):
         if predict:
             predictions = model.predict(x_test)
             accuracy = score(predictions, y_test)
-            config.save(config.path("..","data",d.datafile, "models", "%s_accuracy.p" % d.tags[costIndex]), accuracy)
+            config.save(config.path("..","data",d.datafile, "models", "%s_before_accuracy.p" % d.tags[costIndex]), accuracy)
             print "Model accuracy before feature selection for cost:%s\terror:%f" % (d.tags[costIndex], accuracy ** .5)
 
 if __name__ == "__main__":
