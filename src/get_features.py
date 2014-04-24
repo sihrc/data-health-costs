@@ -4,7 +4,7 @@ author: chris @ sihrc
 """
 
 #Python Modules
-import urllib2, unicodedata
+import urllib2, unicodedata, re
 from bs4 import BeautifulSoup as Soup
 
 #Local Modules
@@ -36,25 +36,34 @@ def read_tables(datafile):
     else:
         with open(path, 'rb') as f:
             page = f.read()
-    #Grab relevant section
-    start = page.find("Variable-Source Crosswalk</a>")
-    # end = page[start:].rfind("Appendix")
-    end = 1
-    soup = Soup(page[start:-abs(end - start)])
-    # print page[start:]
-    # print start
-    # print end 
-    print page[start:-abs(end)]
-    #Find tables and titles
-    tables = [[tag.text.encode("utf") for tag in line.find_all("th")][3:] for line in soup.find_all("table")]#,{"class":"contentStyle"})]
-    titles = [title.text.encode("utf") for title in soup.find_all("p",{"class":"contentStyle"})][2:]
-    # print tables
-    # print titles
-    if len(titles) == 0: titles = [str(title.text) for title in soup.find_all("caption")]#,{"class","dtCaption"})]  
-    #Create dictionary
-    if len(tables) != len(titles): return "ERROR"
+    start = page.find("<a name=\"DVariable\">")
+    page = page[start:]
+    end = page.find("<a name=\"Appendix1\">")
+    soup = Soup(page[:end])
+    titles, tables = [], []
+    # print soup.find_all("table", {"class", "contentStyle"})
+    # raw_input()
+    found_titles = soup.find_all("p", {"class":"contentStyle"})[2:]
+    if len(found_titles) == 0:
+        found_titles = soup.find_all("caption")
+        print found_titles
+        for title in found_titles:
+            titles.append(title.text.encode("utf-8"))
+            tables.append([var.text.encode("utf-8") for var in title.parent.find_all("th")[3:]])
+    else:
+        for title in found_titles:
+            titles.append(title.text.encode('utf-8'))
+            tables.append([var.text.encode("utf-8") for var in title.find_next_sibling("table").find_all("th")[3:]])
+   
     variables = dict(zip(titles,tables))
-    return variables
+    print variables
+    if len(titles) == len(tables) and titles != [] and [] not in tables:
+        return True
+    else:
+        print tables
+        print titles
+        return False
+
 
 if __name__ == "__main__":
     import sys
