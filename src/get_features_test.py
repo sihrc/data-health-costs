@@ -5,7 +5,7 @@ import get_features as gf
 class Test(unittest.TestCase):
     def setUp(self):
         self.datafiles = [\
-                        # "H147",\
+                        "H147",\
                         # "H144D",\
                         # "H149",\
                         # "H143", \

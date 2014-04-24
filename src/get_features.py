@@ -4,7 +4,7 @@ author: chris @ sihrc
 """
 
 #Python Modules
-import urllib2, unicodedata, re
+import urllib2, unicodedata, re, sys
 from bs4 import BeautifulSoup as Soup
 
 #Local Modules
@@ -17,7 +17,11 @@ def download(datafile):
     From get_features.py\n
     Downloads the documentation as text file from HTML
     """
-    page = urllib2.urlopen(config.tables.format(datafile.lower())).read()
+    try:
+        page = urllib2.urlopen(config.tables.format(datafile.lower())).read()
+    except:
+        print "HTTP Failed: Check your connection to the internet or check the name of the datafile"
+        sys.exit()
     with open(config.path("..","data",datafile,"data", "tables.txt"), 'wb') as f:
         f.write(page)
     return page
@@ -45,20 +49,15 @@ def read_tables(datafile):
     titles, tables = [], []
     found_tables = soup.find_all("table", summary= re.compile("This table identifies the variable .*"))
     for table in found_tables:
-        title = table.caption
-        if title == None:
-            title = table.find_previous_sibling("p", {"class":"contentStyle"})
+        title = table.caption if table.caption != None else table.find_previous_sibling("p", {"class":"contentStyle"})
         titles.append(title.text.encode("utf-8"))
         tables.append([var.text.encode("utf-8") for var in table.find_all("th")[3:]])
 
     if not (len(titles) == len(tables) and titles != [] and [] not in tables):
         return False
-        
-    variables = dict(zip(titles,tables))
 
-    return variables
+    return dict(zip(titles,tables))
 
 
 if __name__ == "__main__":
-    import sys
     print read_tables(sys.argv[1])
