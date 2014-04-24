@@ -38,7 +38,6 @@ def read_tables(datafile):
             page = f.read()
     start = page.find("<a name=\"DVariable\">")
     if start == -1:
-        # start = len(page)-page.rfind("Variable-Source Crosswalk</a>")
         start = page.rfind("Variable-Source Crosswalk</a>")
     page = page[start:]
     end = page.rfind("<a name=\"Appendix")
