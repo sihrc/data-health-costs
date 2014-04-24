@@ -1,6 +1,6 @@
 #Python Modules
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder
+# from sklearn.preprocessing import OneHotEncoder
 #Local Modules
 from wrappers import debug
 import config
@@ -31,8 +31,9 @@ def one_hot(data):
     Performs binary vectorization of categorical data for non-decision tree models
     Returns one_hotted data
     """
-    enc = OneHotEncoder()
-    train = enc.fit_transform(data).toarray()
+    # enc = OneHotEncoder()
+    # train = enc.fit_transform(data).toarray()
+    
     return train
 
 @debug
@@ -49,7 +50,6 @@ def splitContinuous(data):
     invalid = data < 0
     
     newData[np.invert(invalid)] = 0
-    train= one_hot(newData)
 
     # data[invalid] = 0
     # mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
@@ -60,7 +60,7 @@ def splitContinuous(data):
     # for index in cols:
     #     if index not in tags:
     #         tags.append(index)
-    return train#, results, tags
+    return newData#, results, tags
 
 @debug
 def getCosts(data, costs):
