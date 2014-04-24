@@ -52,10 +52,10 @@ if __name__ == "__main__":
     datafile = sys.argv[1]
     # Clean Past Data
     config.clean([\
-        # "data",\
-        # "features",\
-        # "formatted",\
-        # "models",\
+        "data",\
+        "features",\
+        "formatted",\
+        "models",\
         ], datafile = datafile)
         
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)  

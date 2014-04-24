@@ -1,12 +1,23 @@
 #Python Modules
 import numpy as np
-# from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder as Sparse
+# from sklearn.decomposition import SparseCoder as Sparse
 #Local Modules
 from wrappers import debug
 import config
+@debug
+def one_hot(data):
+    """
+    Performs binary vectorization of categorical data for non-decision tree models
+    Returns one_hotted data
+    """
+    enc = Sparse()
+    train = enc.fit_transform(data).toarray()
+
+    return train
 
 @debug 
-def formatNonNumerical(catData):
+def formatCategorical(catData):
     """
     Formats nonumerical data found in categorical data
     Returns new categorical data with refitted values
@@ -23,21 +34,12 @@ def formatNonNumerical(catData):
                 counter+= 1
             catData[i,j] = cats[str(catData[i,j])]
     config.save(mapPath, cats)
+    catData = one_hot(catData)
     return catData
 
-@debug
-def one_hot(data):
-    """
-    Performs binary vectorization of categorical data for non-decision tree models
-    Returns one_hotted data
-    """
-    # enc = OneHotEncoder()
-    # train = enc.fit_transform(data).toarray()
-    
-    return train
 
 @debug
-def splitContinuous(data):
+def formatContinuous(data):
     """
     Splits continuous data from categorical data (negative values)
     Returns the data with replaced negative values with mean

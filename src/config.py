@@ -80,13 +80,22 @@ def clean(args, datafile):
     import shutil
     delPath = path("..","data",datafile)
     if not os.path.exists(delPath): return
+    always = False
     for arg in args:
         pathD = os.path.join(delPath, arg)
         if os.path.exists(pathD):
-            if raw_input("Clean %s?(y/n)" % arg) == "y":
+            if always:
                 shutil.rmtree(pathD)
                 print "Cleaning ... %s" % arg
             else:
-                print "Did not clean %s" % arg
-                continue
+                response = raw_input("Clean %s?(y/n/a)" % arg)
+                if response.lower() == "a": 
+                    always = True
+                    response = "y"
+                if response.lower() == "y":
+                    shutil.rmtree(pathD)
+                    print "Cleaning ... %s" % arg
+                else:
+                    print "Did not clean %s" % arg
+                    continue
 

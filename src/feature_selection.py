@@ -9,6 +9,7 @@ author:chris
 from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
+from sklearn.feature_selection import RFE
 import numpy as np
 
 #Local Modules
@@ -50,9 +51,10 @@ def costModel(x_train, y_train):
     Returns model as specified in import
     """
     model = Model(100)
-    model.fit(x_train, y_train)
-
-    return model
+    tenth = int(xtrain.shape[1]/10)
+    selector = RFE(model, tenth, tenth)
+    selector.fit(x_train, y_train)
+    return selector
 
 
 
@@ -66,8 +68,8 @@ def select(costIndices, d, include_costs = False, predict = True):
 
     #Get feature and target data
     data = np.genfromtxt(config.path(path, "data", d.datafile.lower() + ".csv"), delimiter=",")
-    cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatNonNumerical, catData = data[:,d.categorical])
-    cont = config.get(config.path(path, "formatted", "formatCont.p"), ff.splitContinuous, data = data[:,d.continuous])
+    cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatCategorical, catData = data[:,d.categorical])
+    cont = config.get(config.path(path, "formatted", "formatCont.p"), ff.formatContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
     # One hotting categorical data for non decision tree models
     # cont, newCat, newTags = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
@@ -102,10 +104,10 @@ if __name__ == "__main__":
     datafile = sys.argv[1] 
     # Clean Past Data
     config.clean([\
-        # "data",\
-        # "formatted",\
-        # "features",\
-        # "models",\
+        "data",\
+        "formatted",\
+        "features",\
+        "models",\
         ], datafile = datafile)
 
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)
