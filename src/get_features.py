@@ -56,7 +56,6 @@ def read_tables(datafile):
         return False
         
     variables = dict(zip(titles,tables))
-    print variables
 
     return variables
 
