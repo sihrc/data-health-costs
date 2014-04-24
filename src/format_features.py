@@ -32,7 +32,7 @@ def one_hot(data):
     Returns one_hotted data
     """
     enc = OneHotEncoder()
-    train = enc.fit_transform(data, y = None).toarray()
+    train = enc.fit_transform(data).toarray()
     return train
 
 @debug
@@ -51,10 +51,10 @@ def splitContinuous(data):
     newData[np.invert(invalid)] = 0
     train= one_hot(newData)
 
-    data[invalid] = 0
-    mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
-    cols = np.where(invalid)[1]
-    data[invalid] = mean[cols]
+    # data[invalid] = 0
+    # mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
+    # cols = np.where(invalid)[1]
+    # data[invalid] = mean[cols]
 
     # tags = list()
     # for index in cols:
