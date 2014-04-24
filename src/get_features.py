@@ -37,23 +37,36 @@ def read_tables(datafile):
         with open(path, 'rb') as f:
             page = f.read()
     start = page.find("<a name=\"DVariable\">")
+    if start == -1:
+        # start = len(page)-page.rfind("Variable-Source Crosswalk</a>")
+        start = page.rfind("Variable-Source Crosswalk</a>")
     page = page[start:]
-    end = page.find("<a name=\"Appendix1\">")
+    end = page.rfind("<a name=\"Appendix")
     soup = Soup(page[:end])
     titles, tables = [], []
-    # print soup.find_all("table", {"class", "contentStyle"})
+    # print start
+    # print page[:end]
+    found_tables = soup.find_all("table", summary= re.compile("This table identifies the variable .*"))
+    # print found_tables
+    for table in found_tables:
+        title = table.caption
+        if title == None:
+            # title = table.parent
+            title = table.find_previous_sibling("p", {"class":"contentStyle"})
+        titles.append(title.text.encode("utf-8"))
+        tables.append([var.text.encode("utf-8") for var in table.find_all("th")[3:]])
     # raw_input()
-    found_titles = soup.find_all("p", {"class":"contentStyle"})[2:]
-    if len(found_titles) == 0:
-        found_titles = soup.find_all("caption")
-        print found_titles
-        for title in found_titles:
-            titles.append(title.text.encode("utf-8"))
-            tables.append([var.text.encode("utf-8") for var in title.parent.find_all("th")[3:]])
-    else:
-        for title in found_titles:
-            titles.append(title.text.encode('utf-8'))
-            tables.append([var.text.encode("utf-8") for var in title.find_next_sibling("table").find_all("th")[3:]])
+    # found_titles = soup.find_all("p", {"class":"contentStyle"})[2:]
+    # if len(found_titles) == 0:
+    #     found_titles = soup.find_all("caption")
+    #     print found_titles
+    #     for title in found_titles:
+    #         titles.append(title.text.encode("utf-8"))
+    #         tables.append([var.text.encode("utf-8") for var in title.parent.find_all("th")[3:]])
+    # else:
+    #     for title in found_titles:
+    #         titles.append(title.text.encode('utf-8'))
+    #         tables.append([var.text.encode("utf-8") for var in title.find_next_sibling("table").find_all("th")[3:]])
    
     variables = dict(zip(titles,tables))
     print variables
