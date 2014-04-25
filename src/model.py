@@ -61,9 +61,8 @@ def main(costIndices, d, include_costs = False, show_original = False):
 
     #Get feature and target data
     data = np.genfromtxt(config.path(path, "data", d.datafile.lower() + ".csv"), delimiter=",")
-    # cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatCategorical, catData = data[:,d.categorical])
-    cat = ff.formatCategorical(catData = data[:,d.categorical])
-    cont = config.get(config.path(path, "formatted", "formatCont.p"), ff.formatContinuous, data = data[:,d.continuous])
+    cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.formatCategorical, catData = data[:,d.categorical])
+    cont = config.getNP(config.path(path, "formatted", "formatCont.npy"), ff.formatContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
     # One hotting categorical data for non decision tree models
     # cont, newCat, newTags = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
