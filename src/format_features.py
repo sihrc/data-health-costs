@@ -31,7 +31,7 @@ def formatCategorical(catData):
                 counter+= 1
             catData[i,j] = cats[str(catData[i,j])]
     config.save(mapPath, cats)
-    # catData = one_hot(catData)
+    catData = one_hot(catData)
     return catData
 
 
