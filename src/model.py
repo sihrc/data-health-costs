@@ -42,7 +42,7 @@ def select_feature(x_train, y_train):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model =  Model(10)
+    model =  Model(100)
     model.fit(x_train, y_train)
     return model
 
