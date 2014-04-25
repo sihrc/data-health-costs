@@ -11,6 +11,7 @@ def one_hot(data):
     Returns one_hotted data
     """
     enc = Sparse()
+    print "Started"
     train = enc.fit_transform(data).toarray()
     return train
 
@@ -32,6 +33,7 @@ def formatCategorical(catData):
             catData[i,j] = cats[str(catData[i,j])]
     config.save(mapPath, cats)
     catData = one_hot(catData)
+    print "Finished"
     return catData
 
 

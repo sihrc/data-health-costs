@@ -44,7 +44,7 @@ def select_feature(x_train, y_train, show_original):
     Returns model as specified in import
     """
     model = Model(100)
-    tenth = int(xtrain.shape[1]/10)
+    tenth = int(x_train.shape[1]/10)
     selector = RFE(model, tenth, tenth, verbose = 1)
     selector.fit(x_train, y_train)
     return selector
@@ -61,7 +61,8 @@ def main(costIndices, d, include_costs = False, show_original = False):
 
     #Get feature and target data
     data = np.genfromtxt(config.path(path, "data", d.datafile.lower() + ".csv"), delimiter=",")
-    cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatCategorical, catData = data[:,d.categorical])
+    # cat = config.get(config.path(path, "formatted",  "formatCat.p"), ff.formatCategorical, catData = data[:,d.categorical])
+    cat = ff.formatCategorical(catData = data[:,d.categorical])
     cont = config.get(config.path(path, "formatted", "formatCont.p"), ff.formatContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
     # One hotting categorical data for non decision tree models
@@ -81,7 +82,7 @@ def main(costIndices, d, include_costs = False, show_original = False):
             x_train_ = x_train
             x_test_ = x_test
         #Splitting to testing and training datasets
-        model = config.get(config.path(path,"models", "model_%s.p" % d.tags[costIndex]), select, x_train = x_train_, y_train = y_train[:,costIndex], show_original = show_original)
+        model = config.get(config.path(path,"models", "model_%s.p" % d.tags[costIndex]), select_feature , x_train = x_train_, y_train = y_train[:,costIndex], show_original = show_original)
 
         #Sorting and Writing Important Features
         writeFeatures(costFeature = costIndex, importance = model.ranking_, d = d)
