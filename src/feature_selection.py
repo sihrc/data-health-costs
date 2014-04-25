@@ -9,7 +9,7 @@ author:chris
 from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import mean_squared_error as score
-# from sklearn.feature_selection import RFE
+from sklearn.feature_selection import RFE
 import numpy as np
 
 #Local Modules
@@ -51,8 +51,10 @@ def costModel(x_train, y_train):
     Returns model as specified in import
     """
     model = Model(100)
-    model.fit(x_train, y_train)
-    return model
+    tenth = int(xtrain.shape[1]/10)
+    selector = RFE(model, tenth, tenth)
+    selector.fit(x_train, y_train)
+    return selector
 
 
 
@@ -102,10 +104,10 @@ if __name__ == "__main__":
     datafile = sys.argv[1] 
     # Clean Past Data
     config.clean([\
-        "data",\
-        "formatted",\
-        "features",\
-        "models",\
+        # "data",\
+        # "formatted",\
+        # "features",\
+        # "models",\
         ], datafile = datafile)
 
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)
