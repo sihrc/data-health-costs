@@ -57,9 +57,23 @@ class Data():
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
-                for line in f:
+                for line in f:  
                     g.write(format_ % tuple(line.strip()) + "\n")
         return
+    @debug
+    def formatCatData(self):
+        mapPath = config.path("..","data", "category_mapper.p")
+        cats = config.load(mapPath)
+        if cats == None: cats = {}
+        counter = 0
+        for i in xrange(catData.shape[0]):
+            for j in xrange(catData.shape[1]):
+                if str(catData[i,j]) not in cats:
+                    cats[str(catData[i,j])] = counter
+                    counter+= 1
+                    catData[i,j] = cats[str(catData[i,j])]
+                print catData[i,j], cats[str(catData[i,j])], "\n"
+        config.save(mapPath, cats)
 
     @debug
     def getCostFeatures(self):

@@ -42,7 +42,7 @@ def select_feature(x_train, y_train):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model = Model(100)
+    # model =  Model(100)
     model.fit(x_train, y_train)
     return model
 
@@ -56,7 +56,7 @@ def main(costIndices, d, include_costs = False, show_original = False):
 
     #Get feature and target data
     data = np.genfromtxt(config.path(path, "data", d.datafile.lower() + ".csv"), delimiter=",")
-    cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.formatCategorical, catData = data[:,d.categorical])
+    cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.one_hot, data = data[:,d.categorical])
     cont = config.getNP(config.path(path, "formatted", "formatCont.numpy"), ff.formatContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
     # One hotting categorical data for non decision tree models
