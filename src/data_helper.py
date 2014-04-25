@@ -54,26 +54,25 @@ class Data():
 
         indices = [self.features[tag][0] for tag in self.tags]
         printFormat = "".join(["%s" * (high - low) + "," for low,high in zip(indices, indices[1:])])
-        with open(path+".csv", 'wb') as g:
-            with open(path + ".dat", 'rb') as f:
-                format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
-                for line in f:  
-                    g.write(format_ % tuple(line.strip()) + "\n")
-        return
-    @debug
-    def formatCatData(self):
+        
+        # Categorical Mapper Path
         mapPath = config.path("..","data", "category_mapper.p")
         cats = config.load(mapPath)
         if cats == None: cats = {}
         counter = 0
-        for i in xrange(catData.shape[0]):
-            for j in xrange(catData.shape[1]):
-                if str(catData[i,j]) not in cats:
-                    cats[str(catData[i,j])] = counter
-                    counter+= 1
-                    catData[i,j] = cats[str(catData[i,j])]
-                print catData[i,j], cats[str(catData[i,j])], "\n"
-        config.save(mapPath, cats)
+        
+        with open(path+".csv", 'wb') as g:
+            with open(path + ".dat", 'rb') as f:
+                format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
+                for line in f:
+                    values = (format_ % (tuple(line.strip()))).split(",")
+                    for x in xrange(len(values)):
+                        if str(values[x]) not in cats:
+                            cats[values[x]] = counter
+                            counter+= 1
+                        values[x] = str(cats[values[x]])
+                    g.write(",".join(values) + "\n")
+        return
 
     @debug
     def getCostFeatures(self):

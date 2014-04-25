@@ -4,6 +4,7 @@ Also contains notes on the data sets
 
 author: chris @ sihrc
 """
+
 import os
 import pickle as p
 import numpy as np
