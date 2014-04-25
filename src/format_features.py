@@ -1,7 +1,6 @@
 #Python Modules
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder as Sparse
-# from sklearn.decomposition import SparseCoder as Sparse
 #Local Modules
 from wrappers import debug
 import config
@@ -13,7 +12,6 @@ def one_hot(data):
     """
     enc = Sparse()
     train = enc.fit_transform(data).toarray()
-
     return train
 
 @debug 
@@ -24,8 +22,7 @@ def formatCategorical(catData):
     """
     mapPath = config.path("..","data", "category_mapper.p")
     cats = config.load(mapPath)
-    if cats == None:
-        cats = {}
+    if cats == None: cats = {}
     counter = 0
     for i in xrange(catData.shape[0]):
         for j in xrange(catData.shape[1]):
