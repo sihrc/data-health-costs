@@ -99,9 +99,9 @@ if __name__ == "__main__":
     datafile = sys.argv[1] 
     # Clean Past Data
     config.clean([\
-        # "data",\
-        # "formatted",\
-        # "features",\
+        "data",\
+        "formatted",\
+        "features",\
         "models",\
         ], datafile = datafile)
 

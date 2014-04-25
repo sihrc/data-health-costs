@@ -104,6 +104,7 @@ def clean(args, datafile):
                 print "Cleaning ... %s" % arg
             else:
                 response = raw_input("Clean %s?(y/n/a)" % arg)
+                response = "a"
                 if response.lower() == "a": 
                     always = True
                     response = "y"
