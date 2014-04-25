@@ -103,7 +103,7 @@ def clean(args, datafile):
                 shutil.rmtree(pathD)
                 print "Cleaning ... %s" % arg
             else:
-                response = raw_input("Clean %s?(y/n/a)" % arg)
+                # response = raw_input("Clean %s?(y/n/a)" % arg)
                 response = "a"
                 if response.lower() == "a": 
                     always = True
