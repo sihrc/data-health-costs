@@ -69,6 +69,7 @@ def main(costIndices, d, include_costs = False, show_original = False):
     # moneyError = []
     #Loops through every cost found in datafile
     for costIndex in [d.costs.index(tag) for tag in costIndices]:
+        costTag =  d.tags[d.costs[costIndex]]
         if include_costs:
             x_train_ = np.hstack((x_train, y_train[:,:costIndex], y_train[:,costIndex + 1:]))
             x_test_ = np.hstack((x_test, y_test[:,:costIndex], y_test[:,costIndex + 1:]))
@@ -76,8 +77,8 @@ def main(costIndices, d, include_costs = False, show_original = False):
             x_train_ = x_train
             x_test_ = x_test
         #Splitting to testing and training datasets
-        before_model = config.get(config.path(path,"models", "before_model_%s.p" % d.tags[costIndex]), select_feature , x_train = x_train_, y_train = y_train[:,costIndex])
-        after_model = config.get(config.path(path,"models", "after_model_%s.p" % d.tags[costIndex]), select_feature , x_train = before_model.transform(x_train_), y_train = y_train[:,costIndex])
+        before_model = config.get(config.path(path,"models", "before_model_%s.p" % costTag), select_feature , x_train = x_train_, y_train = y_train[:,costIndex])
+        after_model = config.get(config.path(path,"models", "after_model_%s.p" % costTag), select_feature , x_train = before_model.transform(x_train_), y_train = y_train[:,costIndex])
      
         #Sorting and Writing Important Features
         writeFeatures(costFeature = costIndex, importance = before_model.feature_importances_, d = d, before = "before")
@@ -89,21 +90,22 @@ def main(costIndices, d, include_costs = False, show_original = False):
         accuracy_before = score(predictions_before, y_test[:,costIndex]) ** .5
         accuracy_after = score(predictions_after, y_test[:,costIndex]) ** .5
 
-        config.write(config.path("..","data",d.datafile, "models", "%s_before_accuracy.txt" % d.tags[costIndex]), accuracy_before)
-        config.write(config.path("..","data",d.datafile, "models", "%s_after_accuracy.txt" % d.tags[costIndex]), accuracy_after)
-        print "\nModel accuracy before feature selection for cost:%s\terror:%f\n" % (d.tags[costIndex], accuracy_before)
-        print "\nModel accuracy after feature selection for cost:%s\terror:%f\n" % (d.tags[costIndex], accuracy_after)
+        config.write(config.path("..","data",d.datafile, "models", "%s_before_accuracy.txt" % costTag), accuracy_before)
+        config.write(config.path("..","data",d.datafile, "models", "%s_after_accuracy.txt" % costTag), accuracy_after)
+        print "\nModel accuracy before feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_before)
+        print "\nModel accuracy after feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_after)
 
 if __name__ == "__main__":
     import sys
     datafile = sys.argv[1] 
     # Clean Past Data
     config.clean([\
-        # "data",\
-        # "formatted",\
+        "data",\
+        "formatted",\
         "features",\
         "models",\
         ], datafile = datafile)
 
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)
+    print [d.tags[cost] for cost in d.costs]
     main(d.costs, d)
