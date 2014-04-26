@@ -59,14 +59,10 @@ def main(costIndices, d, include_costs = False, show_original = False):
     cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.one_hot, data = data[:,d.categorical])
     cont = config.getNP(config.path(path, "formatted", "formatCont.npy"), ff.formatContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
-    # One hotting categorical data for non decision tree models
-    # cont, newCat, newTags = config.get(config.path(path, "splitCont.p"), splitContinuous, data = cont)
-    # cat = np.hstack((cat, newCat))
-    # hotCats = config.get(config.path(path, "hotConts.p"),one_hot, data = cat)
+    t(config.path(path, "hotConts.p"),one_hot, data = cat)
     training_data = np.hstack((cont,cat))
     x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
 
-    # moneyError = []
     #Loops through every cost found in datafile
     for costIndex in [d.costs.index(tag) for tag in costIndices]:
         costTag =  d.tags[d.costs[costIndex]]
