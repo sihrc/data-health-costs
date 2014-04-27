@@ -37,12 +37,12 @@ def writeFeatures(costFeature, importance , d, before = "before"):
 
 
 @debug
-def select_feature(x_train, y_train):
+def select_feature(x_train, y_train, trees):
     """
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model =  Model()
+    model =  Model(trees)
     model.fit(x_train, y_train)
     return model
 
@@ -91,7 +91,7 @@ def extract_features(d, featureTags,costTags):
     return cat_tags, cont_tags, cost_tags
 
 @debug
-def main(featureTags, costTags, d, include_costs = False):
+def main(featureTags, costTags, d, include_costs = False, trees = 1):
     """
     Performs feature selection given datafile
     """
@@ -119,8 +119,8 @@ def main(featureTags, costTags, d, include_costs = False):
             x_train_ = x_train
             x_test_ = x_test
         #Splitting to testing and training datasets
-        before_model = config.get(config.path(path,"models", "before_model_%s.p" % costTag), select_feature , x_train = x_train_, y_train = y_train[:,target])
-        after_model = config.get(config.path(path,"models", "after_model_%s.p" % costTag), select_feature , x_train = before_model.transform(x_train_), y_train = y_train[:,target])
+        before_model = config.get(config.path(path,"models", "before_model_%s.p" % costTag), select_feature , x_train = x_train_, y_train = y_train[:,target], trees = trees )
+        after_model = config.get(config.path(path,"models", "after_model_%s.p" % costTag), select_feature , x_train = before_model.transform(x_train_), y_train = y_train[:,target], trees = trees)
      
         #Sorting and Writing Important Features
         writeFeatures(costFeature = costIndex, importance = before_model.feature_importances_, d = d, before = "before")
@@ -152,16 +152,18 @@ if __name__ == "__main__":
                         help = "removes cached files of previous runs")
     parse.add_option("-i", "--include", dest = "include", default = True,
                         help = "includes other target costs in training data")
+    parse.add_option("-t", "--trees", dest = "trees", default = 1,
+                        help = "number of trees to use for decision tree algorithms")
 
     (options, args) = parse.parse_args()
 
     if options.clean:
         config.clean([\
-            # "data",\
-            # "formatted",\
-            # "features",\
-            # "models",\
+            "data",\
+            "formatted",\
+            "features",\
+            "models",\
             ], datafile = options.datafile)
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)
-    main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include)
+    main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
