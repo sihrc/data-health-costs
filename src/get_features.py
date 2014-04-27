@@ -26,7 +26,6 @@ def download(datafile):
         f.write(page)
     return page
 
-
 @debug
 def read_tables(datafile):
     """
