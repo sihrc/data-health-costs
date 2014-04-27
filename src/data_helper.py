@@ -59,7 +59,6 @@ class Data():
         mapPath = config.path("..","data", "category_mapper.p")
         cats = config.load(mapPath)
         if cats == None: cats = {}
-        counter = 0
         
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
@@ -68,10 +67,10 @@ class Data():
                     values = (format_ % (tuple(line.strip()))).split(",")
                     for x in xrange(len(values)):
                         if str(values[x]) not in cats:
-                            cats[values[x]] = counter
-                            counter+= 1
+                            cats[values[x]] = len(cats)
                         values[x] = str(cats[values[x]])
                     g.write(",".join(values) + "\n")
+        config.save(mapPath,cats)
         return
 
     @debug
