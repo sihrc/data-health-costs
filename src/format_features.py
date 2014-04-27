@@ -11,7 +11,13 @@ def one_hot(data):
     Returns one_hotted data
     """
     enc = Sparse()
+    import sys
+    original = sys.stdout
+    sys.stdout = open("file.txt",'wb')
+    for line in data:
+        print line
     train = enc.fit_transform(data).toarray()
+    sys.stdout = original
     return train
 
 @debug

@@ -1,6 +1,7 @@
 *.csv
 test.py
 *.npy
+*.tmp
 *.py[cod]
 visuals\
 *.png

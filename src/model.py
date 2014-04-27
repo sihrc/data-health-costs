@@ -47,6 +47,13 @@ def select_feature(x_train, y_train):
     return model
 
 @debug
+def load_data(d):
+    """
+    Loads numpy array from CSV file
+    """
+    return np.genfromtxt(config.path("..","data",d.datafile, "data", d.datafile.lower() + ".csv"), delimiter=",")
+
+@debug
 def main(costIndices, d, include_costs = False, show_original = False):
     """
     Performs feature selection given datafile
@@ -55,7 +62,7 @@ def main(costIndices, d, include_costs = False, show_original = False):
     path = config.path("..","data",d.datafile)
 
     #Get feature and target data
-    data = np.genfromtxt(config.path(path, "data", d.datafile.lower() + ".csv"), delimiter=",")
+    data = load_data(d)
     cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.one_hot, data = data[:,d.categorical])
     cont = config.getNP(config.path(path, "formatted", "formatCont.npy"), ff.formatContinuous, data = data[:,d.continuous])
     costs = data[:,d.costs]
@@ -96,7 +103,7 @@ if __name__ == "__main__":
     datafile = sys.argv[1] 
     # Clean Past Data
     config.clean([\
-        "data",\
+        # "data",\
         "formatted",\
         "features",\
         "models",\

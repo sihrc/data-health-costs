@@ -115,4 +115,8 @@ def clean(args, datafile):
                 else:
                     print "Did not clean %s" % arg
                     continue
+    for dirs in os.listdir(path("..","data")):
+        dirpath = path("..","data",dirs)
+        if os.listdir(dirpath) == []:
+            shutil.rmtree(dirpath)
 
