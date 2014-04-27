@@ -20,12 +20,11 @@ class Data():
     getting data for features as well as loading data, 
     saving and loading temporary sessions
     """
-    def __init__ (self, datafile = "", selected_features = [], costs = []):
+    def __init__ (self, datafile = ""):
         self.datafile = datafile
         self.features = {}
         self.tags = []
-        self.costs = costs
-        self.selected_features = selected_features
+        self.costs = []
         self.categorical = []
         self.continuous = []
 
@@ -66,11 +65,11 @@ class Data():
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
                 for line in f:
                     values = (format_ % (tuple(line.strip()))).split(",")
-                    for x in xrange(len(values)):
+                    for x in self.categorical:
                         str_val = str(values[x])
                         if str_val not in cats:
                             cats[str_val] = len(cats)
-                        values[x] = str_val
+                        values[x] = str(cats[str_val])
                     g.write(",".join(values) + "\n")
         config.save(mapPath,cats)
         return
@@ -185,7 +184,7 @@ class Data():
                 f.write("\n\n=== %s :: %s ===\n" % (string.letters[i].upper(),title))
                 i += 1
                 f.write("\n".join(["\t%s\t%s" % (tag, self.features[tag][1]) for tag in tables if tag in self.features]))
-        return zip(string.letters, self.varTables.keys())
+        return dict(zip(string.letters, self.varTables.values()))
 
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]
