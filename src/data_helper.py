@@ -31,8 +31,8 @@ class Data():
         self.parseCodebook()
         self.writeDataCSV()
         self.getCostFeatures()
-        # self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
-        # self.writeTables()
+        self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
+        self.titleMap = config.get(config.path("..","data",datafile,"data","table_map.p"), self.writeTables)
 
     @debug
     def writeDataCSV(self):
@@ -54,11 +54,24 @@ class Data():
 
         indices = [self.features[tag][0] for tag in self.tags]
         printFormat = "".join(["%s" * (high - low) + "," for low,high in zip(indices, indices[1:])])
+        
+        # Categorical Mapper Path
+        mapPath = config.path("..","data", "category_mapper.p")
+        cats = config.load(mapPath)
+        if cats == None: cats = {}
+        
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
                 for line in f:
-                    g.write(format_ % tuple(line.strip()) + "\n")
+                    values = (format_ % (tuple(line.strip()))).split(",")
+                    for x in self.categorical:
+                        str_val = str(values[x])
+                        if str_val not in cats:
+                            cats[str_val] = len(cats)
+                        values[x] = str(cats[str_val])
+                    g.write(",".join(values) + "\n")
+        config.save(mapPath,cats)
         return
 
     @debug
@@ -166,9 +179,12 @@ class Data():
             return
         with open(path, 'wb') as f:
             f.write("Variables found for data set %s\n" % self.datafile)
+            i = 0 
             for title, tables in self.varTables.items():
-                f.write("\n\n=== %s ===\n" % title)
+                f.write("\n\n=== %s :: %s ===\n" % (string.letters[i].upper(),title))
+                i += 1
                 f.write("\n".join(["\t%s\t%s" % (tag, self.features[tag][1]) for tag in tables if tag in self.features]))
+        return dict(zip(string.letters, self.varTables.values()))
 
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]
@@ -185,9 +201,10 @@ class Data():
         return "Data Handler Object"
 
     def __str__(self):
-        return "Attributes: \ndata\t\t - contains dataset as a numpy array\nindicies\t - contains variables:indicies dictionary\nfeatures\t - contains variables:feature descriptions as dictionary\n\npandas data file at [].csv"
+        return (open(config.path("..","data",self.datafile,"data", "variables.txt"), 'rb')).read()
 
 if __name__ == "__main__":
     import sys
     data = Data(sys.argv[1])
+    print data
 

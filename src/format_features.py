@@ -11,29 +11,14 @@ def one_hot(data):
     Returns one_hotted data
     """
     enc = Sparse()
+    import sys
+    original = sys.stdout
+    sys.stdout = open("file.txt",'wb')
+    for line in data:
+        print line
     train = enc.fit_transform(data).toarray()
+    sys.stdout = original
     return train
-
-@debug 
-def formatCategorical(catData):
-    """
-    Formats nonumerical data found in categorical data
-    Returns new categorical data with refitted values
-    """
-    mapPath = config.path("..","data", "category_mapper.p")
-    cats = config.load(mapPath)
-    if cats == None: cats = {}
-    counter = 0
-    for i in xrange(catData.shape[0]):
-        for j in xrange(catData.shape[1]):
-            if catData[i,j] not in cats:
-                cats[str(catData[i,j])] = counter
-                counter+= 1
-            catData[i,j] = cats[str(catData[i,j])]
-    config.save(mapPath, cats)
-    catData = one_hot(catData)
-    return catData
-
 
 @debug
 def formatContinuous(data):

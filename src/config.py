@@ -4,8 +4,10 @@ Also contains notes on the data sets
 
 author: chris @ sihrc
 """
+
 import os
 import pickle as p
+import numpy as np
 from wrappers import debug
 
 
@@ -32,6 +34,20 @@ def path(*path):
         if not os.path.exists(targetdirs):
             os.makedirs(targetdirs) 
     return targetpath
+
+
+def getNP(fpath, func, **kwargs):
+    """
+    in config.py
+    Caching function for sparse matrices
+    """
+    print "Checking %s ..." % fpath
+    if os.path.exists(fpath):
+        return np.load(fpath)
+    res = func(**kwargs)
+    print "Saved to %s" % fpath
+    np.save(fpath, res)
+    return res
 
 def get(fpath, func, **kwargs):
     """
@@ -88,7 +104,8 @@ def clean(args, datafile):
                 shutil.rmtree(pathD)
                 print "Cleaning ... %s" % arg
             else:
-                response = raw_input("Clean %s?(y/n/a)" % arg)
+                # response = raw_input("Clean %s?(y/n/a)" % arg)
+                response = "a"
                 if response.lower() == "a": 
                     always = True
                     response = "y"
