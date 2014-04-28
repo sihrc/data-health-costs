@@ -134,8 +134,9 @@ def main(featureTags, costTags, d, include_costs = False, trees = 1):
 
         config.write(config.path("..","data",d.datafile, "models", "%s_before_accuracy.txt" % costTag), accuracy_before)
         config.write(config.path("..","data",d.datafile, "models", "%s_after_accuracy.txt" % costTag), accuracy_after)
-        print "\nModel accuracy before feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_before)
-        print "\nModel accuracy after feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_after)
+        with open(config.path("..","data",d.datafile,"models", "results.txt"), 'a') as f:
+            f.write("\nModel accuracy before feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_before))
+            f.write("\nModel accuracy after feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_after))
 
 if __name__ == "__main__":
     import sys
