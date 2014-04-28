@@ -21,9 +21,9 @@ contains the Data object that takes care of parsing and reformatting the data fi
 
 
 <strong>Tutorial:</strong><br>
-Once the code has been downloaded, navigate to the appropriate folder and view the available commands by typing in:
-'''python run.py -h
-If everything worked properly you should be greeted by the following screen. 
+Once the code has been downloaded, navigate to the appropriate folder and view the available commands by typing in: <br>
+```python run.py -h
+ <br> If everything worked properly you should be greeted by the following screen. 
 
 
 <i>-f File</i><br>
