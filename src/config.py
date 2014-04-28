@@ -46,7 +46,7 @@ def getNP(fpath, func, **kwargs):
         return np.load(fpath)
     res = func(**kwargs)
     print "Saved to %s" % fpath
-    res.dump(fpath)
+    res.save(fpath)
     return res
 
 def get(fpath, func, **kwargs):
