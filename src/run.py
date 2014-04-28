@@ -47,12 +47,12 @@ if __name__ == "__main__":
                         help = "clean cached files of previous runs")
     parse.add_option("-d", "--delete", dest = "clean", default = True, action = "count",
                         help = "removes cached files of previous runs")
+    parse.add_option("-p", "--print-tables", dest = "tables", default = "none",
+                        help = "looks up a variable and prints the found table otherwise the table prints all tables")
     parse.add_option("-i", "--include", dest = "include", default = True, action = "count",
                         help = "includes other target costs in training data")
     parse.add_option("-t", "--trees", dest = "trees", default = 1,
                         help = "number of trees to use for decision tree algorithms")
-    parse.add_option("-p", "--print-tables", dest = "tables", default = "none",
-                        help = "looks up a variable and prints the found table otherwise the table prints all tables")
 
     (options, args) = parse.parse_args()
 
