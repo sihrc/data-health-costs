@@ -155,6 +155,8 @@ if __name__ == "__main__":
                         help = "includes other target costs in training data")
     parse.add_option("-t", "--trees", dest = "trees", default = 1,
                         help = "number of trees to use for decision tree algorithms")
+    parse.add_option("-p", "--print-tables", dest = "tables", default = 1, action = "count",
+                        help = "prints available features in their respective tables")
 
     (options, args) = parse.parse_args()
 
@@ -166,5 +168,15 @@ if __name__ == "__main__":
             "models",\
             ], datafile = options.datafile)
 
-    d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)
+    d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
+
+
+    if options.tables:
+        import get_features as gf
+        with open(config.path("..","data",options.datafile,"data", "variables.txt"), 'rb') as f:
+            print f.read()
+        import sys
+        sys.exit()
+
+
     main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
