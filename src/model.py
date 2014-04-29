@@ -103,8 +103,10 @@ def main(featureTags, costTags, d, include_costs = False, trees = 1):
 
     #Get feature and target data
     data = load_data(d)
-    cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.one_hot, data = data[:,cat_tags].astype("int"))
-    cont = config.getNP(config.path(path, "formatted", "formatCont.npy"), ff.formatContinuous, data = data[:,cont_tags])
+    # cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.one_hot, data = data[:,cat_tags].astype("int"))
+    # cont = config.getNP(config.path(path, "formatted", "formatCont.npy"), ff.formatContinuous, data = data[:,cont_tags])
+    cat = ff.one_hot(data = data[:,cat_tags].astype("int"))
+    cont = ff.formatContinuous(data = data[:,cont_tags])
     costs = data[:,cost_tags]
     training_data = np.hstack((cont,cat))
     x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
