@@ -12,7 +12,7 @@ from wrappers import debug
 
 
 """
-Data sets
+Data sets urls used in other files
 """
 
 codebook = "http://meps.ahrq.gov/mepsweb/data_stats/download_data/pufs/{0}/{0}su.txt"

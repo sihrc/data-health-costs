@@ -183,8 +183,8 @@ class Data():
             for title, tables in self.varTables.items():
                 f.write("\n\n=== %s :: %s ===\n" % (string.letters[i].upper(),title))
                 i += 1
-                f.write("\n".join(["\t%s\t%s" % (tag, self.features[tag][1]) for tag in tables if tag in self.features]))
-        return dict(zip(string.letters, self.varTables.values()))
+                f.write("\n".join(["\t%s%s%s" % (tag, (18 - len(tag))*" ",self.features[tag][1]) for tag in tables if tag in self.features]))
+        return dict(zip([letter.upper() for letter in string.letters[:len(self.varTables) + 1]], self.varTables.values()))
 
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]

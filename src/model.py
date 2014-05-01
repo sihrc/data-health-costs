@@ -61,12 +61,15 @@ def parse_features(d, inputs):
     tags = []
     for tag in inputs:
         if len(tag.strip()) == 1:
-            for tag in d.titleMap[tag.strip().upper()]:
-                for tag in d.tags:
+            for tag in d.titleMap[tag.strip().upper()]:                
+                if tag in d.tags:
                     tags.append(d.tags.index(tag))
+                else:
+                    print "Feature Selection Warning: feature %s not found %s (will be ignored)" % (tag, d.datafile)
         else:
             if tag in d.tags:
                 tags.append(d.tags.index(tag))
+
     return tags
 
 @debug
@@ -101,6 +104,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 1):
     #Parsing features
     cat_tags, cont_tags, cost_tags = extract_features(d, featureTags, costTags)
 
+
     #Get feature and target data
     data = load_data(d)
     # cat = config.getNP(config.path(path, "formatted",  "formatCat.npy"), ff.one_hot, data = data[:,cat_tags].astype("int"))
@@ -110,6 +114,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 1):
     costs = data[:,cost_tags]
     training_data = np.hstack((cont,cat))
     x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
+
 
     #Loops through every cost found in datafile
     for target, costIndex in enumerate(cost_tags):
@@ -131,11 +136,13 @@ def main(featureTags, costTags, d, include_costs = False, trees = 1):
         predictions_before = before_model.predict(x_test_)
         predictions_after = after_model.predict(before_model.transform(x_test_))
 
-        accuracy_before = score(predictions_before, y_test[:,target]) ** .5
-        accuracy_after = score(predictions_after, y_test[:,target]) ** .5
-
+        costMean = np.mean(y_test[:,target])
+        accuracy_before = score(predictions_before, y_test[:,target]) ** .5/costMean
+        accuracy_after = score(predictions_after, y_test[:,target]) ** .5/costMean
+        results = config.path("..","data",d.datafile,"models", "results.txt")
+        print "Results saved to %s" % results
         # config.write(config.path("..","data",d.datafile, "models", "%s_before_accuracy.txt" % costTag), accuracy_before)
         # config.write(config.path("..","data",d.datafile, "models", "%s_after_accuracy.txt" % costTag), accuracy_after)
-        with open(config.path("..","data",d.datafile,"models", "results.txt"), 'a') as f:
-            f.write("\nModel accuracy before feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_before))
-            f.write("\nModel accuracy after feature selection for cost:%s\terror:%f\n" % (costTag, accuracy_after))
+        with open(results, 'a') as f:
+            f.write("Model accuracy before feature selection for cost:%s\terror:%.2f%s\n" % (costTag, accuracy_before, "%"))
+            f.write("Model accuracy after feature selection for cost:%s\terror:%.2f%s\n\n" % (costTag, accuracy_after, "%"))
