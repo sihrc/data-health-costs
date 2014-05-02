@@ -19,6 +19,14 @@ codebook = "http://meps.ahrq.gov/mepsweb/data_stats/download_data/pufs/{0}/{0}su
 download = "http://meps.ahrq.gov/data_files/pufs/%sdat.zip"
 tables = "http://meps.ahrq.gov/mepsweb/data_stats/download_data/pufs/{0}/{0}doc.shtml"
 
+def printArray(array):
+    counter = 0
+    for line in array:
+        print line
+        counter += 1
+        if counter % 100 == 0:
+            raw_input("\nEnter to continue!\n")
+
 def path(*path):
     """
     in config.py

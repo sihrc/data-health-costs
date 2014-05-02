@@ -49,12 +49,12 @@ if __name__ == "__main__":
                         help = "removes cached files of previous runs")
     parse.add_option("-p", "--print-tables", dest = "tables", default = "none",
                         help = "looks up a variable and prints the found table, or \"all\" for all tables")
-    parse.add_option("-i", "--include", dest = "include", default = True, action = "count",
+    parse.add_option("-i", "--include", dest = "include", default = False, action = "count",
                         help = "includes other target costs in training data")
     parse.add_option("-t", "--trees", dest = "trees", default = 1,
                         help = "number of trees to use for decision tree algorithms")
-
     (options, args) = parse.parse_args()
+    print options.include
 
     if options.clean:
         config.clean([\
@@ -71,3 +71,7 @@ if __name__ == "__main__":
         sys.exit()
 
     m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
+    
+    results = config.path("..","data",options.datafile,"models", "results.txt")
+    with open(results, 'r') as f:
+        print f.read()

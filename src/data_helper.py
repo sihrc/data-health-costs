@@ -27,12 +27,30 @@ class Data():
         self.costs = []
         self.categorical = []
         self.continuous = []
+        
 
         self.parseCodebook()
-        self.writeDataCSV()
-        self.getCostFeatures()
         self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
         self.titleMap = config.get(config.path("..","data",datafile,"data","table_map.p"), self.writeTables)
+        self.filterIDS()
+        self.catMapper = self.writeDataCSV()
+        self.getCostFeatures()
+
+    @debug
+    def filterIDS(self):
+        for title in self.varTables.keys():
+            if "survey administration" in title.lower():
+                ids = [self.tags.index(tag) for tag in self.varTables[title]]
+
+        for tag_id in ids:
+            if tag_id in self.categorical:
+                self.categorical.remove(tag_id)
+            if tag_id in self.continuous:
+                self.continuous.remove(tag_id)
+            if tag_id in self.costs:
+                self.costs.remove(tag_id)
+
+
 
     @debug
     def writeDataCSV(self):
@@ -72,7 +90,7 @@ class Data():
                         values[x] = str(cats[str_val])
                     g.write(",".join(values) + "\n")
         config.save(mapPath,cats)
-        return
+        return cats
 
     @debug
     def getCostFeatures(self):
@@ -158,7 +176,8 @@ class Data():
                 split = line.split("=")
                 value_list.append((split[0].strip(), split[1].strip()))
             if ";" == line.strip()[0]:
-                check = value_list[-1][-1]
+                check = value_list[-1][-1]             
+
                 if "-" in check and check.split("-")[-1].strip()[0] not in string.letters:
                     self.continuous.append(self.tags.index(tag))
                 else:

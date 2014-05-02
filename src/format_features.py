@@ -21,7 +21,7 @@ def one_hot(data):
     return train
 
 @debug
-def formatContinuous(data):
+def formatContinuous(d,data):
     """
     Splits continuous data from categorical data (negative values)
     Returns the data with replaced negative values with mean
@@ -29,22 +29,30 @@ def formatContinuous(data):
     TODO - return categorical section of continuous data as well
     """
     if len(data) == 0:
-        return np.empty(data.shape[0])
-    newData = (data.copy() * -1).astype("int")
-    invalid = data < 0
-    
-    newData[np.invert(invalid)] = 0
+        return np.empty(data.shape)
 
-    # data[invalid] = 0
-    # mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
-    # cols = np.where(invalid)[1]
-    # data[invalid] = mean[cols]
+    invalid = (data < 0)
 
-    # tags = list()
-    # for index in cols:
-    #     if index not in tags:
-    #         tags.append(index)
-    return newData#, results, tags
+    newCats = data.copy()
+    newCats[np.invert(invalid)] = 0
+    cat_cols = np.unique((np.where(newCats != 0)[1]))
+    newCats = newCats[:,cat_cols]
+    for x in xrange(newCats.shape[0]):
+        for y in xrange(newCats.shape[1]):
+            str_val = str(newCats[x,y])
+            if str_val not in d.catMapper:
+                new = len(d.catMapper)
+                d.catMapper[str_val] = new
+                newCats[x,y] = new
+            else:
+                newCats[x,y] = d.catMapper[str_val]
+
+    mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
+    cols = np.where(invalid)[1]
+    data[invalid] = mean[cols]
+
+
+    return data, newCats
 
 @debug
 def getCosts(data, costs):
