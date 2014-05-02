@@ -155,7 +155,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
         # predictions = model.predict(x_test_)
         # costMean = np.mean(y_test[:,target])
         
-        accuracy = model_score(model, x_train, y_train[:,target])
+        accuracy = model_score(model, x_train_, y_train[:,target])
 
         # accuracy = score(predictions, y_test[:,target])
 
@@ -164,4 +164,4 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
         results = config.path("..","data",d.datafile,"models", "results.txt")
         print "Results saved in %s" % results
         with open(results, 'a') as f:
-            f.write("Model accuracy for cost:%s%serror:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+            f.write("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))

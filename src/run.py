@@ -53,8 +53,32 @@ if __name__ == "__main__":
                         help = "includes other target costs in training data")
     parse.add_option("-t", "--trees", dest = "trees", default = 1,
                         help = "number of trees to use for decision tree algorithms")
+    parse.add_option("-l", "--lookup", dest = "lookup", default = "",
+                        help = "looks up specific variable and prints descriptions and values")
+
     (options, args) = parse.parse_args()
-    print options.include
+
+
+    output = sys.stdout
+
+    if options.tables != "none":
+        sys.stdout = ("runOutput.txt", 'wb')
+        d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
+        sys.stdout = output
+        variable_lookup(options.datafile, options.tables) 
+        sys.exit()
+
+    if options.lookup != "":
+        import feature_lookup as fl
+        sys.stdout = open("runOutput.txt", 'wb')
+        d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
+        sys.stdout = output
+        print "======================================="
+        print  fl.getDetails(options.datafile, options.lookup)["Description"]
+        print
+        print  fl.getDetails(options.datafile, options.lookup)["Values"]
+        print "======================================="
+        sys.exit()
 
     if options.clean:
         config.clean([\
@@ -65,11 +89,6 @@ if __name__ == "__main__":
             ], datafile = options.datafile)
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-
-    if options.tables != "none":
-        variable_lookup(options.datafile, options.tables) 
-        sys.exit()
-
     m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
     
     results = config.path("..","data",options.datafile,"models", "results.txt")
