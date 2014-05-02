@@ -69,8 +69,6 @@ def parse_features(d, inputs):
         else:
             if tag in d.tags:
                 tags.append(d.tags.index(tag))
-        print tags
-        raw_input()
 
     return tags
 
@@ -124,7 +122,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
     cont = data[:,cont_tags]
     cat = data[:,cat_tags]
     costs = data[:,cost_tags]
-    
+
     training_data = np.hstack((cont,cat))
     x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
 
@@ -141,16 +139,15 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
         model = config.get(config.path(path,"models", "model_%s.p" % costTag), select_feature , x_train = x_train_, y_train = y_train[:,target], trees = trees )
      
         #Sorting and Writing Important Features
-        writeFeatures(costFeature = costIndex, importance = model.feature_importances, d = d)
+        writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)
         
         predictions = model.predict(x_test_)
 
         costMean = np.mean(y_test[:,target])
-        accuracy = score(predictions_, y_test[:,target])
-        results = config.path("..","data",d.datafile,"models", "results.txt")
-        
+        accuracy = score(predictions, y_test[:,target])
+        print "Model accuracy for cost:%s\terror:%.2f\n" % (costTag, accuracy)
 
-        print "Results saved to %s" % results
         # config.write(config.path("..","data",d.datafile, "models", "%s_accuracy.txt" % costTag), accuracy_)
+        results = config.path("..","data",d.datafile,"models", "results.txt")
         with open(results, 'a') as f:
-            f.write("Model accuracy for cost:%s\terror:%.2f\n" % (costTag, accuracy))
+            f.write("Model accuracy for cost:%s%serror:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
