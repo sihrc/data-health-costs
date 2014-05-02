@@ -42,7 +42,7 @@ def select_feature(x_train, y_train, trees):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model =  Model(trees)
+    model =  Model(trees, random_state = 42)
     model.fit(x_train, y_train)
     return model
 
@@ -102,6 +102,16 @@ def score(predict, real):
     return np.mean(np.abs((real[valid] - predict[valid]))/real[valid])
 
 @debug
+def model_score(model, train, test):
+    """
+    The coefficient R^2 is defined as (1 - u/v), 
+     where u is the regression sum of squares ((y_true - y_pred) ** 2).sum()
+     and v is the residual sum of squares ((y_true - y_true.mean()) ** 2).sum().
+    Best possible score is 1.0, lower values are worse.
+    """
+    return model.score(train,test)
+
+@debug
 def main(featureTags, costTags, d, include_costs = False, trees = 10):
     """
     Performs feature selection given datafile
@@ -124,30 +134,34 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
     costs = data[:,cost_tags]
 
     training_data = np.hstack((cont,cat))
-    x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
-
+    # x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
+    x_train = np.hstack((cont,cat))
+    y_train = costs
     #Loops through every cost found in datafile
     for target, costIndex in enumerate(cost_tags):
         costTag =  d.tags[costIndex]
         if include_costs:
             x_train_ = np.hstack((x_train, y_train[:,:target], y_train[:,target + 1:]))
-            x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:]))
+            # x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:]))
         else:
             x_train_ = x_train
-            x_test_ = x_test
+            # x_test_ = x_test
         #Splitting to testing and training datasets
         model = config.get(config.path(path,"models", "model_%s.p" % costTag), select_feature , x_train = x_train_, y_train = y_train[:,target], trees = trees )
      
         #Sorting and Writing Important Features
         writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)
         
-        predictions = model.predict(x_test_)
+        # predictions = model.predict(x_test_)
+        # costMean = np.mean(y_test[:,target])
+        
+        accuracy = model_score(model, x_train, y_train[:,target])
 
-        costMean = np.mean(y_test[:,target])
-        accuracy = score(predictions, y_test[:,target])
-        print "Model accuracy for cost:%s\terror:%.2f\n" % (costTag, accuracy)
+        # accuracy = score(predictions, y_test[:,target])
+
 
         # config.write(config.path("..","data",d.datafile, "models", "%s_accuracy.txt" % costTag), accuracy_)
         results = config.path("..","data",d.datafile,"models", "results.txt")
+        print "Results saved in %s" % results
         with open(results, 'a') as f:
             f.write("Model accuracy for cost:%s%serror:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
