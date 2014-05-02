@@ -4,11 +4,12 @@ author:chris
 """
 
 #Python Modules
-# from sklearn.ensemble import GradientBoostingRegressor as Model
+from sklearn.ensemble import GradientBoostingRegressor as Model
 # from sklearn.linear_model import Ridge as Model
-from sklearn.ensemble import RandomForestRegressor as Model
+# from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
 # from sklearn.metrics import mean_squared_error as score
+from sklearn.metrics import explained_variance_score as score
 import numpy as np
 
 #Local Modules
@@ -42,7 +43,8 @@ def select_feature(x_train, y_train, trees):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model =  Model(trees, random_state = 42)
+    # model =  Model(trees)
+    model =  Model()
     model.fit(x_train, y_train)
     return model
 
@@ -93,13 +95,13 @@ def extract_features(d, featureTags,costTags):
     cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
     return cat_tags, cont_tags, cost_tags
 
-@debug
-def score(predict, real):
-    """
-    Hand-written Scoring functions to get the average percent error for each prediction
-    """
-    valid = (real != 0)
-    return np.mean(np.abs((real[valid] - predict[valid]))/real[valid])
+# @debug
+# def score(predict, real):
+#     """
+#     Hand-written Scoring functions to get the average percent error for each prediction
+#     """
+#     valid = (real != 0)
+#     return np.mean(np.abs((real[valid] - predict[valid]))/real[valid])
 
 @debug
 def model_score(model, train, test):
@@ -125,27 +127,27 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
     #Get feature and target data
     data = load_data(d)
 
-    # cont, newCats = ff.formatContinuous(data = data[:,cont_tags], d = d)
-    # cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)))
+    cont, newCats = ff.formatContinuous(data = data[:,cont_tags], d = d)
+    cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)))
     # cat = ff.one_hot(data = data[:,cat_tags])
 
-    cont = data[:,cont_tags]
-    cat = data[:,cat_tags]
+    # cont = data[:,cont_tags]
+    # cat = data[:,cat_tags]
     costs = data[:,cost_tags]
 
     training_data = np.hstack((cont,cat))
-    # x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
-    x_train = np.hstack((cont,cat))
-    y_train = costs
+    x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
+    # x_train = np.hstack((cont,cat))
+    # y_train = costs
     #Loops through every cost found in datafile
     for target, costIndex in enumerate(cost_tags):
         costTag =  d.tags[costIndex]
         if include_costs:
             x_train_ = np.hstack((x_train, y_train[:,:target], y_train[:,target + 1:]))
-            # x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:]))
+            x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:]))
         else:
             x_train_ = x_train
-            # x_test_ = x_test
+            x_test_ = x_test
         #Splitting to testing and training datasets
         model = config.get(config.path(path,"models", "model_%s.p" % costTag), select_feature , x_train = x_train_, y_train = y_train[:,target], trees = trees )
      
