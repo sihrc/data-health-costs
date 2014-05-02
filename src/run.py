@@ -3,12 +3,13 @@ Main Run File
 author:chris
 """
 
-import sys
+import sys, os
 
 #Local Modules
 import data_helper as dc
 import model as m
 import config
+from wrappers import debug
 
 def variable_lookup(datafile, tables):
     import get_features as gf
@@ -33,7 +34,16 @@ def variable_lookup(datafile, tables):
 
     return
 
-
+@debug
+def extract_model(path, datafile, cost):
+    """
+    Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
+    """
+    import shutil
+    contTags, catTags = config.load(path)
+    path = config.path("..","models", cost)
+    shutil.copy(config.path("..", "data", datafile, "models", "%s_model.p" % cost), config.path(path, "%s.p"))
+    sys.exit()
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -58,10 +68,9 @@ if __name__ == "__main__":
     parse.add_option("-u", "--use", dest = "model", default = "",
                         help = "use an extracted model to predict costs")
     parse.add_option("-e", "--extract", dest = "extract", default = "",
-                        help = "extract a model for future use, outputs a packaged model in ../models")
+                        help = "target cost argument to extract a model for future use")
 
     (options, args) = parse.parse_args()
-
 
     output = sys.stdout
 
@@ -90,6 +99,15 @@ if __name__ == "__main__":
             "features",\
             "models",\
             ], datafile = options.datafile)
+
+    if options.extract != "":
+        path = config.path("..","data", options.datafile, "models", "config_%s.p" % options.model)
+        if not os.path.exists(path):
+            print "The %s model was not found under %s" % (options.extract.upper(), options.datafile)
+            print "Please run \npython run.py -f [data set] -s [features] -c [cost-features] -d -t [number of trees]"
+            sys.exit()
+        extract_model(path, options.datafile, options.extract)
+
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
     m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))

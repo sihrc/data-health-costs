@@ -38,14 +38,14 @@ def writeFeatures(costFeature, importance , d):
 
 
 @debug
-def create_model(x_train, y_train, trees, catTags, contTags):
+def create_model(x_train, y_train, trees):
     """
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
     model =  Model(trees)
     model.fit(x_train, y_train)
-    return model, catTags, contTags
+    return model
 
 @debug
 def load_data(d):
@@ -135,7 +135,8 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
             x_train_ = x_train
             x_test_ = x_test
         #Splitting to testing and training datasets
-        model = config.get(config.path(path,"models", "model_%s.p" % costTag), create_model , x_train = x_train_, y_train = y_train[:,target], trees = trees, catTags = , contTags = )
+        model = config.get(config.path(path,"models", "model_%s.p" % costTag), create_model , x_train = x_train_, y_train = y_train[:,target], trees = trees)
+        config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
      
         #Sorting and Writing Important Features
         writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)
