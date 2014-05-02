@@ -55,6 +55,10 @@ if __name__ == "__main__":
                         help = "number of trees to use for decision tree algorithms")
     parse.add_option("-l", "--lookup", dest = "lookup", default = "",
                         help = "looks up specific variable and prints descriptions and values")
+    parse.add_option("-u", "--use", dest = "model", default = "",
+                        help = "use an extracted model to predict costs")
+    parse.add_option("-e", "--extract", dest = "extract", default = "",
+                        help = "extract a model for future use, outputs a packaged model in ../models")
 
     (options, args) = parse.parse_args()
 
@@ -62,7 +66,7 @@ if __name__ == "__main__":
     output = sys.stdout
 
     if options.tables != "none":
-        sys.stdout = ("runOutput.txt", 'wb')
+        sys.stdout = open("runOutput.txt", 'wb')
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
         sys.stdout = output
         variable_lookup(options.datafile, options.tables) 
@@ -82,8 +86,7 @@ if __name__ == "__main__":
 
     if options.clean:
         config.clean([\
-            "data",\
-            "formatted",\
+            # "data",\
             "features",\
             "models",\
             ], datafile = options.datafile)
