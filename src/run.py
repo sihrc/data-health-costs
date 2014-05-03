@@ -45,6 +45,8 @@ def extract_model(path, datafile, cost, d):
     shutil.copy(config.path("..", "data", datafile, "models", "%s.p" % cost), config.path(path, "%s.p" % cost))
     data = [d.tags[tag] for tag in contTags] + [d.tags[tag] for tag in catTags]
 
+    config.save(config.path(path, "config.p"), len(contTags))
+
     with open(config.path(path, "input.csv"), 'wb') as f:
         f.write(",".join(data))
 
@@ -53,9 +55,14 @@ def extract_model(path, datafile, cost, d):
 
     sys.exit()
 
-
 @debug
-def use_model(path, datafile):
+def use_model(path, cost, d):
+    path = config.path("..","models", cost)
+    model = config.load(config.path(path,"%s.p" % costs))
+    limit = config.load(config.path(path, "config.p"))
+    
+
+    model.predict()
     pass
 
 if __name__ == "__main__":
@@ -124,7 +131,8 @@ if __name__ == "__main__":
 
     if options.model != "":
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-        
+
+
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
     m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))

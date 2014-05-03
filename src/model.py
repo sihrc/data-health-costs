@@ -36,6 +36,31 @@ def writeFeatures(costFeature, importance , d):
             write = "%s#%f\n" % (d.tags[feature], importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
 
+@debug
+def use_model(path, cost, d):
+    """
+    Uses extracted model from ../models
+    Predicts based on inputs saved in csv
+    """
+    path = config.path("..","models", cost)
+    model = config.load(config.path(path,"%s.p" % costs))
+    limit = config.load(config.path(path, "config.p"))
+
+    data = np.genfromtxt(config.path(path, "input.csv"), delimiter = ",").astype("str")
+    cont = data[1,:limit + 1]
+    cat = data[1,limit + 1:]
+
+    for x in xrange(cat.shape[0]):
+        for y in xrange(cat.shape[1]):
+            if cat[x,y] in d.catMapper:
+                cat[x,y] = d.catMapper[cat[x,y].strip()]
+
+    train_ = np.hstack((cont, cat))
+
+    
+
+    model.predict()
+    pass
 
 @debug
 def create_model(x_train, y_train, trees):
