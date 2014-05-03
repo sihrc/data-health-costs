@@ -88,7 +88,7 @@ def extract_features(d, featureTags,costTags):
             elif tag in d.continuous:
                 cont_tags.append(tag)
     if len(cat_tags) == 0: cat_tags = d.categorical
-    if len(cont_tags) == 0: cont_tags = d.continuous
+    if len(cont_tags) == 0: cont_tags = d.continuous + d.costs
 
     cost_tags = parse_features(d, costTags)
     cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
@@ -125,6 +125,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
     training_data = np.hstack((cont,cat))
     x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
 
+    results = []
     #Loops through every cost found in datafile
     for target, costIndex in enumerate(cost_tags):
         costTag =  d.tags[costIndex]
@@ -135,7 +136,9 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
             x_train_ = x_train
             x_test_ = x_test
         #Splitting to testing and training datasets
-        model = config.get(config.path(path,"models", "model_%s.p" % costTag), create_model , x_train = x_train_, y_train = y_train[:,target], trees = trees)
+        # model = config.get(config.path(path,"models", "model_%s.p" % costTag), create_model , x_train = x_train_, y_train = y_train[:,target], trees = trees)
+        model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
+        config.save(config.path(path, "models","%s.p" % costTag), (model))
         config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
      
         #Sorting and Writing Important Features
@@ -148,7 +151,6 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
 
 
         # config.write(config.path("..","data",d.datafile, "models", "%s_accuracy.txt" % costTag), accuracy_)
-        results = config.path("..","data",d.datafile,"models", "results.txt")
-        print "Results saved in %s" % results
-        with open(results, 'a') as f:
-            f.write("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+
+    print "\n".join(results)

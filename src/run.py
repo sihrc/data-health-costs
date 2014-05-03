@@ -42,7 +42,7 @@ def extract_model(path, datafile, cost):
     import shutil
     contTags, catTags = config.load(path)
     path = config.path("..","models", cost)
-    shutil.copy(config.path("..", "data", datafile, "models", "%s_model.p" % cost), config.path(path, "%s.p"))
+    shutil.copy(config.path("..", "data", datafile, "models", "%s.p" % cost), config.path(path, "%s.p" % cost))
     sys.exit()
 
 if __name__ == "__main__":
@@ -55,7 +55,7 @@ if __name__ == "__main__":
                       help="specify list of data features to use by table name or tag name i.e. [A,B,DUID,PID]", default = "[]")
     parse.add_option("-c", "--costs", dest = "costs", default = "[]",
                         help = "clean cached files of previous runs")
-    parse.add_option("-d", "--delete", dest = "clean", default = True, action = "count",
+    parse.add_option("-d", "--delete", dest = "clean", default = False, action = "count",
                         help = "removes cached files of previous runs")
     parse.add_option("-p", "--print-tables", dest = "tables", default = "none",
                         help = "looks up a variable and prints the found table, or \"all\" for all tables")
@@ -95,13 +95,13 @@ if __name__ == "__main__":
 
     if options.clean:
         config.clean([\
-            # "data",\
+            "data",\
             "features",\
             "models",\
             ], datafile = options.datafile)
 
     if options.extract != "":
-        path = config.path("..","data", options.datafile, "models", "config_%s.p" % options.model)
+        path = config.path("..","data", options.datafile, "models", "config_%s.p" % options.extract)
         if not os.path.exists(path):
             print "The %s model was not found under %s" % (options.extract.upper(), options.datafile)
             print "Please run \npython run.py -f [data set] -s [features] -c [cost-features] -d -t [number of trees]"
@@ -111,7 +111,3 @@ if __name__ == "__main__":
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
     m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
-    
-    results = config.path("..","data",options.datafile,"models", "results.txt")
-    with open(results, 'r') as f:
-        print f.read()
