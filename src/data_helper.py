@@ -76,7 +76,7 @@ class Data():
         # Categorical Mapper Path
         mapPath = config.path("..","data", "category_mapper.p")
         cats = config.load(mapPath)
-        if cats == None: cats = {}
+        if cats == None: cats = {"0":0}
         
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
@@ -84,10 +84,13 @@ class Data():
                 for line in f:
                     values = (format_ % (tuple(line.strip()))).split(",")
                     for x in self.categorical:
-                        str_val = str(values[x])
-                        if str_val not in cats:
-                            cats[str_val] = len(cats)
-                        values[x] = str(cats[str_val])
+                        try:
+                            val = str(float(values[x]))
+                        except:
+                            val = str(values[x])
+                        if val not in cats:
+                            cats[val] = len(cats)
+                        values[x] = str(cats[val])
                     g.write(",".join(values) + "\n")
         config.save(mapPath,cats)
         return cats
@@ -178,7 +181,7 @@ class Data():
             if ";" == line.strip()[0]:
                 check = value_list[-1][-1]             
 
-                if "-" in check and check.split("-")[-1].strip()[0] not in string.letters:
+                if "-" in check and check.split("-")[-1].strip()[0] in ["0","1","2","3","4","5","6","7","8","9"]:
                     self.continuous.append(self.tags.index(tag))
                 else:
                     self.categorical.append(self.tags.index(tag))

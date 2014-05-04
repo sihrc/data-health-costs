@@ -36,31 +36,6 @@ def writeFeatures(costFeature, importance , d):
             write = "%s#%f\n" % (d.tags[feature], importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
 
-@debug
-def use_model(path, cost, d):
-    """
-    Uses extracted model from ../models
-    Predicts based on inputs saved in csv
-    """
-    path = config.path("..","models", cost)
-    model = config.load(config.path(path,"%s.p" % costs))
-    limit = config.load(config.path(path, "config.p"))
-
-    data = np.genfromtxt(config.path(path, "input.csv"), delimiter = ",").astype("str")
-    cont = data[1,:limit + 1]
-    cat = data[1,limit + 1:]
-
-    for x in xrange(cat.shape[0]):
-        for y in xrange(cat.shape[1]):
-            if cat[x,y] in d.catMapper:
-                cat[x,y] = d.catMapper[cat[x,y].strip()]
-
-    train_ = np.hstack((cont, cat))
-
-    
-
-    model.predict()
-    pass
 
 @debug
 def create_model(x_train, y_train, trees):
@@ -120,6 +95,29 @@ def extract_features(d, featureTags,costTags):
     return cat_tags, cont_tags, cost_tags
 
 @debug
+def extract_model(path, datafile, cost, d):
+    """
+    Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
+    """
+    import shutil
+    catTags, contTags = config.load(path)
+    path = config.path("..","models", cost)
+
+    shutil.copy(config.path("..", "data", datafile, "models", "%s_example_data.csv" % cost), config.path(path, "training_data_%s.csv" % cost))
+
+    data = [d.tags[tag] for tag in catTags] + [d.tags[tag] for tag in contTags]
+
+    config.save(config.path(path, "config.p"), len(contTags))
+
+    with open(config.path(path, "input.csv"), 'wb') as f:
+        f.write(",".join(data))
+
+    with open(config.path(path, "features.txt"), 'wb') as f:
+        f.write("\n".join([tag + "\t" + d.features[tag][1] + "\n\t" + "\n\t".join(["\t==========\t".join(line) for line in d.features[tag][2]]) + "\n" for tag in data]))
+
+    sys.exit()
+
+@debug
 def model_score(model, train, test):
     """
     The coefficient R^2 is defined as (1 - u/v), 
@@ -129,8 +127,54 @@ def model_score(model, train, test):
     """
     return model.score(train,test)
 
+# @debug
+# def use_model(cost, d):
+#     """
+#     Uses extracted model from ../models
+#     Predicts based on inputs saved in csv
+#     """
+#     path = config.path("..","models", cost)
+#     model = config.load(config.path(path,"%s.p" % cost))
+#     limit = config.load(config.path(path, "config.p"))
+
+#     with open(config.path(path, "input.csv"), 'rb') as f:
+#         read = f.readlines()
+#         if len(read) == 1:
+#             print "Please input data to feed the model in ..\models\%s\input.csv" % cost
+#             return
+
+#     tags = read[0].strip().split(",")
+#     cont = []
+#     cat = []
+#     for line in read[1:]:
+#         data = line.strip().split(",")
+#         cat.append(data[limit-1:])
+#         try:
+#             cont.append([float(num) for num in data[:limit-1]])   
+#         except:
+#             print "%s is not a valid value" % num
+
+#     cont = np.array(cont)
+#     cat = np.array(cat)
+
+#     for x,row in enumerate(cat):
+#         for y,col in enumerate(row):
+#             if col in d.catMapper:
+#                 cat[x][y] = int(d.catMapper[col])
+#             else:
+#                 print "Category: %s not found in %s at row %d" % (col, tags[y], x)
+
+#     encoder = config.load(config.path("..","data", d.datafile,"encoder.p"))
+#     cat = encoder.transform(np.hstack((cat.astype("float").astype("int"))))
+
+#     train_ = np.hstack((cont[:-1,], cat[:-1,]))
+#     prediction = model.predict(train_)
+#     print "Predictions for %s with the data given:" % (cost)
+#     print list(enumerate(prediction))
+#     return
+
 @debug
-def main(featureTags, costTags, d, include_costs = False, trees = 10):
+def main(featureTags, costTags, d, include_costs = False, trees = 10, test = True):
     """
     Performs feature selection given datafile
     """
@@ -143,12 +187,19 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
     #Get feature and target data
     data = load_data(d)
 
+    # if not test:
+    #     np.savetxt(config.path(path, "models", "%s_example_data.csv" % costTags[0]), data[:,cat_tags + cont_tags], delimiter = ",", fmt = "%g")
+
+        
     cont, newCats = ff.formatContinuous(data = data[:,cont_tags], d = d)
-    cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)))
+    cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)), datafile = d.datafile)
     costs = data[:,cost_tags]
 
-    training_data = np.hstack((cont,cat))
-    x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
+    # training_data = np.hstack((cont,cat))
+    # x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
+
+    x_train = np.hstack((cont,cat))
+    y_train = costs
 
     results = []
     #Loops through every cost found in datafile
@@ -160,22 +211,22 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10):
         else:
             x_train_ = x_train
             x_test_ = x_test
+            
         #Splitting to testing and training datasets
         # model = config.get(config.path(path,"models", "model_%s.p" % costTag), create_model , x_train = x_train_, y_train = y_train[:,target], trees = trees)
-        model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
-        config.save(config.path(path, "models","%s.p" % costTag), (model))
         config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
-     
-        #Sorting and Writing Important Features
-        writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)
         
-        predictions = model.predict(x_test_)
-        
-        # accuracy = model_score(model, x_train_, y_train[:,target])
-        accuracy = score(predictions, y_test[:,target])
+        model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
+        config.save(config.path(path, "test_models","%s.p" % costTag), (model))
+    
+        # predictions = model.predict(x_test_)
+        # accuracy = score(predictions, y_test[:,target])
 
+        accuracy = model_score(model, x_train_, y_train[:,target])
 
         # config.write(config.path("..","data",d.datafile, "models", "%s_accuracy.txt" % costTag), accuracy_)
         results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
-
+ 
+        #Sorting and Writing Important Features
+        writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
     print "\n".join(results)

@@ -34,36 +34,6 @@ def variable_lookup(datafile, tables):
 
     return
 
-@debug
-def extract_model(path, datafile, cost, d):
-    """
-    Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
-    """
-    import shutil
-    contTags, catTags = config.load(path)
-    path = config.path("..","models", cost)
-    shutil.copy(config.path("..", "data", datafile, "models", "%s.p" % cost), config.path(path, "%s.p" % cost))
-    data = [d.tags[tag] for tag in contTags] + [d.tags[tag] for tag in catTags]
-
-    config.save(config.path(path, "config.p"), len(contTags))
-
-    with open(config.path(path, "input.csv"), 'wb') as f:
-        f.write(",".join(data))
-
-    with open(config.path(path, "features.txt"), 'wb') as f:
-        f.write("\n".join([tag + "\t" + d.features[tag][1] + "\n\t" + "\n\t".join(["\t==========\t".join(line) for line in d.features[tag][2]]) + "\n" for tag in data]))
-
-    sys.exit()
-
-@debug
-def use_model(path, cost, d):
-    path = config.path("..","models", cost)
-    model = config.load(config.path(path,"%s.p" % costs))
-    limit = config.load(config.path(path, "config.p"))
-    
-
-    model.predict()
-    pass
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -88,7 +58,7 @@ if __name__ == "__main__":
     parse.add_option("-u", "--use", dest = "model", default = "",
                         help = "use an extracted model to predict costs")
     parse.add_option("-e", "--extract", dest = "extract", default = "",
-                        help = "target cost argument to extract a model for future use")
+                        help = "target cost argument to create a model for future use")
 
     (options, args) = parse.parse_args()
 
@@ -121,17 +91,20 @@ if __name__ == "__main__":
             ], datafile = options.datafile)
 
     if options.extract != "":
+        options.extract = options.extract.strip()
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
+        if options.extract not in d.tags:
+            print "%s is not a feature in %s" % (options.extract, options.datafile)
+            sys.exit()
         path = config.path("..","data", options.datafile, "models", "config_%s.p" % options.extract)
         if not os.path.exists(path):
-            print "The %s model was not found under %s" % (options.extract.upper(), options.datafile)
-            print "Please run \npython run.py -f [data set] -s [features] -c [cost-features] -d -t [number of trees]"
-            sys.exit()
-        extract_model(path, options.datafile, options.extract, d)
+            m.main(options.select.strip()[1:-1].split(","), [options.extract], d, include_costs = options.include, trees = int(options.trees), test = False)
+        m.extract_model(path, options.datafile, options.extract, d)
 
     if options.model != "":
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-
+        m.use_model(options.model.strip().upper(), d)
+        sys.exit()
 
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
