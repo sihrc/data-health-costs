@@ -192,8 +192,12 @@ if __name__ == "__main__":
     with open(config.path(importance_path, "results.txt"), 'wb') as f:
         for i,feature in enumerate(features):
             remaining_features = [feat[0] for feat in features[i:]]
-            score = main(remaining_features, [cost], d, include_costs = True, trees = 10)
             f.write("Round %d\n" % i)
             f.write("Eliminated feature :%s,%s \n" % (feature[0], feature[1]))
             f.write("Remaining Features:\n %s\n" % [feat[0] for feat in features[i:]])
-            f.write("Model Score: %.04f\n\n" % score)
+            scores = 0
+            for iteration in xrange(10):
+                score = main(remaining_features, [cost], d, include_costs = True, trees = 10)
+                f.write("Model Score: %.04f\n" % score)
+                scores += score
+            f.write("Average Score: %.04f\n" % scores/10.0)
