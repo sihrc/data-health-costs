@@ -33,7 +33,7 @@ class Data():
         self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
         self.titleMap = config.get(config.path("..","data",datafile,"data","table_map.p"), self.writeTables)
         self.filterIDS()
-        self.catMapper = self.writeDataCSV()
+        self.writeDataCSV()
         self.getCostFeatures()
 
     @debug
@@ -74,23 +74,17 @@ class Data():
         printFormat = "".join(["%s" * (high - low) + "," for low,high in zip(indices, indices[1:])])
         
         # Categorical Mapper Path
-        mapPath = config.path("..","data", "category_mapper.p")
-        cats = config.load(mapPath)
-        if cats == None: cats = {}
-        
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
                 for line in f:
                     values = (format_ % (tuple(line.strip()))).split(",")
-                    for x in self.categorical:
-                        str_val = str(values[x])
-                        if str_val not in cats:
-                            cats[str_val] = len(cats)
-                        values[x] = str(cats[str_val])
+                    for i,value in enumerate(values):
+                        try:
+                            val = str(float(values[i]))
+                        except:
+                            val = str(values[i])
                     g.write(",".join(values) + "\n")
-        config.save(mapPath,cats)
-        return cats
 
     @debug
     def getCostFeatures(self):
@@ -176,9 +170,9 @@ class Data():
                 split = line.split("=")
                 value_list.append((split[0].strip(), split[1].strip()))
             if ";" == line.strip()[0]:
-                check = value_list[-1][-1]             
+                check = value_list[-1][-1]         
 
-                if "-" in check and check.split("-")[-1].strip()[0] not in string.letters:
+                if "-" in check and check.split("-")[-1].strip()[0] in ["$","0","1","2","3","4","5","6","7","8","9"]:
                     self.continuous.append(self.tags.index(tag))
                 else:
                     self.categorical.append(self.tags.index(tag))
@@ -199,11 +193,13 @@ class Data():
         with open(path, 'wb') as f:
             f.write("Variables found for data set %s\n" % self.datafile)
             i = 0 
+            varMap = {}
             for title, tables in self.varTables.items():
                 f.write("\n\n=== %s :: %s ===\n" % (string.letters[i].upper(),title))
-                i += 1
                 f.write("\n".join(["\t%s%s%s" % (tag, (18 - len(tag))*" ",self.features[tag][1]) for tag in tables if tag in self.features]))
-        return dict(zip([letter.upper() for letter in string.letters[:len(self.varTables) + 1]], self.varTables.values()))
+                varMap[string.letters[i].upper()] = (title, [tag for tag in tables if tag in self.features])
+                i += 1
+        return varMap
 
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]

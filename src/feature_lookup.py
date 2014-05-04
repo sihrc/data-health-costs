@@ -15,6 +15,7 @@ def formatValues(line):
 	"""
 	Formats the table of values into 3 columns 
 	"""
+	line.insert(0,["Values", "Unweighted", "Weighted"])
 	colLengths = [[],[],[]]
 	[[colLengths[i].append(len(cols[i])) for i in xrange(3)] for cols in line]
 	maxLengths = [max(col) for col in colLengths]
