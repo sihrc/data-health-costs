@@ -83,6 +83,10 @@ if __name__ == "__main__":
             "models",\
             ], datafile = options.datafile)
 
+    select = options.select.replace("[","").replace("]","").strip().split(",")
+    print select
+    costs = options.costs.replace("[","").replace("]","").strip().split(",")
+
     if options.extract != "":
         options.extract = options.extract.strip()
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
@@ -91,7 +95,7 @@ if __name__ == "__main__":
             sys.exit()
         path = config.path("..","data", options.datafile, "models", "config_%s.p" % options.extract)
         if not os.path.exists(path):
-            m.main(options.select.strip()[1:-1].split(","), [options.extract], d, include_costs = options.include, trees = int(options.trees), test = False)
+            m.main(select, [options.extract], d, include_costs = options.include, trees = int(options.trees), test = False)
         m.extract_model(options.datafile, options.extract, d)
         sys.exit()
 
@@ -101,4 +105,4 @@ if __name__ == "__main__":
 
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-    m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
+    m.main(select, costs, d, include_costs = options.include, trees = int(options.trees))

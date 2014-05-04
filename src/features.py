@@ -6,7 +6,7 @@ from wrappers import debug
 import config
 
 @debug
-def writeFeatures(costFeature, importance , d):
+def writeFeatures(costFeature, datafile, importance , tags):
     """
     Writes feature importances to file in order of importance
     Saves to pickle file for use in future modelling
@@ -16,10 +16,10 @@ def writeFeatures(costFeature, importance , d):
 
     Returns the costFeature, Sorted list of feature indices based on importance
     """
-    sortedFeatures = sorted(zip(d.continuous + d.categorical, list(importance)) ,  key = (lambda x:x[1]))
-    with open(config.path("..","data",d.datafile,"features",  "importances", "%s.txt" % (costFeature)),'wb')as f:
+    sortedFeatures = sorted(zip(tags, list(importance)) ,  key = (lambda x:-x[1]))
+    with open(config.path("..","data",datafile,"features",  "importances", "%s.txt" % (costFeature)),'wb')as f:
         for feature, importance in sortedFeatures:
-            write = "%s#%f\n" % (d.tags[feature], importance)
+            write = "%s#%f\n" % (feature, importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
 
 @debug

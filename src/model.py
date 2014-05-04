@@ -32,7 +32,7 @@ def create_model(x_train, y_train, trees):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model =  Model(trees)
+    model =  Model(trees, oob_score = True)
     model.fit(x_train, y_train)
     return model
 
@@ -127,9 +127,11 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     data = load_data(d)
     cont, newCats, mean = ff.formatContinuous(data = data[:,cont_tags], d = d)
     encoder, cat = ff.one_hot(data = np.hstack((data[:,cat_tags], newCats)), d = d)
+
     #Set up Training Data
     x_train = np.hstack((cont,cat))
     y_train = data[:,cost_tags]
+    if test:    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = .15, random_state = 42)
 
     results = []
     #Loops through every cost found in datafile
@@ -143,19 +145,55 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
 
         #Creating Model and Testing
         model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
-        accuracy = model_score(model, x_train_, y_train[:,target])
+        if test:
+            # x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:])) if include_costs else x_test
+            # prediction = model.predict(x_test_)
+            # accuracy = score(y_test[:,target], prediction)
+            accuracy = model.oob_score_
+        else:
+            accuracy = model_score(model, x_train_, y_train[:,target])
         
         #Sorting and Writing Important Features
-        ff.writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
+        all_tags = [d.tags[tag] for tag in d.continuous + d.categorical + cost_tags[:target] + cost_tags[target+1:]] if include_costs else d.continuous + d.categorical
+        ff.writeFeatures(costFeature = d.tags[costIndex], datafile = d.datafile, importance = model.feature_importances_, tags = all_tags)        
         
         #Splitting to testing and training datasets
         costTag =  d.tags[costIndex]
-        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+        results.append("Model accuracy for cost:%s%saccuracy:%.4f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
         modelPath = config.path(path, "models", costTag)
         config.save(config.path(modelPath, "features.p"), (cont_tags_, cat_tags))
-        config.save(config.path(modelPath,"model.p"), (model))
+        config.save(config.path(modelPath, "model.p"), (model))
         config.save(config.path(modelPath, "used_to_train.p"), data[:5,cont_tags_ + cat_tags + [costIndex]])
         config.save(config.path(modelPath, "cont_mean.p"), mean)
         config.save(config.path(modelPath, "encoder.p"), encoder)
         config.save(config.path(modelPath, "dHandler.p"), d)
+        if test:
+            with open(config.path(modelPath, "results.txt"), 'a') as f:
+                f.write(",".join([d.tags[tag] for tag in cont_tags_ + cat_tags]))
+                f.write("\t" + results[-1] + "\n")
     print "\n".join(results)
+    return accuracy
+
+if __name__ == "__main__":
+    import sys
+
+    datafile = sys.argv[1]
+    cost = sys.argv[2]
+    importance_path = config.path("..","data",datafile,"features","importances")
+
+    d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)     
+
+    import shutil
+    shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
+
+    with open(config.path(importance_path, cost + "_test.txt"), 'rb') as f:
+        features = [line.strip().split() for line in f.readlines()][::-1]
+
+    with open(config.path(importance_path, "results.txt"), 'wb') as f:
+        for i,feature in enumerate(features):
+            remaining_features = [feat[0] for feat in features[i:]]
+            score = main(remaining_features, [cost], d, include_costs = True, trees = 10)
+            f.write("Round %d\n" % i)
+            f.write("Eliminated feature :%s,%s \n" % (feature[0], feature[1]))
+            f.write("Remaining Features:\n %s\n" % [feat[0] for feat in features[i:]])
+            f.write("Model Score: %.04f\n\n" % score)
