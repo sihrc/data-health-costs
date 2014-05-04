@@ -100,9 +100,10 @@ if __name__ == "__main__":
         sys.exit()
 
 
+
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
     
-    #Jazmin's added stuff
+    #Jazmin's looping things
     featuredTags = []
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile) 
     tags = ["IPCCC3X" ,"IPCCC4X" ,"IPDOF11X","IPPRO2X" ,"DLVRTYPE","FFIPTYPE","IPPRO1X" ,"NUMNIGHT","ANYOPER" ,"IPICD4X" ,"IPCCC2X" ,"IPICD1X" ,"SPECCOND","VARPSU"  ,"IPBEGMM" ,"IPCCC1X" ,"IPICD3X" ,"IPBEGYR" ,"VARSTR"  ,"RSNINHOS","IPBEGDD" ,"NUMNIGHX","IPENDMM" ,"PERWT11F","IPICD2X" ,"EMERROOM","IPENDYR" ,"IPENDDD" ,"EPIDURAL","IMPFLAG" ]
