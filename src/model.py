@@ -159,3 +159,4 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         config.save(config.path(modelPath, "encoder.p"), encoder)
         config.save(config.path(modelPath, "dHandler.p"), d)
     print "\n".join(results)
+    config.save(config.path("..", "data", d.datafile, "Jazmin", "one" + featureTags[-1] + costTag + ".txt"  ))

@@ -101,4 +101,11 @@ if __name__ == "__main__":
 
 
     d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-    m.main(options.select.strip()[1:-1].split(","), options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
+    
+    #Jazmin's added stuff
+    featuredTags = []
+    d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile) 
+    tags = ["IPCCC3X" ,"IPCCC4X" ,"IPDOF11X","IPPRO2X" ,"DLVRTYPE","FFIPTYPE","IPPRO1X" ,"NUMNIGHT","ANYOPER" ,"IPICD4X" ,"IPCCC2X" ,"IPICD1X" ,"SPECCOND","VARPSU"  ,"IPBEGMM" ,"IPCCC1X" ,"IPICD3X" ,"IPBEGYR" ,"VARSTR"  ,"RSNINHOS","IPBEGDD" ,"NUMNIGHX","IPENDMM" ,"PERWT11F","IPICD2X" ,"EMERROOM","IPENDYR" ,"IPENDDD" ,"EPIDURAL","IMPFLAG" ]
+    for tag in tags:
+        featuredTags.append(tag)    
+        m.main(featuredTags, options.costs.strip()[1:-1].split(","), d, include_costs = options.include, trees = int(options.trees))
