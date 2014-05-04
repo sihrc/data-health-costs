@@ -33,7 +33,7 @@ class Data():
         self.varTables = config.get(config.path("..","data",datafile,"data","varTables.p"), gf.read_tables, datafile = datafile)
         self.titleMap = config.get(config.path("..","data",datafile,"data","table_map.p"), self.writeTables)
         self.filterIDS()
-        self.catMapper = self.writeDataCSV()
+        self.writeDataCSV()
         self.getCostFeatures()
 
     @debug
@@ -74,25 +74,17 @@ class Data():
         printFormat = "".join(["%s" * (high - low) + "," for low,high in zip(indices, indices[1:])])
         
         # Categorical Mapper Path
-        mapPath = config.path("..","data", "category_mapper.p")
-        cats = config.load(mapPath)
-        if cats == None: cats = {"0":0,"NAN":0}
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
                 for line in f:
                     values = (format_ % (tuple(line.strip()))).split(",")
-                    for x in self.categorical:
+                    for i,value in enumerate(values):
                         try:
-                            val = str(float(values[x]))
+                            val = str(float(values[i]))
                         except:
-                            val = str(values[x])
-                        if val not in cats:
-                            cats[val] = len(cats)
-                        values[x] = str(cats[val])
+                            val = str(values[i])
                     g.write(",".join(values) + "\n")
-        config.save(mapPath,cats)
-        return cats
 
     @debug
     def getCostFeatures(self):

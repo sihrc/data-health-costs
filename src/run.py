@@ -96,8 +96,7 @@ if __name__ == "__main__":
         sys.exit()
 
     if options.model != "":
-        d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-        m.use_model(options.model.strip().upper(), d)
+        m.use_model(options.model.strip().upper())
         sys.exit()
 
 

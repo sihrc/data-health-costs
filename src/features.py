@@ -73,7 +73,19 @@ def one_hot(data, d):
     Performs binary vectorization of categorical data for non-decision tree models
     Returns one_hotted data
     """
+    d.catMapper = {"0":0, "NAN":0}
+    for x in xrange(data.shape[0]):
+        for y in xrange(data.shape[1]):
+            str_val = str(data[x,y])
+            if str_val not in d.catMapper:
+                new = len(d.catMapper)
+                d.catMapper[str_val] = new
+                data[x,y] = new
+            else:
+                data[x,y] = d.catMapper[str_val]
+
     enc = Sparse(n_values = len(d.catMapper))
+    print data.shape
     encoder = enc.fit(data)
     train = encoder.transform(data).toarray()
     return encoder, train
@@ -93,16 +105,6 @@ def formatContinuous(d,data, mean = None):
 
     newCats = data.copy()
     newCats[np.invert(invalid)] = 0
-
-    for x in xrange(newCats.shape[0]):
-        for y in xrange(newCats.shape[1]):
-            str_val = str(newCats[x,y])
-            if str_val not in d.catMapper:
-                new = len(d.catMapper)
-                d.catMapper[str_val] = new
-                newCats[x,y] = new
-            else:
-                newCats[x,y] = d.catMapper[str_val]
 
     if mean == None:
         mean = np.sum(newCats, axis = 0)/np.sum(np.invert(invalid), axis = 0)
