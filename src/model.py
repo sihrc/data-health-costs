@@ -74,24 +74,27 @@ def parse_features(d, inputs):
     return tags
 
 @debug
-def extract_features(d, featureTags,costTags):
+def extract_features(d, featureTags, costTags):
     """
     Extracts Features based on inputted features
     """
+    cost_tags = parse_features(d, costTags)
+    cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
+
     cat_tags = []
     cont_tags = []
     feature_tags = parse_features(d, featureTags)
-    if len(featureTags) != 0:
-        for tag in featureTags:
-            if tag in d.categorical:
-                cat_tags.append(tag)
-            elif tag in d.continuous:
-                cont_tags.append(tag)
+    if len(featureTags) == 0:
+        return d.categorical, d.continuous + d.costs, cost_tags
+    
+    for tag in featureTags:
+        if tag in d.categorical:
+            cat_tags.append(tag)
+        elif tag in d.continuous:
+            cont_tags.append(tag)
     if len(cat_tags) == 0: cat_tags = d.categorical
     if len(cont_tags) == 0: cont_tags = d.continuous + d.costs
 
-    cost_tags = parse_features(d, costTags)
-    cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
     return cat_tags, cont_tags, cost_tags
 
 @debug
@@ -196,12 +199,12 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     results = []
     #Loops through every cost found in datafile
     for target, costIndex in enumerate(cost_tags):
-        costTag =  d.tags[costIndex]
         if include_costs:
             x_train_ = np.hstack((x_train, y_train[:,:target], y_train[:,target + 1:]))
         else:
             x_train_ = x_train
 
+        #Creating Model and Testing
         model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
         accuracy = model_score(model, x_train_, y_train[:,target])
  
@@ -209,6 +212,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
         
         #Splitting to testing and training datasets
+        costTag =  d.tags[costIndex]
         # config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
         # config.save(config.path(path, "test_models","%s.p" % costTag), (model))
         results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
