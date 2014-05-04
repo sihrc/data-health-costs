@@ -184,10 +184,10 @@ if __name__ == "__main__":
 
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)     
 
-    import shutil
-    shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
     
     main([], [cost], d, include_costs = True, trees = 100)
+    import shutil
+    shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
 
     with open(config.path(importance_path, cost + "_test.txt"), 'rb') as f:
         features = [line.strip().split() for line in f.readlines()][::-1]
