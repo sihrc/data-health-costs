@@ -204,4 +204,3 @@ if __name__ == "__main__":
                 f.write("Model Score: %.04f\n" % score)
                 print type(score)
                 scores += score
-            f.write("Average Score: %.04f\n" % scores/10.0)
