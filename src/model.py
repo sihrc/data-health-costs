@@ -71,9 +71,10 @@ def extract_model(datafile, cost, d):
         
     #Create csv for feature input
     cont, cat = config.load(dataPath, "features.p")
+    print train_data.shape
     with open(config.path(modelPath, "input.csv"), 'wb') as f:
-        f.write(",".join([d.tags[tag] for tag in cont + cat]) + "\n")
-        f.write(",".join(list(train_data.astype('str'))))
+        f.write(",".join([d.tags[tag] for tag in cont + cat]) + "," + cost + "\n")
+        f.write(",".join(list(train_data[0].astype('str'))))
 
 @debug
 def use_model(cost):
@@ -90,7 +91,8 @@ def use_model(cost):
     data = np.atleast_2d(np.genfromtxt(config.path(path, "input.csv"), delimiter = ",", dtype = str))
     cont, cat = config.load(path, "features.p") 
     cont = data[1:,:len(cont)].astype('float')
-    cat = data[1:,-len(cat):]
+    cat = data[1:,-len(cat)-1:-1]
+    cost = data[1:,-1]
 
     if len(cont) == 0:
         print "Please input data to feed the model in ..\models\%s\input.csv" % cost
@@ -108,6 +110,7 @@ def use_model(cost):
     cat = encoder.transform(cat.astype("int")).toarray()
     prediction = model.predict(np.hstack((cont,cat))).astype(str)
     print "Predicted costs of:\n%s" % "$" + "\n$".join(list(prediction))
+    # print "Test cost of:\n%s" % "$" + "\n$".join(list(cost)) # for testing purposes
 
 @debug
 def main(featureTags, costTags, d, include_costs = False, trees = 10, test = True):
@@ -123,9 +126,6 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     #Get feature and target data
     data = load_data(d)
     cont, newCats, mean = ff.formatContinuous(data = data[:,cont_tags], d = d)
-    print cont.shape
-    print newCats.shape
-    print data[:,cat_tags].shape
     encoder, cat = ff.one_hot(data = np.hstack((data[:,cat_tags], newCats)), d = d)
     #Set up Training Data
     x_train = np.hstack((cont,cat))
@@ -154,7 +154,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         modelPath = config.path(path, "models", costTag)
         config.save(config.path(modelPath, "features.p"), (cont_tags_, cat_tags))
         config.save(config.path(modelPath,"model.p"), (model))
-        config.save(config.path(modelPath, "used_to_train.p"), data[:5,cont_tags_ + cat_tags])
+        config.save(config.path(modelPath, "used_to_train.p"), data[:5,cont_tags_ + cat_tags + [costIndex]])
         config.save(config.path(modelPath, "cont_mean.p"), mean)
         config.save(config.path(modelPath, "encoder.p"), encoder)
         config.save(config.path(modelPath, "dHandler.p"), d)

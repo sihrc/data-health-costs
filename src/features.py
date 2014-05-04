@@ -84,8 +84,8 @@ def one_hot(data, d):
             else:
                 data[x,y] = d.catMapper[str_val]
 
-    enc = Sparse(n_values = len(d.catMapper))
-    print data.shape
+    # enc = Sparse(n_values = len(d.catMapper))
+    enc = Sparse()
     encoder = enc.fit(data)
     train = encoder.transform(data).toarray()
     return encoder, train
