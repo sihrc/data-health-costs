@@ -11,28 +11,18 @@ import model as m
 import config
 from wrappers import debug
 
-def variable_lookup(datafile, tables):
+def variable_lookup(d, tables):
     import get_features as gf
-    with open(config.path("..","data",datafile,"data", "variables.txt"), 'rb') as f:
-        all_tables = f.read()
-        if tables.lower() == "all":
-            print all_tables
-            return
-        index = all_tables.find(tables.strip())
-        if index == -1:
-            print all_tables
-            print "Could not find specified variable."
-            return
+    if tables == "all":
+        for title, tags in sorted(d.titleMap.items()):
+            print "\n\n=== %s :: %s ===\n" % (title, tags[0])
+            print "\n".join(["\t%s%s%s" % (tag, (18 - len(tag))*" ",d.features[tag][1]) for tag in tags[1] if tag in d.features])            
+        return
 
-        end = all_tables[:index].rfind("===")
-        start = all_tables[:end].rfind("===")
-        rest = end + all_tables[end + 3:].find("===")
-        if rest == end - 1:
-            rest = -1
-        print
-        print all_tables[start:end].replace("=","").strip()
-        print all_tables[end + 3:rest]
-
+    for title,tags in d.titleMap.items():
+        if tables in tags[1]:
+            print "\n\n=== %s :: %s ===\n" % (title, tags[0])
+            print "\n".join(["\t%s%s%s" % (tag, (18 - len(tag))*" ",d.features[tag][1]) for tag in tags[1] if tag in d.features])
     return
 
 
@@ -66,17 +56,19 @@ if __name__ == "__main__":
     output = sys.stdout
 
     if options.tables != "none":
-        sys.stdout = open("runOutput.txt", 'wb')
+        print "Looking up tables, please wait..."
+        # sys.stdout = open("runOutput.txt", 'wb')
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-        sys.stdout = output
-        variable_lookup(options.datafile, options.tables) 
+        # sys.stdout = output
+        variable_lookup(d, options.tables) 
         sys.exit()
 
     if options.lookup != "":
         import feature_lookup as fl
-        sys.stdout = open("runOutput.txt", 'wb')
+        print "Looking up feature, please wait..."
+        # sys.stdout = open("runOutput.txt", 'wb')
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
-        sys.stdout = output
+        # sys.stdout = output
         print "======================================="
         print  fl.getDetails(options.datafile, options.lookup)["Description"]
         print

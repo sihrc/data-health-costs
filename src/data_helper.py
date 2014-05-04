@@ -179,9 +179,9 @@ class Data():
                 split = line.split("=")
                 value_list.append((split[0].strip(), split[1].strip()))
             if ";" == line.strip()[0]:
-                check = value_list[-1][-1]             
+                check = value_list[-1][-1]         
 
-                if "-" in check and check.split("-")[-1].strip()[0] in ["0","1","2","3","4","5","6","7","8","9"]:
+                if "-" in check and check.split("-")[-1].strip()[0] in ["$","0","1","2","3","4","5","6","7","8","9"]:
                     self.continuous.append(self.tags.index(tag))
                 else:
                     self.categorical.append(self.tags.index(tag))
@@ -202,11 +202,13 @@ class Data():
         with open(path, 'wb') as f:
             f.write("Variables found for data set %s\n" % self.datafile)
             i = 0 
+            varMap = {}
             for title, tables in self.varTables.items():
                 f.write("\n\n=== %s :: %s ===\n" % (string.letters[i].upper(),title))
-                i += 1
                 f.write("\n".join(["\t%s%s%s" % (tag, (18 - len(tag))*" ",self.features[tag][1]) for tag in tables if tag in self.features]))
-        return dict(zip([letter.upper() for letter in string.letters[:len(self.varTables) + 1]], self.varTables.values()))
+                varMap[string.letters[i].upper()] = (title, [tag for tag in tables if tag in self.features])
+                i += 1
+        return varMap
 
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]

@@ -27,10 +27,11 @@ def parse_features(d, inputs):
     """
     Parsing features from input arguments to a list of tag names
     """
+    import string
     tags = []
     for tag in inputs:
         if len(tag.strip()) == 1:
-            for tag in d.titleMap[tag.strip().upper()]:                
+            for tag in d.titleMap[tag.strip().upper()][1]:                
                 if tag in d.tags:
                     tags.append(d.tags.index(tag))
                 else:
@@ -74,9 +75,8 @@ def one_hot(data, datafile):
     """
     enc = Sparse()
     encoder = enc.fit(data)
-    config.save(config.path("..","data",datafile, "encoder.p"), encoder)
     train = encoder.transform(data).toarray()
-    return train
+    return encoder, train
 
 @debug
 def formatContinuous(d,data, mean = None):
