@@ -124,10 +124,11 @@ def extract_model(datafile, cost, d):
 
     #Copy the model
     shutil.copy(config.path(dataPath, "model.p"), config.path(modelPath, "model.p"))
+    shutil.copy(config.path(dataPath, "features.p"), config.path(modelPath, "features.p"))
+    shutil.copy(config.path(dataPath, "used_to_train.csv"), config.path(modelPath, "used_to_train.p"))
     
     #Create csv for feature input
     cont, cat = config.load(dataPath, "features.p")
-    shutil.copy(config.path(dataPath, "features.p"), config.path(modelPath, "features.p"))
     with open(config.path(modelPath, "input.csv"), 'wb') as f:
         f.write(",".join([d.tags[tag] for tag in cont + cat]))
 
@@ -153,8 +154,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     
     #Parsing features
     cat_tags, cont_tags, cost_tags = ff.extract_features(d, featureTags, costTags)
-    print cost_tags
-    raw_input()
+
     #Get feature and target data
     data = load_data(d)
     cont, newCats = ff.formatContinuous(data = data[:,cont_tags], d = d)
