@@ -79,7 +79,7 @@ def one_hot(data, datafile):
     return train
 
 @debug
-def formatContinuous(d,data):
+def formatContinuous(d,data, mean = None):
     """
     Splits continuous data from categorical data (negative values)
     Returns the data with replaced negative values with mean
@@ -104,9 +104,10 @@ def formatContinuous(d,data):
             else:
                 newCats[x,y] = d.catMapper[str_val]
 
-    mean = np.sum(data, axis = 0)/np.sum(np.invert(invalid), axis = 0)
+    if mean == None:
+        mean = np.sum(newCats, axis = 0)/np.sum(np.invert(invalid), axis = 0)
     cols = np.where(invalid)[1]
     data[invalid] = mean[cols]
 
 
-    return data, newCats
+    return data, newCats, mean
