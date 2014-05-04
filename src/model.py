@@ -47,77 +47,13 @@ def model_score(model, train, test):
     """
     return model.score(train,test)
 
-# @debug
-# def extract_model(path, datafile, cost, d):
-#     """
-#     Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
-#     """
-#     import shutil
-#     catTags, contTags = config.load(path)
-#     path = config.path("..","models", cost)
 
-#     shutil.copy(config.path("..", "data", datafile, "models", "%s_example_data.csv" % cost), config.path(path, "training_data_%s.csv" % cost))
-
-#     data = [d.tags[tag] for tag in catTags] + [d.tags[tag] for tag in contTags]
-
-#     config.save(config.path(path, "config.p"), len(contTags))
-
-#     with open(config.path(path, "input.csv"), 'wb') as f:
-#         f.write(",".join(data))
-
-#     with open(config.path(path, "features.txt"), 'wb') as f:
-#         f.write("\n".join([tag + "\t" + d.features[tag][1] + "\n\t" + "\n\t".join(["\t==========\t".join(line) for line in d.features[tag][2]]) + "\n" for tag in data]))
-
-#     sys.exit()
-
-# @debug
-# def use_model(cost, d):
-#     """
-#     Uses extracted model from ../models
-#     Predicts based on inputs saved in csv
-#     """
-#     path = config.path("..","models", cost)
-#     model = config.load(path,"%s.p" % cost))
-#     limit = config.load(path, "config.p"))
-
-#     with open(config.path(path, "input.csv"), 'rb') as f:
-#         read = f.readlines()
-#         if len(read) == 1:
-#             print "Please input data to feed the model in ..\models\%s\input.csv" % cost
-#             return
-
-#     tags = read[0].strip().split(",")
-#     cont = []
-#     cat = []
-#     for line in read[1:]:
-#         data = line.strip().split(",")
-#         cat.append(data[limit-1:])
-#         try:
-#             cont.append([float(num) for num in data[:limit-1]])   
-#         except:
-#             print "%s is not a valid value" % num
-
-#     cont = np.array(cont)
-#     cat = np.array(cat)
-
-#     for x,row in enumerate(cat):
-#         for y,col in enumerate(row):
-#             if col in d.catMapper:
-#                 cat[x][y] = int(d.catMapper[col])
-#             else:
-#                 print "Category: %s not found in %s at row %d" % (col, tags[y], x)
-
-#     encoder = config.load("..","data", d.datafile,"encoder.p"))
-#     cat = encoder.transform(np.hstack((cat.astype("float").astype("int"))))
-
-#     train_ = np.hstack((cont[:-1,], cat[:-1,]))
-#     prediction = model.predict(train_)
-#     print "Predictions for %s with the data given:" % (cost)
-#     print list(enumerate(prediction))
-#     return
 
 @debug
 def extract_model(datafile, cost, d):
+    """
+    Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
+    """
     import shutil
     dataPath = config.path("..","data",datafile,"models",cost)
     modelPath = config.path("..","models", cost)
@@ -139,6 +75,10 @@ def extract_model(datafile, cost, d):
 
 @debug
 def use_model(cost, d):
+    """
+    Uses extracted model from ../models
+    Predicts based on inputs saved in csv
+    """
     path = config.path("..","models", cost)
     model = config.load(path,"model.p")
     cont_mean = config.load(path,"cont_mean.p")
@@ -157,16 +97,13 @@ def use_model(cost, d):
         for y in xrange(cat.shape[1]):
             str_val = str(cat[x,y])
             if str_val not in d.catMapper:
-                print "NEW!"
-                print str_val
-                raw_input()
-                new = len(d.catMapper)
-                d.catMapper[str_val] = new
-                cat[x,y] = new
+                cat[x,y] = d.catMapper["NAN"]
             else:
                 cat[x,y] = d.catMapper[str_val]
     cat = np.hstack((cat.astype("int"), newCats.astype("int")))
-    cat = encoder.transform(cat)
+    cat = encoder.transform(cat).toarray()
+    prediction = model.predict(np.hstack((cont,cat))).astype(str)
+    print "Predicted costs of:\n%s" % "$" + "\n$".join(list(prediction))
 
 @debug
 def main(featureTags, costTags, d, include_costs = False, trees = 10, test = True):
@@ -182,7 +119,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     #Get feature and target data
     data = load_data(d)
     cont, newCats, mean = ff.formatContinuous(data = data[:,cont_tags], d = d)
-    encoder, cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)), datafile = d.datafile)
+    encoder, cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)), d = d)
 
     #Set up Training Data
     x_train = np.hstack((cont,cat))

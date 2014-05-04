@@ -68,12 +68,12 @@ def extract_features(d, featureTags, costTags):
 
 
 @debug
-def one_hot(data, datafile):
+def one_hot(data, d):
     """
     Performs binary vectorization of categorical data for non-decision tree models
     Returns one_hotted data
     """
-    enc = Sparse()
+    enc = Sparse(n_values = len(d.catMapper))
     encoder = enc.fit(data)
     train = encoder.transform(data).toarray()
     return encoder, train

@@ -76,8 +76,7 @@ class Data():
         # Categorical Mapper Path
         mapPath = config.path("..","data", "category_mapper.p")
         cats = config.load(mapPath)
-        if cats == None: cats = {"0":0}
-        
+        if cats == None: cats = {"0":0,"NAN":0}
         with open(path+".csv", 'wb') as g:
             with open(path + ".dat", 'rb') as f:
                 format_ = printFormat + "%s" * (len(f.readline().strip()) - indices[-1] + 1)
