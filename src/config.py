@@ -76,9 +76,10 @@ def load(*path):
     in config.py
     Pickle load that checks for path
     """
+    fpath = os.path.join(*path)
     if os.path.exists(fpath):
         print "Cache Loading from %s" % fpath
-        return p.load(open(os.path.join(*path), 'rb'))
+        return p.load(open(fpath, 'rb'))
     else:
         return None
 

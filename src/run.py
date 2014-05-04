@@ -23,6 +23,7 @@ def variable_lookup(datafile, tables):
             print all_tables
             print "Could not find specified variable."
             return
+
         end = all_tables[:index].rfind("===")
         start = all_tables[:end].rfind("===")
         rest = end + all_tables[end + 3:].find("===")
@@ -99,7 +100,8 @@ if __name__ == "__main__":
         path = config.path("..","data", options.datafile, "models", "config_%s.p" % options.extract)
         if not os.path.exists(path):
             m.main(options.select.strip()[1:-1].split(","), [options.extract], d, include_costs = options.include, trees = int(options.trees), test = False)
-        m.extract_model(path, options.datafile, options.extract, d)
+        m.extract_model(options.datafile, options.extract, d)
+        sys.exit()
 
     if options.model != "":
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     

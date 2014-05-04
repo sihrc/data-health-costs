@@ -126,24 +126,21 @@ def extract_model(datafile, cost, d):
     shutil.copy(config.path(dataPath, "model.p"), config.path(modelPath, "model.p"))
     
     #Create csv for feature input
-    cont, cat = config.load(dataPath, "features.p"))
+    cont, cat = config.load(dataPath, "features.p")
     shutil.copy(config.path(dataPath, "features.p"), config.path(modelPath, "features.p"))
-    with open(config.path(modelPath, "input.csv")) as f:
+    with open(config.path(modelPath, "input.csv"), 'wb') as f:
         f.write(",".join([d.tags[tag] for tag in cont + cat]))
 
 
 @debug
-def use_model(datafile, cost, d):
+def use_model(cost, d):
     path = config.path("..","models", cost)
-    model = config.load(path,"model.p"))
+    model = config.load(path,"model.p")
 
-    data = np.genfromtxt(config.path(path, "input.csv"), delimiter = ",", dtype = str)
-    cont, cat = config.load(modelPath, "features.p")
-
+    data = np.atleast_2d(np.genfromtxt(config.path(path, "input.csv"), delimiter = ",", dtype = str))
+    cont, cat = config.load(path, "features.p")
     cont = data[1:,:len(cont)]
     cat = data[1:,:len(cat)]
-
-
 
 
 @debug
@@ -156,7 +153,8 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     
     #Parsing features
     cat_tags, cont_tags, cost_tags = ff.extract_features(d, featureTags, costTags)
-
+    print cost_tags
+    raw_input()
     #Get feature and target data
     data = load_data(d)
     cont, newCats = ff.formatContinuous(data = data[:,cont_tags], d = d)
@@ -177,13 +175,15 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         #Creating Model and Testing
         model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
         accuracy = model_score(model, x_train_, y_train[:,target])
-        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
         
         #Sorting and Writing Important Features
         ff.writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
         
         #Splitting to testing and training datasets
         costTag =  d.tags[costIndex]
-        config.save(config.path(path, "models", costTag,"features.p"), (cont_tags, cat_tags))
-        config.save(config.path(path, "models", costTag,"model.p"), (model))
+        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+        modelPath = config.path(path, "models", costTag)
+        config.save(config.path(modelPath, "features.p"), (cont_tags, cat_tags))
+        config.save(config.path(modelPath,"model.p"), (model))
+        config.save(config.path(modelPath, "used_to_train.csv"), data[:5,cont_tags + cat_tags])
     print "\n".join(results)
