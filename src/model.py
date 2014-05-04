@@ -185,6 +185,8 @@ if __name__ == "__main__":
 
     import shutil
     shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
+    
+    main([], [cost], d, include_costs = True, trees = 10)
 
     with open(config.path(importance_path, cost + "_test.txt"), 'rb') as f:
         features = [line.strip().split() for line in f.readlines()][::-1]
