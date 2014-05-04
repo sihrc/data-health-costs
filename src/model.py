@@ -31,7 +31,7 @@ def writeFeatures(costFeature, importance , d):
     Returns the costFeature, Sorted list of feature indices based on importance
     """
     sortedFeatures = sorted(zip(d.continuous + d.categorical, list(importance)) ,  key = (lambda x:x[1]))
-    with open(config.path("..","data",d.datafile,"features",  "importances", "%s.txt" % (d.tags[costFeature])),'wb')as f:
+    with open(config.path("..","data",d.datafile,"features",  "importances", "%s.txt" % (costFeature)),'wb')as f:
         for feature, importance in sortedFeatures:
             write = "%s#%f\n" % (d.tags[feature], importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
@@ -186,20 +186,12 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
 
     #Get feature and target data
     data = load_data(d)
-
-    # if not test:
-    #     np.savetxt(config.path(path, "models", "%s_example_data.csv" % costTags[0]), data[:,cat_tags + cont_tags], delimiter = ",", fmt = "%g")
-
-        
     cont, newCats = ff.formatContinuous(data = data[:,cont_tags], d = d)
     cat = ff.one_hot(data = np.hstack((data[:,cat_tags].astype("int"), newCats)), datafile = d.datafile)
-    costs = data[:,cost_tags]
 
-    # training_data = np.hstack((cont,cat))
-    # x_train, x_test, y_train, y_test = train_test_split(training_data, costs, test_size=0.15, random_state=42)
-
+    #Set up Training Data
     x_train = np.hstack((cont,cat))
-    y_train = costs
+    y_train = data[:,cost_tags]
 
     results = []
     #Loops through every cost found in datafile
@@ -207,26 +199,17 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         costTag =  d.tags[costIndex]
         if include_costs:
             x_train_ = np.hstack((x_train, y_train[:,:target], y_train[:,target + 1:]))
-            x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:]))
         else:
             x_train_ = x_train
-            x_test_ = x_test
-            
-        #Splitting to testing and training datasets
-        # model = config.get(config.path(path,"models", "model_%s.p" % costTag), create_model , x_train = x_train_, y_train = y_train[:,target], trees = trees)
-        config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
-        
+
         model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
-        config.save(config.path(path, "test_models","%s.p" % costTag), (model))
-    
-        # predictions = model.predict(x_test_)
-        # accuracy = score(predictions, y_test[:,target])
-
         accuracy = model_score(model, x_train_, y_train[:,target])
-
-        # config.write(config.path("..","data",d.datafile, "models", "%s_accuracy.txt" % costTag), accuracy_)
-        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
  
         #Sorting and Writing Important Features
         writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
+        
+        #Splitting to testing and training datasets
+        # config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
+        # config.save(config.path(path, "test_models","%s.p" % costTag), (model))
+        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
     print "\n".join(results)
