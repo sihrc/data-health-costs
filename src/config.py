@@ -71,14 +71,14 @@ def get(fpath, func, **kwargs):
         p.dump(res, f)
     return res
 
-def load(fpath):
+def load(*path):
     """
     in config.py
     Pickle load that checks for path
     """
     if os.path.exists(fpath):
         print "Cache Loading from %s" % fpath
-        return p.load(open(fpath, 'rb'))
+        return p.load(open(os.path.join(*path), 'rb'))
     else:
         return None
 

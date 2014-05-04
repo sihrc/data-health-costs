@@ -14,28 +14,17 @@ import numpy as np
 
 #Local Modules
 from wrappers import debug
-import format_features as ff
+import features as ff
 import data_helper as dc
 import config
 
 
 @debug
-def writeFeatures(costFeature, importance , d):
+def load_data(d):
     """
-    Writes feature importances to file in order of importance
-    Saves to pickle file for use in future modelling
-
-    Takes in costFeature index of d.tags
-    Takes in the model
-
-    Returns the costFeature, Sorted list of feature indices based on importance
+    Loads numpy array from CSV file
     """
-    sortedFeatures = sorted(zip(d.continuous + d.categorical, list(importance)) ,  key = (lambda x:x[1]))
-    with open(config.path("..","data",d.datafile,"features",  "importances", "%s.txt" % (costFeature)),'wb')as f:
-        for feature, importance in sortedFeatures:
-            write = "%s#%f\n" % (d.tags[feature], importance)
-            f.write(write.replace("#", (24 - len(write)) * " "))
-
+    return np.genfromtxt(config.path("..","data",d.datafile, "data", d.datafile.lower() + ".csv"), delimiter=",")
 
 @debug
 def create_model(x_train, y_train, trees):
@@ -47,78 +36,6 @@ def create_model(x_train, y_train, trees):
     model.fit(x_train, y_train)
     return model
 
-@debug
-def load_data(d):
-    """
-    Loads numpy array from CSV file
-    """
-    return np.genfromtxt(config.path("..","data",d.datafile, "data", d.datafile.lower() + ".csv"), delimiter=",")
-
-@debug
-def parse_features(d, inputs):
-    """
-    Parsing features from input arguments to a list of tag names
-    """
-    tags = []
-    for tag in inputs:
-        if len(tag.strip()) == 1:
-            for tag in d.titleMap[tag.strip().upper()]:                
-                if tag in d.tags:
-                    tags.append(d.tags.index(tag))
-                else:
-                    print "Feature Selection Warning: feature %s not found %s (will be ignored)" % (tag, d.datafile)
-        else:
-            if tag in d.tags:
-                tags.append(d.tags.index(tag))
-
-    return tags
-
-@debug
-def extract_features(d, featureTags, costTags):
-    """
-    Extracts Features based on inputted features
-    """
-    cost_tags = parse_features(d, costTags)
-    cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
-
-    cat_tags = []
-    cont_tags = []
-    feature_tags = parse_features(d, featureTags)
-    if len(featureTags) == 0:
-        return d.categorical, d.continuous + d.costs, cost_tags
-    
-    for tag in featureTags:
-        if tag in d.categorical:
-            cat_tags.append(tag)
-        elif tag in d.continuous:
-            cont_tags.append(tag)
-    if len(cat_tags) == 0: cat_tags = d.categorical
-    if len(cont_tags) == 0: cont_tags = d.continuous + d.costs
-
-    return cat_tags, cont_tags, cost_tags
-
-@debug
-def extract_model(path, datafile, cost, d):
-    """
-    Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
-    """
-    import shutil
-    catTags, contTags = config.load(path)
-    path = config.path("..","models", cost)
-
-    shutil.copy(config.path("..", "data", datafile, "models", "%s_example_data.csv" % cost), config.path(path, "training_data_%s.csv" % cost))
-
-    data = [d.tags[tag] for tag in catTags] + [d.tags[tag] for tag in contTags]
-
-    config.save(config.path(path, "config.p"), len(contTags))
-
-    with open(config.path(path, "input.csv"), 'wb') as f:
-        f.write(",".join(data))
-
-    with open(config.path(path, "features.txt"), 'wb') as f:
-        f.write("\n".join([tag + "\t" + d.features[tag][1] + "\n\t" + "\n\t".join(["\t==========\t".join(line) for line in d.features[tag][2]]) + "\n" for tag in data]))
-
-    sys.exit()
 
 @debug
 def model_score(model, train, test):
@@ -131,14 +48,37 @@ def model_score(model, train, test):
     return model.score(train,test)
 
 # @debug
+# def extract_model(path, datafile, cost, d):
+#     """
+#     Given the target cost name and data set. Extracts the model to ..\models\model_name\ for use in future
+#     """
+#     import shutil
+#     catTags, contTags = config.load(path)
+#     path = config.path("..","models", cost)
+
+#     shutil.copy(config.path("..", "data", datafile, "models", "%s_example_data.csv" % cost), config.path(path, "training_data_%s.csv" % cost))
+
+#     data = [d.tags[tag] for tag in catTags] + [d.tags[tag] for tag in contTags]
+
+#     config.save(config.path(path, "config.p"), len(contTags))
+
+#     with open(config.path(path, "input.csv"), 'wb') as f:
+#         f.write(",".join(data))
+
+#     with open(config.path(path, "features.txt"), 'wb') as f:
+#         f.write("\n".join([tag + "\t" + d.features[tag][1] + "\n\t" + "\n\t".join(["\t==========\t".join(line) for line in d.features[tag][2]]) + "\n" for tag in data]))
+
+#     sys.exit()
+
+# @debug
 # def use_model(cost, d):
 #     """
 #     Uses extracted model from ../models
 #     Predicts based on inputs saved in csv
 #     """
 #     path = config.path("..","models", cost)
-#     model = config.load(config.path(path,"%s.p" % cost))
-#     limit = config.load(config.path(path, "config.p"))
+#     model = config.load(path,"%s.p" % cost))
+#     limit = config.load(path, "config.p"))
 
 #     with open(config.path(path, "input.csv"), 'rb') as f:
 #         read = f.readlines()
@@ -167,7 +107,7 @@ def model_score(model, train, test):
 #             else:
 #                 print "Category: %s not found in %s at row %d" % (col, tags[y], x)
 
-#     encoder = config.load(config.path("..","data", d.datafile,"encoder.p"))
+#     encoder = config.load("..","data", d.datafile,"encoder.p"))
 #     cat = encoder.transform(np.hstack((cat.astype("float").astype("int"))))
 
 #     train_ = np.hstack((cont[:-1,], cat[:-1,]))
@@ -175,6 +115,36 @@ def model_score(model, train, test):
 #     print "Predictions for %s with the data given:" % (cost)
 #     print list(enumerate(prediction))
 #     return
+
+@debug
+def extract_model(datafile, cost, d):
+    import shutil
+    dataPath = config.path("..","data",datafile,"models",cost)
+    modelPath = config.path("..","models", cost)
+
+    #Copy the model
+    shutil.copy(config.path(dataPath, "model.p"), config.path(modelPath, "model.p"))
+    
+    #Create csv for feature input
+    cont, cat = config.load(dataPath, "features.p"))
+    shutil.copy(config.path(dataPath, "features.p"), config.path(modelPath, "features.p"))
+    with open(config.path(modelPath, "input.csv")) as f:
+        f.write(",".join([d.tags[tag] for tag in cont + cat]))
+
+
+@debug
+def use_model(datafile, cost, d):
+    path = config.path("..","models", cost)
+    model = config.load(path,"model.p"))
+
+    data = np.genfromtxt(config.path(path, "input.csv"), delimiter = ",", dtype = str)
+    cont, cat = config.load(modelPath, "features.p")
+
+    cont = data[1:,:len(cont)]
+    cat = data[1:,:len(cat)]
+
+
+
 
 @debug
 def main(featureTags, costTags, d, include_costs = False, trees = 10, test = True):
@@ -185,7 +155,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     path = config.path("..","data",d.datafile)
     
     #Parsing features
-    cat_tags, cont_tags, cost_tags = extract_features(d, featureTags, costTags)
+    cat_tags, cont_tags, cost_tags = ff.extract_features(d, featureTags, costTags)
 
     #Get feature and target data
     data = load_data(d)
@@ -207,13 +177,13 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         #Creating Model and Testing
         model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
         accuracy = model_score(model, x_train_, y_train[:,target])
- 
+        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+        
         #Sorting and Writing Important Features
-        writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
+        ff.writeFeatures(costFeature = costIndex, importance = model.feature_importances_, d = d)        
         
         #Splitting to testing and training datasets
         costTag =  d.tags[costIndex]
-        # config.save(config.path(path, "models","config_%s.p" % costTag), (cat_tags, cont_tags))
-        # config.save(config.path(path, "test_models","%s.p" % costTag), (model))
-        results.append("Model accuracy for cost:%s%saccuracy:%.2f\n" % (costTag, (30 - len(costTag)) * " ", accuracy))
+        config.save(config.path(path, "models", costTag,"features.p"), (cont_tags, cat_tags))
+        config.save(config.path(path, "models", costTag,"model.p"), (model))
     print "\n".join(results)
