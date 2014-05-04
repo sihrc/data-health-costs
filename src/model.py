@@ -172,6 +172,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
                 f.write(",".join([d.tags[tag] for tag in cont_tags_ + cat_tags]))
                 f.write("\t" + results[-1] + "\n")
     print "\n".join(results)
+    print accuracy
     return accuracy
 
 if __name__ == "__main__":
@@ -186,12 +187,12 @@ if __name__ == "__main__":
     import shutil
     shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
     
-    main([], [cost], d, include_costs = True, trees = 10)
+    main([], [cost], d, include_costs = True, trees = 100)
 
     with open(config.path(importance_path, cost + "_test.txt"), 'rb') as f:
         features = [line.strip().split() for line in f.readlines()][::-1]
 
-    with open(config.path(importance_path, "results.txt"), 'wb') as f:
+    with open(config.path(importance_path, "%s_results.txt" % cost), 'wb') as f:
         for i,feature in enumerate(features):
             remaining_features = [feat[0] for feat in features[i:]]
             f.write("Round %d\n" % i)
@@ -199,7 +200,8 @@ if __name__ == "__main__":
             f.write("Remaining Features:\n %s\n" % [feat[0] for feat in features[i:]])
             scores = 0
             for iteration in xrange(10):
-                score = main(remaining_features, [cost], d, include_costs = True, trees = 10)
+                score = main(remaining_features, [cost], d, include_costs = True, trees = 100)
                 f.write("Model Score: %.04f\n" % score)
+                print type(score)
                 scores += score
             f.write("Average Score: %.04f\n" % scores/10.0)
