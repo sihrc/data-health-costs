@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parse.add_option("-s", "--select", dest = "select",
                       help="specify list of data features to use by table name or tag name i.e. [A,B,DUID,PID]", default = "[]")
     parse.add_option("-c", "--costs", dest = "costs", default = "[]",
-                        help = "clean cached files of previous runs")
+                        help = "selects cost data features to use by table name or tag name")
     parse.add_option("-d", "--delete", dest = "clean", default = False, action = "count",
                         help = "removes cached files of previous runs")
     parse.add_option("-p", "--print-tables", dest = "tables", default = "none",

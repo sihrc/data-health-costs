@@ -185,7 +185,7 @@ if __name__ == "__main__":
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)     
 
     
-    main([], [cost], d, include_costs = True, trees = 100)
+    main([], [cost], d, include_costs = True, trees = 1)
     import shutil
     shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
 
@@ -200,7 +200,7 @@ if __name__ == "__main__":
             f.write("Remaining Features:\n %s\n" % [feat[0] for feat in features[i:]])
             scores = 0
             for iteration in xrange(10):
-                score = main(remaining_features, [cost], d, include_costs = True, trees = 100)
+                score = main(remaining_features, [cost], d, include_costs = True, trees = 1)
                 f.write("Model Score: %.04f\n" % score)
                 print type(score)
                 scores += score
