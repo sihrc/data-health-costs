@@ -84,7 +84,6 @@ if __name__ == "__main__":
             ], datafile = options.datafile)
 
     select = options.select.replace("[","").replace("]","").strip().split(",")
-    print select
     costs = options.costs.replace("[","").replace("]","").strip().split(",")
 
     if options.extract != "":

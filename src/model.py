@@ -154,7 +154,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
             accuracy = model_score(model, x_train_, y_train[:,target])
         
         #Sorting and Writing Important Features
-        all_tags = [d.tags[tag] for tag in d.continuous + d.categorical + cost_tags[:target] + cost_tags[target+1:]] if include_costs else d.continuous + d.categorical
+        all_tags = [d.tags[tag] for tag in d.continuous + d.categorical + cost_tags[:target] + cost_tags[target+1:]] if include_costs else [d.tags[tag] for tag in d.continuous + d.categorical]
         ff.writeFeatures(costFeature = d.tags[costIndex], datafile = d.datafile, importance = model.feature_importances_, tags = all_tags)        
         
         #Splitting to testing and training datasets
