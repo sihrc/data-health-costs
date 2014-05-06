@@ -166,9 +166,9 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         if test:
             x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:])) if include_costs else x_test
             prediction = model.predict(x_test_)
-            prediction_2 = model.predict(x_train)
-            accuracy_2 = manual_error_score(y_train[:,target],prediction_2)
-            print "TRAIN DATA, ", accuracy_2
+            # prediction_2 = model.predict(x_train)
+            # accuracy_2 = manual_error_score(y_train[:,target],prediction_2)
+            # print "TRAIN DATA, ", accuracy_2
             accuracy = manual_error_score(y_test[:,target], prediction)
 
             # prediction = model.predict(np.zeros(x_test_.shape))
