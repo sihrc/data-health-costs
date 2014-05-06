@@ -225,7 +225,7 @@ if __name__ == "__main__":
             print len(features)
             cumulative = 0
             i += 1
-            for iteration in [0]:
+            for iteration in xrange(10):
                 print remaining[1:]
                 features, score_var = main(remaining[1:], [cost], d, include_costs = True, trees = 80)
                 f.write("Model Score: %.4f\n" % score_var)
