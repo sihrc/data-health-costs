@@ -21,6 +21,7 @@ def writeFeatures(costFeature, datafile, importance , tags):
         for feature, importance in sortedFeatures:
             write = "%s#%f\n" % (feature, importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
+    return sortedFeatures
 
 @debug
 def parse_features(d, inputs):
@@ -67,10 +68,10 @@ def extract_features(d, featureTags, costTags):
     for tag in feature_tags:
         if tag in d.categorical:
             cat_tags.append(tag)
-        elif tag in d.continuous:
+        elif tag in d.continuous or tag in d.costs:
             cont_tags.append(tag)
 
-    return cat_tags, cont_tags + [tag for tag in d.costs if tag not in cost_tags], cost_tags
+    return cat_tags, cont_tags, cost_tags
 
 
 @debug
@@ -92,10 +93,10 @@ def one_hot(data, d):
 
     # enc = Sparse(n_values = len(d.catMapper))
     enc = Sparse()
-    encoder = enc.fit(data)
-    train = encoder.transform(data).toarray()
-    return encoder, train
-    # return encoder, data
+    # enc = enc.fit(data)
+    # train = enc.transform(data).toarray()
+    # return enc, train
+    return enc, data
 
 @debug
 def formatContinuous(d,data, mean = None):
