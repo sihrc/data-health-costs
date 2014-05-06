@@ -47,24 +47,30 @@ def extract_features(d, featureTags, costTags):
     """
     Extracts Features based on inputted features
     """
-    cost_tags = parse_features(d, costTags)
-    cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
+    if len(costTags) == 0:
+        cost_tags = d.costs
+    else:
+        cost_tags = parse_features(d, costTags)
+        if len(cost_tags) == 0:
+            print "WARNING:: Cost tags inputted cannot be found!"
+            return 
+
+    if len(featureTags) == 0: return d.categorical, d.continuous + [tag for tag in d.costs if tag not in cost_tags], cost_tags
 
     cat_tags = []
     cont_tags = []
     feature_tags = parse_features(d, featureTags)
-    if len(featureTags) == 0:
-        return d.categorical, d.continuous + d.costs, cost_tags
     
-    for tag in featureTags:
+    if len(feature_tags) == 0:
+        print "WARNING::Feature tags inputted cannot be found!"
+        return
+    for tag in feature_tags:
         if tag in d.categorical:
             cat_tags.append(tag)
         elif tag in d.continuous:
             cont_tags.append(tag)
-    if len(cat_tags) == 0: cat_tags = d.categorical
-    if len(cont_tags) == 0: cont_tags = d.continuous + d.costs
 
-    return cat_tags, cont_tags, cost_tags
+    return cat_tags, cont_tags + [tag for tag in d.costs if tag not in cost_tags], cost_tags
 
 
 @debug
@@ -89,6 +95,7 @@ def one_hot(data, d):
     encoder = enc.fit(data)
     train = encoder.transform(data).toarray()
     return encoder, train
+    # return encoder, data
 
 @debug
 def formatContinuous(d,data, mean = None):
@@ -113,3 +120,4 @@ def formatContinuous(d,data, mean = None):
 
 
     return data, newCats, mean
+    # return data, np.empty(newCats.shape), mean

@@ -8,8 +8,9 @@ author:chris
 # from sklearn.linear_model import Ridge as Model
 from sklearn.ensemble import RandomForestRegressor as Model
 from sklearn.cross_validation import train_test_split
-# from sklearn.metrics import mean_squared_error as score
-from sklearn.metrics import explained_variance_score as score
+from sklearn.metrics import mean_squared_error as score
+# from sklearn.metrics import explained_variance_score as score
+# from sklearn.metrics import r2_score as score
 import numpy as np
 
 #Local Modules
@@ -32,7 +33,8 @@ def create_model(x_train, y_train, trees):
     Creates and fits the model based on x_train and y_train
     Returns model as specified in import
     """
-    model =  Model(trees, oob_score = True)
+    # model =  Model(trees, oob_score = True)
+    model =  Model()
     model.fit(x_train, y_train)
     return model
 
@@ -75,6 +77,18 @@ def extract_model(datafile, cost, d):
     with open(config.path(modelPath, "input.csv"), 'wb') as f:
         f.write(",".join([d.tags[tag] for tag in cont + cat]) + "," + cost + "\n")
         f.write(",".join(list(train_data[0].astype('str'))))
+
+
+def manual_error_score(real, prediction):
+    diff = (prediction - real)
+    bigger = prediction > real
+    scale = np.zeros(prediction.shape)
+    scale[bigger] = prediction[bigger]
+    scale[np.invert(bigger)] = real[np.invert(bigger)]
+    scale[diff == 0] = 1
+    
+    return 1 - np.mean(np.abs(diff)/scale)
+
 
 @debug
 def use_model(cost):
@@ -119,7 +133,7 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     """
     #Get Data Handler
     path = config.path("..","data",d.datafile)
-    
+
     #Parsing features
     cat_tags, cont_tags, cost_tags = ff.extract_features(d, featureTags, costTags)
 
@@ -129,9 +143,9 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     encoder, cat = ff.one_hot(data = np.hstack((data[:,cat_tags], newCats)), d = d)
 
     #Set up Training Data
-    x_train = np.hstack((cont,cat))
+    x_train = np.hstack((cont,cat)) 
     y_train = data[:,cost_tags]
-    if test:    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = .15, random_state = 42)
+    if test:    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = .1, random_state = 42)
 
     results = []
     #Loops through every cost found in datafile
@@ -146,15 +160,22 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         #Creating Model and Testing
         model = create_model(x_train = x_train_, y_train = y_train[:,target], trees = trees)
         if test:
-            # x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:])) if include_costs else x_test
-            # prediction = model.predict(x_test_)
-            # accuracy = score(y_test[:,target], prediction)
-            accuracy = model.oob_score_
+            x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:])) if include_costs else x_test
+            prediction = model.predict(x_test_)
+            accuracy = manual_error_score(y_test[:,target], prediction)
+
+            # prediction = model.predict(np.zeros(x_test_.shape))
+            # config.save(config.path("results", d.tags[costIndex], "prediction.p"), prediction)
+            # config.save(config.path("results", d.tags[costIndex], "real.p"), y_test[:,target])
+            # accuracy = score(y_test[:,target], prediction) ** .5 / np.mean(y_test[:,target])
+            # accuracy = model.oob_score_
         else:
-            accuracy = model_score(model, x_train_, y_train[:,target])
+            prediction = model.predict(np.zeros(x_train.shape))
+            accuracy = 1 - manual_error_score(y_train[:,target], prediction)
         
         #Sorting and Writing Important Features
-        all_tags = [d.tags[tag] for tag in d.continuous + d.categorical + cost_tags[:target] + cost_tags[target+1:]] if include_costs else [d.tags[tag] for tag in d.continuous + d.categorical]
+        all_tags = [d.tags[tag] for tag in d.continuous +d.categorical + cost_tags[:target] + cost_tags[target+1:]] if include_costs else [d.tags[tag] for tag in d.continuous + d.categorical]
+        print all_tags
         ff.writeFeatures(costFeature = d.tags[costIndex], datafile = d.datafile, importance = model.feature_importances_, tags = all_tags)        
         
         #Splitting to testing and training datasets
@@ -172,7 +193,6 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
                 f.write(",".join([d.tags[tag] for tag in cont_tags_ + cat_tags]))
                 f.write("\t" + results[-1] + "\n")
     print "\n".join(results)
-    print accuracy
     return accuracy
 
 if __name__ == "__main__":
@@ -180,12 +200,12 @@ if __name__ == "__main__":
 
     datafile = sys.argv[1]
     cost = sys.argv[2]
+
     importance_path = config.path("..","data",datafile,"features","importances")
-
+   
     d = config.get(config.path("..","data",datafile,"data","dHandler.p"), dc.Data, datafile = datafile)     
-
+    main([], [cost], d, include_costs = True, trees = 50)
     
-    main([], [cost], d, include_costs = True, trees = 1)
     import shutil
     shutil.copy(config.path(importance_path, cost + ".txt"), config.path(importance_path, cost + "_test.txt"))
 
@@ -200,7 +220,6 @@ if __name__ == "__main__":
             f.write("Remaining Features:\n %s\n" % [feat[0] for feat in features[i:]])
             scores = 0
             for iteration in xrange(10):
-                score = main(remaining_features, [cost], d, include_costs = True, trees = 1)
-                f.write("Model Score: %.04f\n" % score)
-                print type(score)
-                scores += score
+                score_var = main(remaining_features, [cost], d, include_costs = True, trees = 30)
+                f.write("Model Score: %.04f\n" % score_var)
+                scores += score_var
