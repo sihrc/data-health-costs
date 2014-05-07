@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
     with open(config.path(importance_path, "%s_results.txt" % cost), 'wb') as f:
         i = 0
-        while len(features) >= 1:
+        while len(features) > 1:
             feature = features[0]
             remaining = [feat[0] for feat in features]
             f.write("Round %d\n" % i)
@@ -225,11 +225,11 @@ if __name__ == "__main__":
             print len(features)
             cumulative = 0
             i += 1
-            for iteration in xrange(10):
+            for iteration in xrange(3):
                 print remaining[1:]
                 features, score_var = main(remaining[1:], [cost], d, include_costs = True, trees = 80)
                 f.write("Model Score: %.4f\n" % score_var)
                 cumulative += score_var
                 print "========================="
 
-            f.write("Average Score: %.4f\n" % (cumulative/10))
+            f.write("Average Score: %.4f\n" % (cumulative/3))
