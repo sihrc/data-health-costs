@@ -12,7 +12,7 @@ def debug(func):
     Debug Wrapper that prints time elapsed
     """
     def wrapper(*arg, **kwargs):
-        print "======================================="
+        print "========================================"
         print "Currently Running:%s %s"% (func.func_name, func.__doc__)
         t1 = time.time()
         res = func(*arg,**kwargs)
