@@ -28,7 +28,6 @@ def parse_features(d, inputs):
     """
     Parsing features from input arguments to a list of tag names
     """
-    import string
     tags = []
     for tag in inputs:
         if len(tag.strip()) == 1:
@@ -48,7 +47,7 @@ def extract_features(d, featureTags, costTags):
     """
     Extracts Features based on inputted features
     """
-    if len(costTags) == 0:
+    if costTags[0] == "":
         cost_tags = d.costs
     else:
         cost_tags = parse_features(d, costTags)
@@ -56,7 +55,7 @@ def extract_features(d, featureTags, costTags):
             print "WARNING:: Cost tags inputted cannot be found!"
             return 
 
-    if len(featureTags) == 0: return d.categorical, d.continuous + [tag for tag in d.costs if tag not in cost_tags], cost_tags
+    if featureTags[0] == "": return d.categorical, d.continuous + [tag for tag in d.costs if tag not in cost_tags], cost_tags
 
     cat_tags = []
     cont_tags = []
@@ -91,12 +90,12 @@ def one_hot(data, d):
             else:
                 data[x,y] = d.catMapper[str_val]
 
-    # enc = Sparse(n_values = len(d.catMapper))
-    enc = Sparse()
-    # enc = enc.fit(data)
-    # train = enc.transform(data).toarray()
-    # return enc, train
-    return enc, data
+    enc = Sparse(n_values = len(d.catMapper))
+    # enc = Sparse()
+    enc = enc.fit(data)
+    train = enc.transform(data).toarray()
+    return enc, train
+    # return enc, data
 
 @debug
 def formatContinuous(d,data, mean = None):

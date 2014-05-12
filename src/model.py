@@ -62,7 +62,6 @@ def extract_model(datafile, cost, d):
 
     #Copy the model
     shutil.copy(config.path(dataPath, "model.p"), config.path(modelPath, "model.p"))
-    shutil.copy(config.path(dataPath, "features.p"), config.path(modelPath, "features.p"))
     shutil.copy(config.path(dataPath, "cont_mean.p"), config.path(modelPath, "cont_mean.p"))
     shutil.copy(config.path(dataPath, "encoder.p"), config.path(modelPath, "encoder.p"))
     shutil.copy(config.path(dataPath, "dHandler.p"), config.path(modelPath, "dHandler.p"))
@@ -70,13 +69,16 @@ def extract_model(datafile, cost, d):
     #Sample Data
     train_data = config.load(dataPath, "used_to_train.p")
     np.savetxt(config.path(modelPath, "used_to_train.csv"), train_data, fmt = "%g", delimiter = ",")
-        
+
     #Create csv for feature input
     cont, cat = config.load(dataPath, "features.p")
-    print train_data.shape
+    with open(config.path(modelPath, "features.txt"), 'wb') as f:
+        f.write("\n".join([tag + "\t" + d.features[tag][1] + "\n\t" + "\n\t".join(["\t==========\t".join(line) for line in d.features[tag][2]]) + "\n" for tag in [d.tags[tag] for tag in cont + cat]]))
     with open(config.path(modelPath, "input.csv"), 'wb') as f:
         f.write(",".join([d.tags[tag] for tag in cont + cat]) + "," + cost + "\n")
         f.write(",".join(list(train_data[0].astype('str'))))
+
+    print "\nMODEL EXTRACTION:\nModel Package extracted to %s\n" % modelPath
 
 
 def manual_error_score(real, prediction):
@@ -113,7 +115,7 @@ def use_model(cost):
         return
 
     cont, newCats, cont_mean = ff.formatContinuous(data = cont, d = d, mean = cont_mean)
-    cat = np.hstack((cat, newCats))
+    # cat = np.hstack((cat, newCats))
     for x in xrange(cat.shape[0]):
         for y in xrange(cat.shape[1]):
             str_val = str(cat[x,y])
@@ -121,7 +123,7 @@ def use_model(cost):
                 cat[x,y] = d.catMapper["NAN"]
             else:
                 cat[x,y] = d.catMapper[str_val]
-    cat = encoder.transform(cat.astype("int")).toarray()
+    # cat = encoder.transform(cat.astype("int")).toarray()
     prediction = model.predict(np.hstack((cont,cat))).astype(str)
     print "Predicted costs of:\n%s" % "$" + "\n$".join(list(prediction))
     # print "Test cost of:\n%s" % "$" + "\n$".join(list(cost)) # for testing purposes
@@ -141,15 +143,10 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
     data = load_data(d)
     cont, newCats, mean = ff.formatContinuous(data = data[:,cont_tags], d = d)
     encoder, cat = ff.one_hot(data = data[:,cat_tags], d = d)
-    print cont.shape
-    print cat.shape
     #Set up Training Data
     x_train = np.hstack((cont,cat)) 
     y_train = data[:,cost_tags]
     if test:    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = .1, random_state = 42)
-
-    print "USING %d COLUMNS" % x_train.shape[1]
-    print "USING %d FEATURES" % len(cat_tags + cont_tags)
 
     results = []
     #Loops through every cost found in datafile
@@ -166,9 +163,8 @@ def main(featureTags, costTags, d, include_costs = False, trees = 10, test = Tru
         if test:
             x_test_ = np.hstack((x_test, y_test[:,:target], y_test[:,target + 1:])) if include_costs else x_test
             prediction = model.predict(x_test_)
-            # prediction_2 = model.predict(x_train)
-            # accuracy_2 = manual_error_score(y_train[:,target],prediction_2)
-            # print "TRAIN DATA, ", accuracy_2
+            # prediction_2 = model.predict(x_train) # Check for over fitting
+            # accuracy_2 = manual_error_score(y_train[:,target],prediction_2) # Check for over fitting
             accuracy = manual_error_score(y_test[:,target], prediction)
 
             # prediction = model.predict(np.zeros(x_test_.shape))
