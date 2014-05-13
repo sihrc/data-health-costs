@@ -200,7 +200,7 @@ if __name__ == "__main__":
             f.write("Remaining Features:\n %s\n" % [feat[0] for feat in features[i:]])
             scores = 0
             for iteration in xrange(10):
-                score = main(remaining_features, [cost], d, include_costs = True, trees = 1)
+                score = main(remaining_features, [cost], d, include_costs = True, trees = 20)
                 f.write("Model Score: %.04f\n" % score)
                 print type(score)
                 scores += score
