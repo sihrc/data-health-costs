@@ -204,11 +204,6 @@ class Data():
     def getTagIndices(self,tagNames):
         return [self.tags.index[tag] for tag in tagNames]
     
-    def costInput(self):
-        while True:
-            response = raw_input("\n".join(sorted([self.tags[tag] + "\t" + self.features[self.tags[tag]][1] for tag in self.costs])) + "\n")
-            if response in self.tags:
-                return response
     """
     Class native methods
     """

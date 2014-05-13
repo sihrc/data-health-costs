@@ -21,13 +21,13 @@ def writeFeatures(costFeature, datafile, importance , tags):
         for feature, importance in sortedFeatures:
             write = "%s#%f\n" % (feature, importance)
             f.write(write.replace("#", (24 - len(write)) * " "))
+    return sortedFeatures
 
 @debug
 def parse_features(d, inputs):
     """
     Parsing features from input arguments to a list of tag names
     """
-    import string
     tags = []
     for tag in inputs:
         if len(tag.strip()) == 1:
@@ -47,22 +47,28 @@ def extract_features(d, featureTags, costTags):
     """
     Extracts Features based on inputted features
     """
-    cost_tags = parse_features(d, costTags)
-    cost_tags = d.costs if len(cost_tags) == 0 else parse_features(d, costTags)
+    if costTags[0] == "":
+        cost_tags = d.costs
+    else:
+        cost_tags = parse_features(d, costTags)
+        if len(cost_tags) == 0:
+            print "WARNING:: Cost tags inputted cannot be found!"
+            return 
+
+    if featureTags[0] == "": return d.categorical, d.continuous + [tag for tag in d.costs if tag not in cost_tags], cost_tags
 
     cat_tags = []
     cont_tags = []
     feature_tags = parse_features(d, featureTags)
-    if len(featureTags) == 0:
-        return d.categorical, d.continuous + d.costs, cost_tags
     
-    for tag in featureTags:
+    if len(feature_tags) == 0:
+        print "WARNING::Feature tags inputted cannot be found!"
+        return
+    for tag in feature_tags:
         if tag in d.categorical:
             cat_tags.append(tag)
-        elif tag in d.continuous:
+        elif tag in d.continuous or tag in d.costs:
             cont_tags.append(tag)
-    if len(cat_tags) == 0: cat_tags = d.categorical
-    if len(cont_tags) == 0: cont_tags = d.continuous + d.costs
 
     return cat_tags, cont_tags, cost_tags
 
@@ -84,11 +90,12 @@ def one_hot(data, d):
             else:
                 data[x,y] = d.catMapper[str_val]
 
-    # enc = Sparse(n_values = len(d.catMapper))
-    enc = Sparse()
-    encoder = enc.fit(data)
-    train = encoder.transform(data).toarray()
-    return encoder, train
+    enc = Sparse(n_values = len(d.catMapper))
+    # enc = Sparse()
+    enc = enc.fit(data)
+    train = enc.transform(data).toarray()
+    return enc, train
+    # return enc, data
 
 @debug
 def formatContinuous(d,data, mean = None):
@@ -113,3 +120,4 @@ def formatContinuous(d,data, mean = None):
 
 
     return data, newCats, mean
+    # return data, np.empty(newCats.shape), mean

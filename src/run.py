@@ -49,7 +49,7 @@ if __name__ == "__main__":
     parse.add_option("-u", "--use", dest = "model", default = "",
                         help = "use an extracted model to predict costs")
     parse.add_option("-e", "--extract", dest = "extract", default = "",
-                        help = "target cost argument to create a model for future use")
+                        help = "target cost to create a model for future use")
 
     (options, args) = parse.parse_args()
 
@@ -59,15 +59,16 @@ if __name__ == "__main__":
         print "Looking up tables, please wait..."
         # sys.stdout = open("runOutput.txt", 'wb')
         d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
+        print "Cost Features:\n%s" % "\n".join([d.tags[tag] for tag in d.costs])
         # sys.stdout = output
         variable_lookup(d, options.tables) 
         sys.exit()
 
     if options.lookup != "":
         import feature_lookup as fl
+        d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
         print "Looking up feature, please wait..."
         # sys.stdout = open("runOutput.txt", 'wb')
-        d = config.get(config.path("..","data",options.datafile,"data","dHandler.p"), dc.Data, datafile = options.datafile)     
         # sys.stdout = output
         print "======================================="
         print  fl.getDetails(options.datafile, options.lookup)["Description"]
